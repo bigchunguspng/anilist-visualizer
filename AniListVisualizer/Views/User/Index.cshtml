@@ -1,0 +1,36 @@
+@model List<MediaListEntry>
+
+@{
+    ViewBag.Title = ViewBag.Username;
+    Layout = "_Layout";
+    var list = Model
+        .Where(x => x.status is EntryStatus.COMPLETED or EntryStatus.CURRENT or EntryStatus.PAUSED)
+        .OrderBy(x => x.watching_start.year)
+        .ThenBy(x => x.watching_start.month)
+        .ThenBy(x => x.watching_start.day);
+}
+
+<h1>Index</h1>
+
+<table>
+    <tbody>
+    @foreach (var item in list)
+    {
+        <tr>
+            <td>
+                <a href="https://anilist.co/anime/@item.media.id">
+                    <img src="@item.media.coverImage["medium"]" height="32px" alt="…"/>
+                </a>
+            </td>
+            @if (item.status is EntryStatus.CURRENT or EntryStatus.REPEATING)
+            {
+                <td><b> @item.media.title["romaji"] </b></td>
+            }
+            else
+            {
+                <td> @item.media.title["romaji"] </td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>

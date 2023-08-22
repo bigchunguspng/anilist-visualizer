@@ -7,19 +7,11 @@ internal static class Program
 {
     public static void Main(string[] args)
     {
-        var baka = new AniListExtractor();
-        var user = "oncewascrunchy"; // not me
-        Console.WriteLine(baka.GetAniListUserID(user));
-        var list = baka.GetFullMediaList(user);
-        Console.WriteLine(list.Count);
-        foreach (var entry in list.Where(x => x.status is EntryStatus.COMPLETED or EntryStatus.CURRENT or EntryStatus.PAUSED).OrderBy(x => x.watching_start.year).ThenBy(x => x.watching_start.month).ThenBy(x => x.watching_start.day))
-        {
-            Console.WriteLine(entry.media.title["romaji"]);
-        }
-        /*var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+        builder.Services.AddRouting(o => o.LowercaseUrls = true);
 
         var app = builder.Build();
 
@@ -35,13 +27,8 @@ internal static class Program
         app.UseStaticFiles();
 
         app.UseRouting();
+        app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
-        app.UseAuthorization();
-
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
-
-        app.Run();*/
+        app.Run();
     }
 }

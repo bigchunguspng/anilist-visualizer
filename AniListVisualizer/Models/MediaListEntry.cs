@@ -24,12 +24,12 @@ public class Media
     public int? chapters;
     public int? volumes;
     public Dictionary<string, string> coverImage = null!;
-    public MediaSource source;
+    public MediaSource? source;
     public MediaSeason? season;
     public FuzzyDate startDate;
     public FuzzyDate   endDate;
     public MediaFormat? format;
-    public MediaStatus Status;
+    public MediaStatus? Status;
 }
 
 public struct FuzzyDate
