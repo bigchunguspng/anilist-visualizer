@@ -9,9 +9,8 @@ public class UserController : Controller
     public IActionResult Index(string username)
     {
         var baka = new AniListExtractor();
-        var list = baka.GetFullMediaList(username);
-        
-        ViewBag.Username = username;
-        return View(list);
+        var user = baka.GetUserViewModel(username);
+
+        return View(user);
     }
 }

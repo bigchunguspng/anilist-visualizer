@@ -1,16 +1,24 @@
-@model List<MediaListEntry>
+@model UserViewModel
 
 @{
-    ViewBag.Title = ViewBag.Username;
+    ViewBag.Title = Model.User.name;
     Layout = "_Layout";
-    var list = Model
-        .Where(x => x.status is EntryStatus.COMPLETED or EntryStatus.CURRENT or EntryStatus.PAUSED)
-        .OrderBy(x => x.watching_start.year)
-        .ThenBy(x => x.watching_start.month)
-        .ThenBy(x => x.watching_start.day);
+    var list = Model.History
+        .Where(x => x.status is EntryStatus.COMPLETED or EntryStatus.CURRENT or EntryStatus.PAUSED && x.watching_start.year is not null)
+        .OrderBy(x => x.watching_start.GetDateTime())
+        .ThenBy(x => x.watching_end.GetDateTime())
+        .ToList();
+    var min = list.Min(a => a.watching_start.GetDateTime());
+    var max = list.Max(a => a.watching_end  .GetDateTime());
+    var length = (int)(max - min).TotalDays;
 }
 
-<h1>Index</h1>
+<div class="baka">
+    <a href="https://anilist.co/user/@Model.User.name">
+        <img src="@Model.User.avatar["medium"]" height="64px" alt="…" style="border-radius: 16px"/>
+    </a>
+    <h1>@ViewBag.Title</h1>
+</div>
 
 <table>
     <tbody>
@@ -18,18 +26,45 @@
     {
         <tr>
             <td>
-                <a href="https://anilist.co/anime/@item.media.id">
-                    <img src="@item.media.coverImage["medium"]" height="32px" alt="…"/>
+                @{ var path = $"{item.media.type.ToString().ToLower()}/{item.media.id}"; }
+                <a href="https://anilist.co/@path">
+                    <img src="@item.media.coverImage["medium"]" height="32px" alt="…" style="border-radius: 2px"/>
                 </a>
             </td>
+            @{ var title = item.media.title["english"] ?? item.media.title["romaji"]; }
             @if (item.status is EntryStatus.CURRENT or EntryStatus.REPEATING)
             {
-                <td><b> @item.media.title["romaji"] </b></td>
+                <td><b> @title </b></td>
             }
             else
             {
-                <td> @item.media.title["romaji"] </td>
+                <td> @title </td>
             }
+            <td>
+                @{
+                    var r = (int)(item.watching_start.GetDateTime() - min).TotalDays;
+                    var l = item.status is EntryStatus.CURRENT or EntryStatus.PAUSED ? 0 : (int)(max - item.watching_end.GetDateTime()).TotalDays;
+                    var margin = $"0 {l}px 0 {r}px";
+                    //var text = $"min {min} max {max} length {length} L:{r} R:{l} ({title})";
+                    var width = $"{length}px";
+                    var color = item.media.coverImage["color"] ?? "#00a8fe";
+                    var years = Enumerable.Range(min.Year, max.Year - min.Year + 1);
+                    var accumulated = 0;
+                }
+                <div style="width: @width; background-color: #f0f0f0">
+                    @foreach (var year in years)
+                    {
+                        var days = year == min.Year ? (int)(new DateTime(year, 12, 31) - min).TotalDays : DateTime.IsLeapYear(year) ? 366 : 365;
+                        var w = $"{days}px";
+                        var m = $"{accumulated}px";
+                        accumulated += days;
+                        <div style="position: absolute; margin-left: @m; width: @w; height: 24px; border-left-width: 1px; border-left-style: solid; padding-left: 5px;">@year</div>
+                    }
+                    <div style=" margin: @margin; height: 24px; min-width: 3px; background-color: @color; color: white;"> </div>
+                </div>
+            </td>
+            @*<td> @item.watching_start.ToString() </td>
+            <td> @item.watching_end.ToString() </td>*@
         </tr>
     }
     </tbody>

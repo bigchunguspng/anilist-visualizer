@@ -20,3 +20,14 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.baka * {
+  display:inline-block;
+  vertical-align: bottom;
+}
+
+th {
+  background: white;
+  position: sticky;
+  top: 0; /* Don't forget this, required for the stickiness */
+}

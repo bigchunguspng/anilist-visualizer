@@ -18,12 +18,12 @@ public class Media
 {
     public int id;
     public MediaType type;
-    public Dictionary<string, string> title = null!;
+    public Dictionary<string, string?> title = null!;
     public int? episodes;
     public int? duration;
     public int? chapters;
     public int? volumes;
-    public Dictionary<string, string> coverImage = null!;
+    public Dictionary<string, string?> coverImage = null!;
     public MediaSource? source;
     public MediaSeason? season;
     public FuzzyDate startDate;
@@ -35,6 +35,10 @@ public class Media
 public struct FuzzyDate
 {
     public int? year, month, day;
+
+    public override string ToString() => year is null ? "…" : $"{year}-{month}-{day}";
+
+    public DateTime GetDateTime() =>  year is null ? new DateTime() : new DateTime(year.Value, month!.Value, day!.Value);
 }
 
 public enum EntryStatus

@@ -9,7 +9,7 @@ public class AniListExtractor
 {
     private readonly RestClient anilistClient = new("https://graphql.anilist.co");
 
-    private const string USER_ID_QUERY = "query ($name: String) { User(name: $name) { id } }";
+    private const string USER_ID_QUERY = "query ($name: String) { User(name: $name) { id name avatar { large medium } } }";
     private const string MEDIALIST_QUERY =
         """
         query ($id: Int, $page: Int) {
@@ -44,15 +44,15 @@ public class AniListExtractor
         }
         """;
 
-    public List<MediaListEntry> GetFullMediaList(string username)
+    public UserViewModel GetUserViewModel(string username)
     {
-        var user = GetAniListUserID(username);
-        var list = GetOtakuHistory(user);
+        var user = GetAniListUser(username);
+        var list = GetOtakuHistory(user.id);
 
-        return list;
+        return new UserViewModel { User = user, History = list };
     }
 
-    public int GetAniListUserID(string username)
+    public User GetAniListUser(string username)
     {
         var query = new GraphQLQuery
         {
@@ -64,10 +64,9 @@ public class AniListExtractor
         {
             var json = DeserializeResponse(response);
             var data = JsonToDictionary((JObject)json["data"]);
-            var id   = JsonToDictionary((JObject)data["User"])["id"];
-            return Convert.ToInt32((long)id);
+            return JsonConvert.DeserializeObject<User>(((JObject)data["User"]).ToString())!;
         }
-        return -1;
+        throw new Exception("User not found.");
     }
 
     private List<MediaListEntry> GetOtakuHistory(int user, int page = 1)
