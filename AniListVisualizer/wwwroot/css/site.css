@@ -68,3 +68,32 @@ body {
 .on-hover {
   display:none;
 }
+
+/*tooltip*/
+.tip:hover {
+  cursor: help;
+  position: relative;
+  z-index: 10;
+}
+
+.tip span {
+  display: none;
+}
+
+.tip:hover .xd {
+  opacity: 75%;
+}
+
+.tip:hover span {
+  padding: 5px;
+  display: block;
+  z-index: 100;
+  background: #000b;
+  left: 0;
+  margin: 10px;
+  position: absolute;
+  bottom: 15px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 0.8em;
+}
