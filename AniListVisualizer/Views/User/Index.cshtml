@@ -1,3 +1,4 @@
+@using AniListVisualizer.Services
 @model UserViewModel
 
 @{
@@ -13,22 +14,35 @@
     var length = (int)(max - min).TotalDays;
 }
 
-<div class="baka">
+<div class="user-info">
     <a href="https://anilist.co/user/@Model.User.name">
-        <img src="@Model.User.avatar["medium"]" height="64px" alt="…" style="border-radius: 16px"/>
+        <img class="user-pfp" src="@Model.User.avatar["medium"]" height="64px" alt="…"/>
     </a>
     <h1>@ViewBag.Title</h1>
 </div>
 
 <table>
     <tbody>
+    @{
+        var years = Enumerable.Range(min.Year, max.Year - min.Year + 1).ToList();
+        var divs = new List<TimelineYear>(years.Count);
+        var accumulated = 0;
+        foreach (var year in years)
+        {
+            var days = year == min.Year ? (int)(new DateTime(year, 12, 31) - min).TotalDays : DateTime.IsLeapYear(year) ? 366 : 365;
+            var margin = $"{accumulated}px";
+            var width = $"{days}px";
+            accumulated += days;
+            divs.Add(new TimelineYear(year, margin, width));
+        }
+    }
     @foreach (var item in list)
     {
         <tr>
             <td>
                 @{ var path = $"{item.media.type.ToString().ToLower()}/{item.media.id}"; }
                 <a href="https://anilist.co/@path">
-                    <img src="@item.media.coverImage["medium"]" height="32px" alt="…" style="border-radius: 2px"/>
+                    <img class="title-cover" src="@item.media.coverImage["medium"]" height="32px" alt="…"/>
                 </a>
             </td>
             @{ var title = item.media.title["english"] ?? item.media.title["romaji"]; }
@@ -42,29 +56,27 @@
             }
             <td>
                 @{
-                    var r = (int)(item.watching_start.GetDateTime() - min).TotalDays;
-                    var l = item.status is EntryStatus.CURRENT or EntryStatus.PAUSED ? 0 : (int)(max - item.watching_end.GetDateTime()).TotalDays;
-                    var margin = $"0 {l}px 0 {r}px";
-                    //var text = $"min {min} max {max} length {length} L:{r} R:{l} ({title})";
+                    var start = item.watching_start;
+                    var end   = item.watching_end;
+                    var sd = start.GetDateTime();
+                    var ed =   end.GetDateTime();
+                    var right = (int)(sd - min).TotalDays;
+                    var left = end.year is null ? 0 : (int)(max - ed).TotalDays;
+                    var margin = $"0 {left}px 0 {right}px";
+                    var text = sd == ed ? start.ToString() : $"{start} - {end}";
                     var width = $"{length}px";
                     var color = item.media.coverImage["color"] ?? "#00a8fe";
-                    var years = Enumerable.Range(min.Year, max.Year - min.Year + 1);
-                    var accumulated = 0;
                 }
-                <div style="width: @width; background-color: #f0f0f0">
-                    @foreach (var year in years)
+                <div class="timeline-row" style="width: @width;">
+                    @foreach (var x in divs)
                     {
-                        var days = year == min.Year ? (int)(new DateTime(year, 12, 31) - min).TotalDays : DateTime.IsLeapYear(year) ? 366 : 365;
-                        var w = $"{days}px";
-                        var m = $"{accumulated}px";
-                        accumulated += days;
-                        <div style="position: absolute; margin-left: @m; width: @w; height: 24px; border-left-width: 1px; border-left-style: solid; padding-left: 5px;">@year</div>
+                        <div class="timeline-year" style="margin-left: @x.MarginLeft; width: @x.Width;">@x.Year</div>
                     }
-                    <div style=" margin: @margin; height: 24px; min-width: 3px; background-color: @color; color: white;"> </div>
+                    <div class="timeline-item" title="@text" style="margin: @margin; background-color: @color;">
+                        @*<div class="on-hover">...</div>*@
+                    </div>
                 </div>
             </td>
-            @*<td> @item.watching_start.ToString() </td>
-            <td> @item.watching_end.ToString() </td>*@
         </tr>
     }
     </tbody>

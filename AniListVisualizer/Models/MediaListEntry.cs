@@ -36,7 +36,7 @@ public struct FuzzyDate
 {
     public int? year, month, day;
 
-    public override string ToString() => year is null ? "…" : $"{year}-{month}-{day}";
+    public override string ToString() => year is null ? "…" : $"{GetDateTime():M}";
 
     public DateTime GetDateTime() =>  year is null ? new DateTime() : new DateTime(year.Value, month!.Value, day!.Value);
 }
