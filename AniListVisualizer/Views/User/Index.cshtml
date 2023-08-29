@@ -1,4 +1,5 @@
 @using AniListVisualizer.Services
+@using System.Globalization
 @model UserViewModel
 
 @{
@@ -12,6 +13,8 @@
     var min = list.Min(a => a.watching_start.GetDateTime());
     var max = list.Max(a => a.watching_end  .GetDateTime());
     var length = (int)(max - min).TotalDays;
+
+    string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
 }
 
 <div class="user-info">
@@ -21,65 +24,68 @@
     <h1>@ViewBag.Title</h1>
 </div>
 
-<table>
-    <tbody>
-    @{
-        var years = Enumerable.Range(min.Year, max.Year - min.Year + 1).ToList();
-        var divs = new List<TimelineYear>(years.Count);
-        var accumulated = 0;
-        foreach (var year in years)
-        {
-            var days = year == min.Year ? (int)(new DateTime(year, 12, 31) - min).TotalDays : DateTime.IsLeapYear(year) ? 366 : 365;
-            var margin = $"{accumulated}px";
-            var width = $"{days}px";
-            accumulated += days;
-            divs.Add(new TimelineYear(year, margin, width));
+<div class="table">
+    <div class="media-list">
+        @{
+            var years = Enumerable.Range(min.Year, max.Year - min.Year + 1).ToList();
+            var divs = new List<TimelineYear>(years.Count);
+            var accumulated = 0;
+            foreach (var year in years)
+            {
+                var days = year == min.Year ? (int)(new DateTime(year, 12, 31) - min).TotalDays : year == max.Year ? (int)(new DateTime(year, 1, 1) - max).TotalDays : DateTime.IsLeapYear(year) ? 366 : 365;
+                var margin = Percent(accumulated); // $"{accumulated}px";
+                var width = Percent(days); // $"{days}px";
+                accumulated += days;
+                divs.Add(new TimelineYear(year, margin, width));
+            }
         }
-    }
-    @foreach (var item in list)
-    {
-        <tr>
-            <td>
+        @foreach (var item in list)
+        {
+            <div class="entry">
                 @{ var path = $"{item.media.type.ToString().ToLower()}/{item.media.id}"; }
-                <a href="https://anilist.co/@path">
-                    <img class="title-cover" src="@item.media.coverImage["medium"]" height="32px" alt="…"/>
-                </a>
-            </td>
-            @{ var title = item.media.title["english"] ?? item.media.title["romaji"]; }
-            @if (item.status is EntryStatus.CURRENT or EntryStatus.REPEATING)
-            {
-                <td><b> @title </b></td>
-            }
-            else
-            {
-                <td> @title </td>
-            }
-            <td>
-                @{
-                    var start = item.watching_start;
-                    var end   = item.watching_end;
-                    var sd = start.GetDateTime();
-                    var ed =   end.GetDateTime();
-                    var right = (int)(sd - min).TotalDays;
-                    var left = end.year is null ? 0 : (int)(max - ed).TotalDays;
-                    var margin = $"0 {left}px 0 {right}px";
-                    var text = sd == ed ? start.ToString() : $"{start} - {end}";
-                    var width = $"{length}px";
-                    var color = item.media.coverImage["color"] ?? "#00a8fe";
+                <div class="cover">
+                    <div class="image" style="background-image: url(@item.media.coverImage["medium"]);"></div>
+                    <a href="https://anilist.co/@path"></a>
+                </div>
+                @{ var title = item.media.title["english"] ?? item.media.title["romaji"]; }
+                @if (item.status is EntryStatus.CURRENT or EntryStatus.REPEATING)
+                {
+                    <div class="title">
+                        <b> @title </b>
+                    </div>
                 }
-                <div class="timeline-row" style="width: @width;">
-                    @foreach (var x in divs)
-                    {
-                        <div class="timeline-year" style="margin-left: @x.MarginLeft; width: @x.Width;">@x.Year</div>
+                else
+                {
+                    <div class="title"> @title </div>
+                }
+                <div class="timeline">
+                    @{
+                        var start = item.watching_start;
+                        var end = item.watching_end;
+                        var sd = start.GetDateTime();
+                        var ed = end.GetDateTime();
+                        var left = (int)(sd - min).TotalDays;
+                        var width = (int)(ed - sd).TotalDays;
+                        //var right = end.year is null ? 0 : (int)(max - ed).TotalDays;
+                        //var margin = $"0 {Percent(left)} 0 {Percent(right)}";
+                        var text = sd == ed ? start.ToString() : $"{start} - {end}";
+                        //var width = $"{length}px";
+                        
+                        var color = item.media.coverImage["color"] ?? "#00a8fe";
                     }
-                    <div class="timeline-item tip" style="margin: @margin;">
-                        <div class="xd" style="background-color: @color; width: 100%;"></div>
+                    <div class="timeline-row">
+                        @foreach (var x in divs)
+                        {
+                            <div class="timeline-year" style="width: @x.Width;">@x.Year</div>
+                        }
+                    </div>
+                    <div class="timeline-item tip" style="margin-left: @Percent(left); width: @Percent(width)">
+                        <div class="range" style="background-color: @color;"></div>
                         <span>@text</span>
                         @*<div class="on-hover">...</div>*@
                     </div>
                 </div>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+            </div>
+        }
+    </div>
+</div>
