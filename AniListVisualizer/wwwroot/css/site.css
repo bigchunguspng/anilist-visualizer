@@ -68,6 +68,13 @@ body {
   align-items: center;
 }
 
+.link {
+  border-radius: 3px;
+  height: 40px;
+  width: 40px;
+  display: none;
+}
+
 .title {
   flex: 5;
 }
@@ -107,6 +114,11 @@ body {
   top: -60px;
   width: 140px;
   z-index: 1;
+}
+
+.entry:hover .cover .link {
+  display: block;
+  background-color: rgb(224, 232, 240);
 }
 
 div.timeline {

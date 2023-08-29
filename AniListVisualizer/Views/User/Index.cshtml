@@ -11,7 +11,7 @@
         .ThenBy(x => x.watching_end.GetDateTime())
         .ToList();
     var min = list.Min(a => a.watching_start.GetDateTime());
-    var max = list.Max(a => a.watching_end  .GetDateTime());
+    var max = DateTime.Today; // list.Max(a => a.watching_end  .GetDateTime());
     var length = (int)(max - min).TotalDays;
 
     string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
@@ -45,7 +45,7 @@
                 @{ var path = $"{item.media.type.ToString().ToLower()}/{item.media.id}"; }
                 <div class="cover">
                     <div class="image" style="background-image: url(@item.media.coverImage["medium"]);"></div>
-                    <a href="https://anilist.co/@path"></a>
+                    <a class="link" href="https://anilist.co/@path"></a>
                 </div>
                 @{ var title = item.media.title["english"] ?? item.media.title["romaji"]; }
                 @if (item.status is EntryStatus.CURRENT or EntryStatus.REPEATING)
