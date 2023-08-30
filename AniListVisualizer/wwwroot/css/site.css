@@ -22,14 +22,15 @@ body {
   background: rgb(237, 241, 245);
 }
 
-.user-info * {
-  display: inline-block;
-  vertical-align: bottom;
-}
 
 .user-info {
   padding: 20px;
   margin-bottom: 15px;
+}
+
+.user-info * {
+  display: inline-block;
+  vertical-align: bottom;
 }
 
 .user-pfp {
@@ -50,13 +51,13 @@ body {
 }
 
 .entry {
-  display: table-row;
-}
-
-.entry {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.title {
+  flex: 5;
 }
 
 .link {
@@ -64,10 +65,6 @@ body {
   height: 40px;
   width: 40px;
   display: none;
-}
-
-.title {
-  flex: 5;
 }
 
 .entry .cover {
@@ -111,6 +108,7 @@ body {
   display: block;
   background-color: rgb(224, 232, 240);
 }
+
 
 div.timeline {
   flex: 10;
@@ -158,25 +156,18 @@ div.timeline-item .range {
   height: 100%;
 }
 
-div.timeline-item:hover .on-hover {
-  display: block;
-}
-
-.on-hover {
-  display: none;
-}
 
 .tip:hover {
   cursor: help;
   z-index: 10;
 }
 
-.tip span {
-  display: none;
-}
-
 .tip:hover .range {
   opacity: 75%;
+}
+
+.tip span {
+  display: none;
 }
 
 .tip:hover span {
@@ -192,6 +183,7 @@ div.timeline-item:hover .on-hover {
   white-space: nowrap;
   font-size: 0.8em;
 }
+
 
 .table > :not(caption) > * > * {
   margin: .1em .5em;
