@@ -1,11 +1,88 @@
-html {
-  font-size: 14px;
+:root {
+  --color-background: rgb(237, 241, 245);
+  --color-foreground: rgb(250, 250, 250);
+  --color-foreground-grey: rgb(245, 246, 246);
+  --color-foreground-grey-dark: rgb(234, 236, 237);
+  --color-foreground-blue: rgb(246, 248, 251);
+  --color-foreground-blue-dark: rgb(241, 243, 247);
+  --color-background-blue-dark: rgb(31, 35, 45);
+  --color-overlay: rgb(31, 38, 49);
+  --color-shadow: rgb(49, 54, 68);
+  --color-shadow-dark: rgb(6, 13, 34);
+  --color-shadow-blue: rgb(103, 132, 187);
+  --color-text: rgb(92, 114, 138);
+  --color-text-light: rgb(122, 133, 143);
+  --color-text-lighter: rgb(146, 153, 161);
+  --color-text-bright: rgb(237, 241, 245);
+  --color-blue: rgb(61, 180, 242);
+  --color-blue-dim: rgb(141, 178, 219);
+  --color-white: rgb(255, 255, 255);
+  --color-black: rgb(0, 0, 0);
+  --color-red: rgb(232, 93, 117);
+  --color-peach: rgb(250, 122, 122);
+  --color-orange: rgb(247, 154, 99);
+  --color-yellow: rgb(247, 191, 99);
+  --color-green: rgb(123, 213, 85);
+  --color-background-100: rgb(251, 251, 251);
+  --color-background-75: rgba(237, 241, 245, 0.75);
+  --color-background-200: rgb(237, 241, 245);
+  --color-background-300: rgb(221, 230, 238);
+  --color-background-400: rgb(201, 215, 227);
+  --color-background-500: rgb(173, 192, 210);
+  --color-background-600: rgb(139, 160, 178);
+  --color-background-700: rgb(116, 136, 153);
+  --color-background-800: rgb(100, 115, 128);
+  --color-background-900: rgb(81, 97, 112);
+  --color-background-1000: rgb(64, 78, 92);
+  --color-background-1100: rgb(38, 52, 63);
+  --color-background-1200: rgb(27, 30, 31);
+  --color-gray-100: rgb(251, 251, 251);
+  --color-gray-200: rgb(237, 241, 245);
+  --color-gray-300: rgb(221, 230, 238);
+  --color-gray-400: rgb(201, 215, 227);
+  --color-gray-500: rgb(173, 192, 210);
+  --color-gray-600: rgb(139, 160, 178);
+  --color-gray-700: rgb(116, 136, 153);
+  --color-gray-800: rgb(100, 115, 128);
+  --color-gray-900: rgb(81, 97, 112);
+  --color-gray-1000: rgb(64, 78, 92);
+  --color-gray-1100: rgb(38, 52, 63);
+  --color-gray-1200: rgb(27, 30, 31);
+  --color-blue-100: rgb(247, 250, 252);
+  --color-blue-200: rgb(236, 246, 254);
+  --color-blue-300: rgb(201, 232, 255);
+  --color-blue-400: rgb(143, 215, 255);
+  --color-blue-500: rgb(111, 200, 255);
+  --color-blue-600: rgb(61, 180, 242);
+  --color-blue-700: rgb(8, 143, 214);
+  --color-blue-800: rgb(12, 101, 166);
+  --color-blue-900: rgb(11, 70, 113);
+  --color-blue-1000: rgb(16, 61, 85);
+  --color-green-100: rgb(245, 249, 243);
+  --color-green-200: rgb(226, 246, 217);
+  --color-green-300: rgb(160, 241, 126);
+  --color-green-400: rgb(119, 220, 76);
+  --color-green-500: rgb(83, 175, 45);
+  --color-green-600: rgb(56, 126, 26);
+  --color-green-700: rgb(46, 90, 27);
+  --color-green-800: rgb(41, 66, 31);
+  --color-red-100: rgb(255, 244, 246);
+  --color-red-200: rgb(254, 212, 220);
+  --color-red-300: rgb(255, 140, 160);
+  --color-red-400: rgb(236, 41, 75);
+  --color-red-500: rgb(213, 0, 37);
+  --color-red-600: rgb(165, 1, 29);
+  --color-red-700: rgb(117, 0, 20);
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+main {
+  font-size: 62.5%;
+  font-family: Roboto, Segoe UI, Ubuntu, system-ui;
+  line-height: 1.15;
+}
+
+.pb-3 {
+  padding-bottom: 2rem !important;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -19,7 +96,8 @@ html {
 
 body {
   margin-bottom: 60px;
-  background: rgb(237, 241, 245);
+  color: var(--color-text);
+  background: var(--color-background);
 }
 
 
@@ -39,9 +117,10 @@ body {
 }
 
 
-.table {
+.medialist {
   display: table;
   width: 100%;
+  font-size: 1.5em;
 }
 
 .section {
@@ -114,7 +193,7 @@ div.timeline {
   flex: 10;
   display: flex;
   position: relative;
-  background-color: #f0f0f0;
+  background-color: var(--color-background-75);
 }
 
 div.timeline-row {
@@ -128,10 +207,12 @@ div.timeline-row {
 div.timeline-year {
   height: 24px;
   border-left: 2px solid white;
-  padding-left: 6px;
-  color: #0000005c;
-  font-weight: bold;
+  padding-left: 7px;
   font-family: calibri, system-ui;
+  opacity: 80%;
+  font-size: small;
+  padding-top: 5px;
+  text-shadow: 0 0 5px #0e121e73;
 }
 
 div.timeline-year.first {
@@ -185,7 +266,7 @@ div.timeline-item .range {
 }
 
 
-.table > :not(caption) > * > * {
+.medialist > :not(caption) > * > * {
   margin: .1em .5em;
   padding: 0;
 }
