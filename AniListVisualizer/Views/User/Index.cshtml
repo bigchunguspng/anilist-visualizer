@@ -16,7 +16,7 @@
     string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
 }
 
-<div class="user-info">
+<div class="user-info section">
     <a href="https://anilist.co/user/@Model.User.name">
         <img class="user-pfp" src="@Model.User.avatar["medium"]" height="64px" alt="…"/>
     </a>
@@ -24,7 +24,7 @@
 </div>
 
 <div class="table">
-    <div class="media-list">
+    <div class="section">
         @{
             var years = Enumerable.Range(min.Year, max.Year - min.Year + 1).ToList();
             var divs = new Dictionary<int, string>(years.Count);
@@ -61,14 +61,15 @@
                         
                         var left  = (int)(start - min).TotalDays;
                         var width = (int)(end - start).TotalDays;
-                        var dates = start == end ? a.ToString() : $"{a} - {b}";
+                        var dates = start == end ? a.ToString() : b.year is null ? $"{a} ➽" : $"{a} - {b}";
                         
                         var color = item.media.coverImage["color"] ?? "#00a8fe";
                     }
                     <div class="timeline-row">
                         @foreach (var x in divs)
                         {
-                            <div class="timeline-year" style="width: @x.Value;">@x.Key</div>
+                            var first = x.Key == min.Year ? "first" : "";
+                            <div class="timeline-year @first" style="width: @x.Value;">@x.Key</div>
                         }
                     </div>
                     <div class="timeline-item tip" style="margin-left: @Percent(left); width: @Percent(width)">

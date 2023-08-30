@@ -22,12 +22,6 @@ body {
   background: rgb(237, 241, 245);
 }
 
-/*th {
-  background: white;
-  position: sticky;
-  top: 0; !* Don't forget this, required for the stickiness *!
-}*/
-
 .user-info * {
   display: inline-block;
   vertical-align: bottom;
@@ -36,9 +30,6 @@ body {
 .user-info {
   padding: 20px;
   margin-bottom: 15px;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 20px rgba(49, 54, 68, .09); /*media-list*/
 }
 
 .user-pfp {
@@ -52,7 +43,7 @@ body {
   width: 100%;
 }
 
-.media-list {
+.section {
   background: white;
   border-radius: 4px;
   box-shadow: 0 2px 20px rgba(49, 54, 68, .09);
@@ -130,25 +121,23 @@ div.timeline {
 
 div.timeline-row {
   width: 100%;
-  /*background-color: #f0f0f0;*/
   height: 24px;
   display: flex;
-  /*position: absolute;*/
   z-index: 2;
   pointer-events: none;
 }
 
 div.timeline-year {
-  /*position: absolute;*/
   height: 24px;
-  border-left-width: 2px;
-  border-left-style: solid;
+  border-left: 2px solid white;
   padding-left: 6px;
-  /*pointer-events: none;*/
   color: #0000005c;
-  border-color: white;
   font-weight: bold;
   font-family: calibri, system-ui;
+}
+
+div.timeline-year.first {
+  border-left: 0;
 }
 
 /*noinspection CssInvalidPropertyValue*/
@@ -177,10 +166,8 @@ div.timeline-item:hover .on-hover {
   display: none;
 }
 
-/*tooltip*/
 .tip:hover {
   cursor: help;
-  /*position: relative;*/
   z-index: 10;
 }
 
