@@ -30,6 +30,12 @@ public class Media
     public FuzzyDate   endDate;
     public MediaFormat? format;
     public MediaStatus? Status;
+
+    /// <summary> Returns Anilist URL of the media. </summary>
+    public string URL => $"{AnimeOrManga}/{id}";
+
+    /// <summary> Returns "anime" or "manga" based on media type. </summary>
+    public string AnimeOrManga => type.ToString().ToLower();
 }
 
 public struct FuzzyDate
