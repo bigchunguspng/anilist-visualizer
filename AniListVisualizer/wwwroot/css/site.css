@@ -89,6 +89,10 @@ main {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+.invisible {
+  display: none;
+}
+
 html {
   position: relative;
   min-height: 100%;

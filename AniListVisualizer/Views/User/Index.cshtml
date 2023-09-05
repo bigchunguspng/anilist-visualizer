@@ -21,6 +21,8 @@
         <img class="user-pfp" src="@Model.User.avatar["medium"]" height="64px" alt="…"/>
     </a>
     <h1>@ViewBag.Title</h1>
+    <button onclick="ToggleInnerHTML('title', 'naming')">toggle naming</button>
+    <span class="invisible" id="naming" on="english" off="romaji"></span>
 </div>
 
 <div class="medialist">
@@ -47,10 +49,11 @@
                     <a class="link" href="https://anilist.co/@item.media.URL"></a>
                 </div>
                 @{
-                    var title = item.media.title["english"] ?? item.media.title["romaji"];
+                    var romaji = item.media.title["romaji"];
+                    var title = item.media.title["english"] ?? romaji;
                     var bold = item.status is EntryStatus.CURRENT or EntryStatus.REPEATING;
                 }
-                <div class="title" style="font-weight: @(bold ? "bold" : "inherit")"> @title </div>
+                <div class="title" style="font-weight: @(bold ? "bold" : "inherit")" english="@title" romaji="@romaji"> @title </div>
                 <div class="timeline">
                     @{
                         var a = item.watching_start;
