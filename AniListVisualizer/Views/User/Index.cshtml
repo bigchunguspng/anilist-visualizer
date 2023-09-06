@@ -15,13 +15,16 @@
 
     string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
 }
-
+<div id="buttons">
+    <button class="butt section" onclick="ToggleInnerHTML('title', 'naming')">
+        <img src="~/svg/translate.svg" alt="JAP / ENG"/>
+    </button>
+</div>
 <div class="user-info section">
     <a href="https://anilist.co/user/@Model.User.name">
         <img class="user-pfp" src="@Model.User.avatar["medium"]" height="64px" alt="…"/>
     </a>
     <h1>@ViewBag.Title</h1>
-    <button onclick="ToggleInnerHTML('title', 'naming')">toggle naming</button>
     <span class="invisible" id="naming" on="english" off="romaji"></span>
 </div>
 
@@ -49,8 +52,8 @@
                     <a class="link" href="https://anilist.co/@item.media.URL"></a>
                 </div>
                 @{
-                    var romaji = item.media.title["romaji"];
-                    var title = item.media.title["english"] ?? romaji;
+                    var romaji = item.media.title["native"];
+                    var title = item.media.title["english"] ?? item.media.title["romaji"];
                     var bold = item.status is EntryStatus.CURRENT or EntryStatus.REPEATING;
                 }
                 <div class="title" style="font-weight: @(bold ? "bold" : "inherit")" english="@title" romaji="@romaji"> @title </div>
