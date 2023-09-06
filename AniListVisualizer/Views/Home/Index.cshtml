@@ -7,27 +7,29 @@
     <div class="searchbar">
         <input id="user-search" type="text" autocomplete="off" class="search" placeholder="Enter your username">
     </div>
-    <p id="result-container">text</p>
+    <div id="result-container">text</div>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 <script>
 $(document).ready(function() {
     const search = $("#user-search");
+    
+    var temp;
 
-    search.on("input", function () {
+    search.on("input", async function () {
         const text = search.val();
 
-        const api = "https://graphql.anilist.co";
-        let query = "query ($search: String) { Page(perPage: 10) { users(search: $search) { id name avatar { large medium }}}}";
-        let variables = { search: text };
+        temp = text;
+        await delay(300);
+        if (temp != text) return;
+
+        const url = "/search/" + text;
 
         $.ajax({
-            url: api,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ query: query, variables: variables }),
+            url: url,
+            method: "GET",
             success: function (data) {
-                $("#result-container").html(JSON.stringify(data));
+                $("#result-container").html(data);
             },
             error: function (error) {
                 console.error("AJAX error:", error);

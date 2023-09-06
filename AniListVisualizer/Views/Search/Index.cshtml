@@ -1,0 +1,13 @@
+@model List<User>
+
+@{ Layout = null; }
+
+<div class="section mb-3">
+    @foreach (var user in Model)
+    {
+        <a href="/user/@user.name" class="search-result">
+            <div class="image" style="background-image: url(@user.avatar["medium"]);"></div>
+            <div class="title">@user.name</div>
+        </a>
+    }
+</div>

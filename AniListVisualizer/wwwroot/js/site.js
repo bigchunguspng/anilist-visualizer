@@ -13,3 +13,5 @@ function ToggleInnerHTML(class_name, toggle_id) {
     toggle.setAttribute("on", off);
     toggle.setAttribute("off", on);
 }
+
+function delay(milliseconds){ return new Promise(resolve => { setTimeout(resolve, milliseconds); }); }

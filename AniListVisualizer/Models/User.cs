@@ -13,4 +13,6 @@ public class User
     public int id;
     public string name = null!;
     public Dictionary<string, string> avatar = null!;
+
+    public string URL => $"https://anilist.co/user/{name}";
 }
