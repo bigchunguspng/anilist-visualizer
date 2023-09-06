@@ -4,5 +4,35 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <div class="searchbar">
+        <input id="user-search" type="text" autocomplete="off" class="search" placeholder="Enter your username">
+    </div>
+    <p id="result-container">text</p>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+<script>
+$(document).ready(function() {
+    const search = $("#user-search");
+
+    search.on("input", function () {
+        const text = search.val();
+
+        const api = "https://graphql.anilist.co";
+        let query = "query ($search: String) { Page(perPage: 10) { users(search: $search) { id name avatar { large medium }}}}";
+        let variables = { search: text };
+
+        $.ajax({
+            url: api,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ query: query, variables: variables }),
+            success: function (data) {
+                $("#result-container").html(JSON.stringify(data));
+            },
+            error: function (error) {
+                console.error("AJAX error:", error);
+            }
+        });
+    });
+});
+</script>

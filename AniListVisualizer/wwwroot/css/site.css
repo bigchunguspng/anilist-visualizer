@@ -286,3 +286,34 @@ div.timeline-item .range {
   margin: .1em .5em;
   padding: 0;
 }
+
+
+.searchbar {
+  background: rgb(var(--color-foreground));
+  border-radius: 4px;
+  color: rgb(var(--color-text));
+  position: relative;
+  font-size: 14px;
+  display: inline-block;
+  width: 100%;
+  margin-block: 20px;
+}
+
+.search {
+  border: 0;
+  box-shadow: none;
+  color: rgb(var(--color-text));
+  outline: 0;
+  transition: .2s;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  text-align: center;
+  padding-inline: 40px;
+}
+
+.search:focus {
+  border: 0;
+  box-shadow: 0 1px 10px 0 rgba(49,54,68,.15);
+  outline: 0;
+}
