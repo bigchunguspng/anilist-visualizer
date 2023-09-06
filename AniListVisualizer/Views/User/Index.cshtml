@@ -49,7 +49,7 @@
             <div class="entry">
                 <div class="cover">
                     <div class="image" style="background-image: url(@item.media.coverImage["large"]);"></div>
-                    <a class="link" href="https://anilist.co/@item.media.URL"></a>
+                    <a class="link" href="https://anilist.co/@item.media.URL">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
                 </div>
                 @{
                     var romaji = item.media.title["native"];

@@ -152,6 +152,14 @@ body {
   height: 40px;
   width: 40px;
   display: none;
+  text-align: center;
+  text-decoration: none;
+  color: var(--color-background-500);
+  line-height: 40px;
+}
+
+.link:hover {
+  color: var(--color-blue);
 }
 
 .entry .cover {
