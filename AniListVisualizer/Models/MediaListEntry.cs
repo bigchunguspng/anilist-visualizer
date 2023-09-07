@@ -42,7 +42,7 @@ public struct FuzzyDate
 {
     public int? year, month, day;
 
-    public override string ToString() => year is null ? "…" : $"{GetDateTime():M}";
+    public override string ToString() => year is null ? "…" : $"{GetDateTime():MMM d}";
 
     public DateTime GetDateTime() =>  year is null ? new DateTime() : new DateTime(year.Value, month!.Value, day!.Value);
 }
