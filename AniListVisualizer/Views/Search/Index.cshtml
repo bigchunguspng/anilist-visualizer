@@ -1,13 +1,18 @@
-@model List<User>
+@model List<UserSearchResult>
 
 @{ Layout = null; }
 
-<div class="section mb-3">
-    @foreach (var user in Model)
-    {
-        <a href="/user/@user.name" class="search-result">
-            <div class="image" style="background-image: url(@user.avatar["medium"]);"></div>
-            <div class="title">@user.name</div>
-        </a>
-    }
+<div class="mb-3 medialist">
+    <div class="section">
+        @foreach (var user in Model)
+        {
+            <a href="/user/@user.name" class="search-result entry">
+                <div class="cover">
+                    <div class="image" style="background-image: url(@user.avatar["large"]), url(@user.avatar["medium"]);"></div>
+                </div>
+                <div class="title">@user.name</div>
+                <div class="last-seen">@user.LastSeen()</div>
+            </a>
+        }
+    </div>
 </div>

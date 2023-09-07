@@ -22,9 +22,13 @@
 </div>
 <div class="user-info section">
     <a href="@Model.User.URL">
-        <img class="user-pfp" src="@Model.User.avatar["medium"]" height="64px" alt="…"/>
+        <img class="user-pfp" src="@Model.User.avatar["large"]" height="100px" alt="…"/>
     </a>
-    <h1>@ViewBag.Title</h1>
+    <div class="user-info text">
+        <h1 class="user-h1">@ViewBag.Title</h1>
+        <p class="user-count">@list.Count @(list.Count == 1 ? "title" : "titles")</p>
+    </div>
+    
     <span class="invisible" id="naming" on="english" off="romaji"></span>
 </div>
 
@@ -48,8 +52,8 @@
         {
             <div class="entry">
                 <div class="cover">
-                    <div class="image" style="background-image: url(@item.media.coverImage["large"]);"></div>
-                    <a class="link" href="https://anilist.co/@item.media.URL">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
+                    <div class="image" style="background-image: url(@item.media.coverImage["large"]), url(@item.media.coverImage["medium"]);"></div>
+                    <a class="link" href="https://anilist.co/@item.media.URL" target="_blank">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
                 </div>
                 @{
                     var romaji = item.media.title["native"];
