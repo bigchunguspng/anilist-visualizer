@@ -50,9 +50,13 @@
         }
         @foreach (var item in list)
         {
+            var large  = item.media.coverImage["large"];
+            var medium = item.media.coverImage["medium"];
+            var color  = item.media.coverImage["color"] ?? "#00a8fe";
+
             <div class="entry">
                 <div class="cover">
-                    <div class="image" style="background-image: url(@item.media.coverImage["large"]), url(@item.media.coverImage["medium"]);"></div>
+                    <div class="image" style="background-image: url(@large), url(@medium); background-color: @color;"></div>
                     <a class="link" href="https://anilist.co/@item.media.URL" target="_blank">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
                 </div>
                 @{
@@ -72,8 +76,6 @@
                         var left  = (int)(start - min).TotalDays;
                         var width = (int)(end - start).TotalDays;
                         var dates = start == end ? a.ToString() : b.year is null ? $"{a} ➽" : $"{a} - {b}";
-                        
-                        var color = item.media.coverImage["color"] ?? "#00a8fe";
                     }
                     <div class="timeline-row">
                         @foreach (var x in divs)
