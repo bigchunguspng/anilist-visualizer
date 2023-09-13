@@ -106,13 +106,18 @@
                     <div class="timeline-row">
                         @foreach (var x in divs)
                         {
-                            var first = x.Key == min.Year ? "first" : "";
-                            <div class="timeline-year @first" style="width: @x.Value;">@x.Key</div>
+                            <div class="timeline-year" style="width: @x.Value;"></div>
                         }
                     </div>
                     <div class="timeline-item tip" style="margin-left: @Percent(left); width: @Percent(width)">
                         <div class="range" style="background-color: @color; @(gradient ? FancyGradientBg(color) : "")"></div>
                         <span>@Html.Raw(tip.ToString())</span>
+                    </div>
+                    <div class="timeline-row text">
+                        @foreach (var x in divs)
+                        {
+                            <div class="timeline-year text" style="width: @x.Value;">@x.Key</div>
+                        }
                     </div>
                 </div>
             </div>

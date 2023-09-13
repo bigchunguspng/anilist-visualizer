@@ -243,19 +243,27 @@ div.timeline-row {
   pointer-events: none;
 }
 
+div.timeline-row.text {
+  position: absolute;
+  mix-blend-mode: multiply;
+}
+
 div.timeline-year {
   height: 24px;
   border-left: 2px solid white;
-  padding-left: 7px;
-  font-family: calibri, system-ui;
   opacity: 80%;
-  font-size: small;
-  padding-top: 5px;
-  text-shadow: 0 0 5px #0e121e73;
   overflow: hidden;
 }
 
-div.timeline-year.first {
+div.timeline-year.text {
+  padding-top: 5px;
+  padding-left: 7px;
+  font-family: calibri, system-ui;
+  font-size: small;
+  text-shadow: 0 0 5px #0e121e73;
+}
+
+div.timeline-year:first-child {
   border-left: 0;
 }
 
