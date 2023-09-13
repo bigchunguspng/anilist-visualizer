@@ -36,6 +36,9 @@ public class Media
 
     /// <summary> Returns "anime" or "manga" based on media type. </summary>
     public string AnimeOrManga => type.ToString().ToLower();
+
+    /// <summary> Returns "episode" or "chapter" based on media type. </summary>
+    public string EpisodeOrChapter => type == MediaType.ANIME ? "episode" : "chapter";
 }
 
 public struct FuzzyDate
@@ -44,7 +47,7 @@ public struct FuzzyDate
 
     public override string ToString() => year is null ? "…" : $"{GetDateTime():MMM d}";
 
-    public DateTime GetDateTime() =>  year is null ? new DateTime() : new DateTime(year.Value, month!.Value, day!.Value);
+    public DateTime GetDateTime() =>  year is null ? DateTime.Today : new DateTime(year.Value, month!.Value, day!.Value);
 }
 
 public enum EntryStatus

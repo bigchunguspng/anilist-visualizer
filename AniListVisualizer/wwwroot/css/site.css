@@ -6,6 +6,7 @@
   --color-foreground-blue: rgb(246, 248, 251);
   --color-foreground-blue-dark: rgb(241, 243, 247);
   --color-background-blue-dark: rgb(31, 35, 45);
+  --color-background-blue-png: rgba(31, 35, 45, 0.9);
   --color-overlay: rgb(31, 38, 49);
   --color-shadow: rgb(49, 54, 68);
   --color-shadow-dark: rgb(6, 13, 34);
@@ -294,7 +295,7 @@ div.timeline-item .range {
   padding: 5px;
   display: block;
   z-index: 100;
-  background: #000b;
+  background: var(--color-background-blue-png);
   left: 0;
   margin: 10px;
   position: absolute;
@@ -304,6 +305,21 @@ div.timeline-item .range {
   font-size: 0.8em;
 }
 
+.tip:hover span p {
+  margin-bottom: 0;
+  font-family: Overpass, Segoe UI, Ubuntu, sans-serif;
+  font-size: 13px;
+}
+
+.tip:hover span p:nth-child(n+2) {
+  font-size: 0.8em;
+  margin-top: 4px;
+  color: var(--color-background-300);
+}
+
+.tip:hover span p:only-child {
+  margin-top: 3px;
+}
 
 .searchbar {
   background: rgb(var(--color-foreground));

@@ -1,4 +1,5 @@
 @using System.Globalization
+@using System.Text
 @model UserViewModel
 
 @{
@@ -75,7 +76,25 @@
                         
                         var left  = (int)(start - min).TotalDays;
                         var width = (int)(end - start).TotalDays;
-                        var dates = start == end ? a.ToString() : b.year is null ? $"{a} ➽" : $"{a} - {b}";
+
+                        var tip = new StringBuilder();
+                        tip.Append("<p>").Append(start == end ? a.ToString() : b.year is null ? $"{a} ➽" : $"{a} - {b}").Append("</p>");
+                        if ((item.media.episodes ?? item.media.chapters ?? item.progress) > 1)
+                        {
+                            var unit = item.media.EpisodeOrChapter;
+                            tip.Append("<p>").Append(item.progress).Append(" ").Append(unit).Append("s</p>");
+                            
+                            var days = (end - start + TimeSpan.FromDays(1)).TotalDays;
+                            if (days > 1)
+                            {
+                                var ppd = item.progress / days;
+                                var boring_ah = ppd < 1;
+                                var n = Math.Round(boring_ah ? 1 / ppd : ppd, 1);
+                                var one = Math.Abs(n - 1) < 0.1;
+                                var details = boring_ah ? $"{unit} every {(one ? "day" : $"{n} days")}" : $"{n} {unit}{(one ? "" : "s")}/day";
+                                tip.Append("<p>").Append(details).Append("</p>");
+                            }
+                        }
                     }
                     <div class="timeline-row">
                         @foreach (var x in divs)
@@ -86,7 +105,7 @@
                     </div>
                     <div class="timeline-item tip" style="margin-left: @Percent(left); width: @Percent(width)">
                         <div class="range" style="background-color: @color;"></div>
-                        <span>@dates</span>
+                        <span>@Html.Raw(tip.ToString())</span>
                     </div>
                 </div>
             </div>
