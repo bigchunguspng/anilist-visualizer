@@ -161,12 +161,26 @@ body {
 
 .entry {
   display: flex;
+  position: relative;
   justify-content: space-between;
   align-items: center;
 }
 
+.entry-status {
+  position: absolute;
+  margin: 6px !important;
+}
+
 .title {
   flex: 5;
+}
+
+.title.CURRENT, .title.REPEATING {
+  font-weight: bold;
+}
+
+.title.DROPPED {
+  font-style: italic;
 }
 
 .link {

@@ -12,6 +12,8 @@ public class MediaListEntry
     public FuzzyDate watching_end;
     public int times_rewatched;
     public int score;
+
+    public bool EpisodeCountMatters => (media.episodes ?? media.chapters) != 1 && progress > 0;
 }
 
 public class Media

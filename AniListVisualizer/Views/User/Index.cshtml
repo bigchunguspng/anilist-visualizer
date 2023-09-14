@@ -6,7 +6,7 @@
     ViewBag.Title = Model.User.name;
     Layout = "_Layout";
     var list = Model.History
-        .Where(x => x.status is EntryStatus.COMPLETED or EntryStatus.CURRENT or EntryStatus.PAUSED && x.watching_start.year is not null)
+        .Where(x => x.status is not EntryStatus.PLANNING && x.watching_start.year is not null)
         .OrderBy(x => x.watching_start.GetDateTime())
         .ThenBy(x => x.watching_end.GetDateTime())
         .ToList();
@@ -66,9 +66,9 @@
                 @{
                     var romaji = item.media.title["native"];
                     var title = item.media.title["english"] ?? item.media.title["romaji"];
-                    var bold = item.status is EntryStatus.CURRENT or EntryStatus.REPEATING;
+                    var status = item.status.ToString();
                 }
-                <div class="title" style="font-weight: @(bold ? "bold" : "inherit")" english="@title" romaji="@romaji"> @title </div>
+                <div class="title @status" english="@title" romaji="@romaji">@title</div>
                 <div class="timeline">
                     @{
                         var a = item.watching_start;
@@ -84,10 +84,12 @@
 
                         var tip = new StringBuilder();
                         tip.Append("<p>").Append(start == end ? a.ToString() : b.year is null ? $"{a} ➽" : $"{a} - {b}").Append("</p>");
-                        if ((item.media.episodes ?? item.media.chapters ?? item.progress) > 1)
+                        if (item.EpisodeCountMatters)
                         {
                             var unit = item.media.EpisodeOrChapter;
-                            tip.Append("<p>").Append(item.progress).Append(" ").Append(unit).Append("s</p>");
+                            tip.Append("<p>").Append(item.progress).Append(" ").Append(unit);
+                            if (item.progress > 1) tip.Append("s");
+                            tip.Append("</p>");
                             
                             var days = (end - start + TimeSpan.FromDays(1)).TotalDays;
                             if (days > 1)
@@ -120,6 +122,12 @@
                         }
                     </div>
                 </div>
+                @if (item.status != EntryStatus.COMPLETED)
+                {
+                    <span class="entry-status">
+                        <img src="~/svg/status/@(status).svg" alt="@status"/>
+                    </span>
+                }
             </div>
         }
     </div>
