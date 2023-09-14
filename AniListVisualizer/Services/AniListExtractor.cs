@@ -9,9 +9,9 @@ public class AniListExtractor : AniListEngine
     private const string USER_ID_QUERY = "query ($name: String) { User(name: $name) { id name avatar { large medium } } }";
     private const string MEDIALIST_QUERY =
         """
-        query ($id: Int, $page: Int) {
+        query ($id: Int, $status: MediaListStatus, $page: Int) {
             Page(page: $page) {
-            mediaList(userId: $id) {
+            mediaList(userId: $id, status: $status) {
               id
               media {
                 id
@@ -41,15 +41,32 @@ public class AniListExtractor : AniListEngine
         }
         """;
 
-    public UserViewModel GetUserViewModel(string username)
+    private static readonly EntryStatus[] Statuses =
+    {
+        EntryStatus.CURRENT,
+        EntryStatus.COMPLETED,
+        EntryStatus.DROPPED,
+        EntryStatus.PAUSED,
+        EntryStatus.REPEATING
+    };
+
+    public async Task<UserViewModel> GetUserViewModel(string username)
     {
         var user = GetAniListUser(username);
-        var list = GetOtakuHistory(user.id);
+        var list = new List<MediaListEntry>();
+
+        var tasks = Statuses.Select(status => Task.Run(() => GetOtakuHistory(user.id, status))).ToArray();
+        
+        await Task.WhenAll(tasks);
+        foreach (var task in tasks)
+        {
+            list.AddRange(task.Result);
+        }
 
         return new UserViewModel { User = user, History = list };
     }
 
-    public User GetAniListUser(string username)
+    private User GetAniListUser(string username)
     {
         var query = new GraphQLQuery
         {
@@ -66,13 +83,13 @@ public class AniListExtractor : AniListEngine
         throw new Exception("User not found.");
     }
 
-    private List<MediaListEntry> GetOtakuHistory(int user, int page = 1)
+    private List<MediaListEntry> GetOtakuHistory(int user, EntryStatus status, int page = 1)
     {
         var list = new List<string>();
         var query = new GraphQLQuery
         {
             Query = MEDIALIST_QUERY,
-            Variables = new Dictionary<string, object> { { "id", user }, { "page", page } }
+            Variables = new Dictionary<string, object> { { "id", user }, { "status", status.ToString() }, { "page", page } }
         };
         
         var enough = false;
