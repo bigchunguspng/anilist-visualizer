@@ -23,7 +23,7 @@ public class SearchController : Controller
         var list = baka.FindUsers(search);
         
         timer.Stop();
-        _logger.LogInformation("Users found: {count}. Search string: {search}. Time elapsed: {time:m\\:ss\\.fff}", list.Count, search, timer.Elapsed);
+        _logger.LogInformation("SEARCH: {search}. RESULTS: {count}. TIME: {time:m\\:ss\\.fff}", search, list.Count, timer.Elapsed);
         
         return View(list);
     }

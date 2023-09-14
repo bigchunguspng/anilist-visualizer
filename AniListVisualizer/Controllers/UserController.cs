@@ -23,7 +23,7 @@ public class UserController : Controller
         var user = await baka.GetUserViewModel(username);
 
         timer.Stop();
-        _logger.LogInformation("User: {name}. Entries: {count}. Time elapsed: {time:m\\:ss\\.fff}", user.User.name, user.History.Count, timer.Elapsed);
+        _logger.LogInformation("USER: {name}. ENTRIES: {count}. TIME: {time:m\\:ss\\.fff}", user.User.name, user.History.Count, timer.Elapsed);
         
         return View(user);
     }
