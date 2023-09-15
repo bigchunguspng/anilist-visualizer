@@ -58,7 +58,7 @@
 
             <div class="entry">
                 <div class="cover">
-                    <div class="image" style="background-image: url(@large), url(@medium); background-color: @color;"></div>
+                    <div class="image color" style="background-image: url(@large), url(@medium); --color-blue: @color;"></div>
                     <a class="link" href="https://anilist.co/@item.media.URL" target="_blank">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
                 </div>
                 @{
@@ -78,7 +78,7 @@
                         var left  = (int)(start - min).TotalDays;
                         var width = (int)(end - start).TotalDays;
 
-                        var gradient = false;
+                        var stripes = false;
 
                         var tip = new StringBuilder();
                         tip.Append("<p>").Append(start == end ? a.ShortDate() : FuzzyDate.DateInterval(a, b, FuzzyDate.FormatShort)).Append("</p>");
@@ -99,7 +99,7 @@
                                 var details = boring_ah ? $"{unit} every {(one ? "day" : $"{n} days")}" : $"{n} {unit}{(one ? "" : "s")}/day";
                                 tip.Append("<p>").Append(details).Append("</p>");
 
-                                gradient = days / item.progress > 30;
+                                stripes = days / item.progress > 30;
                             }
                         }
                     }
@@ -108,29 +108,29 @@
                         {
                             <div class="timeline-year" style="width: @x.Value;"></div>
                         }
-                        @{
-                            var aa = item.media.startDate;
-                            var bb = item.media.endDate;
-                            
-                            var release_a = aa.GetDateTime();
-                            var release_b = bb.GetDateTime();
-
-                            if (release_b > min)
-                            {
-                                var release_start = (int)(release_a - min).TotalDays;
-                                var release_left = Math.Max(0, release_start);
-                                var release_width = (int)(release_b - (release_a < min ? min : release_a)).TotalDays;
-
-                                var season = item.media.season is null ? FuzzyDate.DateInterval(aa, bb, FuzzyDate.FormatLong, '→') : item.media.SeasonAndYear;
-                                
-                                <div class="timeline-item releasing stripes" style="margin-left: @Percent(release_left); width: @Percent(release_width)">
-                                    <div class="season">@season</div>
-                                </div>
-                            }
-                        }
                     </div>
+                    @{
+                        var aa = item.media.startDate;
+                        var bb = item.media.endDate;
+
+                        var release_a = aa.GetDateTime();
+                        var release_b = bb.GetDateTime();
+
+                        if (release_b > min)
+                        {
+                            var release_start = (int)(release_a - min).TotalDays;
+                            var release_left = Math.Max(0, release_start);
+                            var release_width = (int)(release_b - (release_a < min ? min : release_a)).TotalDays;
+
+                            var season = item.media.season is null ? FuzzyDate.DateInterval(aa, bb, FuzzyDate.FormatLong, '→') : item.media.SeasonAndYear;
+
+                            <div class="timeline-item releasing stripes" style="margin-left: @Percent(release_left); width: @Percent(release_width)">
+                                <div class="season">@season</div>
+                            </div>
+                        }
+                    }
                     <div class="timeline-item tip" style="margin-left: @Percent(left); width: @Percent(width)">
-                        <div class="range @(gradient ? "stripes" : "")" style="--color-blue: @color;">
+                        <div class="range @(stripes ? "stripes" : "")" style="--color-blue: @color;">
                             <div class="hover-box"></div>
                         </div>
                         <span>@Html.Raw(tip.ToString())</span>

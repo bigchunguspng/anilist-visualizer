@@ -152,20 +152,15 @@ body {
 
 
 .medialist {
-  display: table;
-  width: 100%;
   font-size: 1.5em;
 }
 
 .medialist > :not(caption) > * > * {
   margin: .1em .5em;
-  padding: 0;
 }
 
 .entry {
   display: flex;
-  position: relative;
-  justify-content: space-between;
   align-items: center;
 }
 
@@ -188,13 +183,13 @@ body {
 
 .link {
   border-radius: 3px;
-  height: 40px;
+  line-height: 40px;
   width: 40px;
   display: none;
   text-align: center;
   text-decoration: none;
   color: var(--color-background-500);
-  line-height: 40px;
+  background-color: rgb(224, 232, 240);
 }
 
 .link:hover {
@@ -204,43 +199,38 @@ body {
 .entry .cover {
   align-items: center;
   display: flex;
-  flex: 1;
   justify-content: flex-end;
-  max-width: 60px;
-  min-width: 60px;
+  width: 60px;
   height: 48px;
-  padding: 0;
 }
 
-.cover .image, .search-result .image {
+.cover .image {
   background-position: 50%;
-  background-repeat: no-repeat;
   background-size: cover;
   border-radius: 3px;
   height: 40px;
   width: 40px;
 }
 
+.cover .image.color {
+  background-color: var(--color-blue);
+}
+
 .entry:hover .cover {
   position: relative;
 }
 
-.entry:hover .cover .image {
-  border-radius: 3px;
+.entry:hover .image {
   box-shadow: 0 2px 20px rgba(49, 54, 68, .3);
-  display: block;
   height: 200px;
   left: -160px;
-  padding: 0;
   position: absolute;
   top: -60px;
   width: 140px;
-  z-index: 1;
 }
 
-.entry:hover .cover .link {
+.entry:hover .link {
   display: block;
-  background-color: rgb(224, 232, 240);
 }
 
 
@@ -256,17 +246,17 @@ div.timeline-row {
   width: 100%;
   height: 24px;
   display: flex;
+  z-index: 2;
   pointer-events: none;
 }
 
 div.timeline-row.text {
   position: absolute;
   mix-blend-mode: multiply;
-  z-index: 2;
 }
 
 div.timeline-year {
-  height: 24px;
+  /*height: 24px;*/
   border-left: 2px solid white;
   opacity: 80%;
   overflow: hidden;
@@ -284,7 +274,7 @@ div.timeline-year:first-child {
   border-left: 0;
 }
 
-/*noinspection CssInvalidPropertyValue*/
+
 div.timeline-item {
   height: 24px;
   min-width: 4px;
@@ -294,20 +284,19 @@ div.timeline-item {
   display: flex;
   justify-content: center;
   position: absolute;
-  z-index: 1;
 }
 
 div.releasing {
-  position: absolute;
   --color-blue: var(--color-background-300);
   opacity: 0.75;
+  border: var(--color-background-700);
   transition: 0.2s;
 }
 
 .timeline:hover div.releasing {
-  border: 1px dashed var(--color-background-700);
   --color-blue: var(--color-background-400);
   opacity: 1;
+  border: 1px dashed var(--color-background-700);
 }
 
 div.season {
@@ -317,11 +306,12 @@ div.season {
   white-space: nowrap;
   text-shadow: 0 0 3px #0e121e20;
   margin-top: 26px;
-  display: none;
+  opacity: 0;
+  transition: 0.25s;
 }
 
 .timeline:hover div.season {
-  display: block;
+  opacity: 1;
 }
 
 .stripes {
@@ -332,7 +322,6 @@ div.season {
 
 div.timeline-item .range {
   width: 100%;
-  height: 100%;
   background-color: var(--color-blue)
 }
 
@@ -353,37 +342,37 @@ div.timeline-item .range {
 }
 
 .tip span {
-  display: none;
-}
-
-.tip:hover span {
   padding: 5px;
-  display: block;
   z-index: 100;
   background: var(--color-background-blue-png);
   left: 0;
   margin: 10px;
   position: absolute;
   bottom: 15px;
-  border-radius: 5px;
+  border-radius: 6px;
   white-space: nowrap;
   font-size: 0.8em;
+  display: none;
 }
 
-.tip:hover span p {
+.tip:hover span {
+  display: block;
+}
+
+.tip span p {
   margin-bottom: 0;
   font-family: var(--font-tips);
   font-size: 13px;
 }
 
-.tip:hover span p:nth-child(n+2) {
+.tip span p:nth-child(n+2) {
   font-size: 0.8em;
   margin-top: 4px;
   color: var(--color-background-300);
 }
 
-.tip:hover span p:only-child {
-  margin-top: 3px;
+.tip span p:only-child {
+  margin-top: 4px;
 }
 
 .searchbar {
