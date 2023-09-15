@@ -56,7 +56,7 @@
         {
             var large  = item.media.coverImage["large"];
             var medium = item.media.coverImage["medium"];
-            var color  = item.media.coverImage["color"] ?? "#00a8fe";
+            var color  = item.media.coverImage["color"] ?? "var(--color-blue)";
 
             <div class="entry">
                 <div class="cover">
@@ -112,7 +112,9 @@
                         }
                     </div>
                     <div class="timeline-item tip" style="margin-left: @Percent(left); width: @Percent(width)">
-                        <div class="range" style="background-color: @color; @(gradient ? FancyGradientBg(color) : "")"></div>
+                        <div class="range" style="background-color: @color; @(gradient ? FancyGradientBg(color) : "")">
+                            <div class="hover-box"></div>
+                        </div>
                         <span>@Html.Raw(tip.ToString())</span>
                     </div>
                     <div class="timeline-row text">

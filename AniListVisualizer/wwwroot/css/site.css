@@ -309,6 +309,12 @@ div.timeline-item .range {
   opacity: 75%;
 }
 
+.hover-box {
+  min-width: 24px;
+  height: 100%;
+  margin-inline: -6px;
+}
+
 .tip span {
   display: none;
 }
