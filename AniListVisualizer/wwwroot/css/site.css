@@ -114,10 +114,21 @@
   }
 }
 
+@media (max-width: 319px) {
+  div.last-seen {
+    width: 0;
+    color: transparent !important;
+  }
+}
+
 main {
   font-size: 62.5%;
   font-family: var(--font-main);
   line-height: 1.15;
+}
+
+p {
+  font-size: 1.5em;
 }
 
 .pb-3 {
@@ -445,6 +456,7 @@ div.timeline-item .range {
 .search-result .title {
   color: var(--color-text);
   text-decoration: none;
+  white-space: nowrap;
   text-align: start;
 }
 
@@ -452,7 +464,7 @@ div.last-seen {
   color: var(--color-background-500);
   font-size: 0.75rem;
   padding-right: 20px;
-  flex: 5;
+  flex: 3;
   font-weight: bold;
   white-space: nowrap;
   text-align: end;
