@@ -79,6 +79,41 @@
   --font-year: calibri, system-ui;
 }
 
+@media (max-width: 991px) {
+  #anime-manga .title {
+    font-size: small;
+  }
+}
+
+@media (max-width: 767px) {
+  #anime-manga .title {
+    display: none;
+  }
+
+  button#translate {
+    display: none;
+  }
+}
+
+@media (max-width: 449px) {
+  .user-h1 {
+    font-size: 6vw !important;
+  }
+
+  .user-count {
+    font-size: 2.85vw !important;
+  }
+
+  .user-info.text * {
+    margin-left: 3vw !important;
+  }
+
+  .user-pfp {
+    width:  20vw !important;
+    height: 20vw !important;
+  }
+}
+
 main {
   font-size: 62.5%;
   font-family: var(--font-main);
@@ -138,6 +173,9 @@ body {
 
 .user-pfp {
   border-radius: 4px 0 0 4px;
+  height: 100px;
+  width: 100px;
+  background-size: cover;
 }
 
 .user-h1 {
@@ -376,10 +414,6 @@ div.timeline-item .range {
 }
 
 .searchbar {
-  background: rgb(var(--color-foreground));
-  border-radius: 4px;
-  color: rgb(var(--color-text));
-  position: relative;
   font-size: 14px;
   display: inline-block;
   width: 100%;
@@ -388,21 +422,16 @@ div.timeline-item .range {
 
 .search {
   border: 0;
-  box-shadow: none;
   color: rgb(var(--color-text));
   outline: 0;
   transition: 0.2s;
-  height: 40px;
   line-height: 40px;
-  border-radius: 4px;
   text-align: center;
   padding-inline: 40px;
 }
 
 .search:focus {
-  border: 0;
-  box-shadow: 0 1px 10px 0 rgba(49,54,68,.15);
-  outline: 0;
+  box-shadow: 0 1px 10px rgba(49, 54, 68, .2);
 }
 
 .search-result {
@@ -416,14 +445,15 @@ div.timeline-item .range {
 .search-result .title {
   color: var(--color-text);
   text-decoration: none;
-  padding-right: 60px;
-  text-align: left;
+  text-align: start;
 }
 
 div.last-seen {
   color: var(--color-background-500);
-  font-size: .75rem;
+  font-size: 0.75rem;
   padding-right: 20px;
+  flex: 5;
   font-weight: bold;
-  /*text-shadow: 0 0 3px var(--color-background-400);*/
+  white-space: nowrap;
+  text-align: end;
 }

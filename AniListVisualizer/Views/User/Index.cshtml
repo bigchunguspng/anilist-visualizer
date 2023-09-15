@@ -18,13 +18,13 @@
 }
 
 <div id="buttons">
-    <button class="butt section" onclick="ToggleInnerHTML('title', 'naming')">
+    <button class="butt section" id="translate" onclick="ToggleInnerHTML('title', 'naming')">
         <img src="~/svg/translate.svg" alt="JAP / ENG"/>
     </button>
 </div>
 <div class="user-info section">
     <a href="@Model.User.URL">
-        <img class="user-pfp" src="@Model.User.avatar["large"]" height="100px" alt="…"/>
+        <div class="user-pfp" style="background-image: url(@Model.User.avatar["large"]);"></div>
     </a>
     <div class="user-info text">
         <h1 class="user-h1">@ViewBag.Title</h1>
@@ -35,7 +35,7 @@
 </div>
 
 <div class="medialist">
-    <div class="section">
+    <div class="section" id="anime-manga">
         @{
             var years = Enumerable.Range(min.Year, max.Year - min.Year + 1).ToList();
             var divs = new Dictionary<int, string>(years.Count);
