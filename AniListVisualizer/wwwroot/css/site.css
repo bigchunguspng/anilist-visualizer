@@ -74,11 +74,14 @@
   --color-red-500: rgb(213, 0, 37);
   --color-red-600: rgb(165, 1, 29);
   --color-red-700: rgb(117, 0, 20);
+  --font-main: Roboto, Sawarabi Gothic, Segoe UI, Ubuntu, system-ui;
+  --font-tips: Overpass, Segoe UI, Ubuntu, sans-serif;
+  --font-year: calibri, system-ui;
 }
 
 main {
   font-size: 62.5%;
-  font-family: Roboto, Sawarabi Gothic, Segoe UI, Ubuntu, system-ui;
+  font-family: var(--font-main);
   line-height: 1.15;
 }
 
@@ -139,7 +142,7 @@ body {
 
 .user-h1 {
   font-size: 1.9rem;
-  font-family: Overpass, Segoe UI, Ubuntu, sans-serif;
+  font-family: var(--font-tips);
 }
 
 .user-count {
@@ -253,13 +256,13 @@ div.timeline-row {
   width: 100%;
   height: 24px;
   display: flex;
-  z-index: 2;
   pointer-events: none;
 }
 
 div.timeline-row.text {
   position: absolute;
   mix-blend-mode: multiply;
+  z-index: 2;
 }
 
 div.timeline-year {
@@ -272,7 +275,7 @@ div.timeline-year {
 div.timeline-year.text {
   padding-top: 5px;
   padding-left: 7px;
-  font-family: calibri, system-ui;
+  font-family: var(--font-year);
   font-size: small;
   text-shadow: 0 0 5px #0e121e73;
 }
@@ -294,9 +297,43 @@ div.timeline-item {
   z-index: 1;
 }
 
+div.releasing {
+  position: absolute;
+  --color-blue: var(--color-background-300);
+  opacity: 0.75;
+  transition: 0.2s;
+}
+
+.timeline:hover div.releasing {
+  border: 1px dashed var(--color-background-700);
+  --color-blue: var(--color-background-400);
+  opacity: 1;
+}
+
+div.season {
+  color: var(--color-background-700);
+  font-family: var(--font-tips);
+  font-size: 0.75em;
+  white-space: nowrap;
+  text-shadow: 0 0 3px #0e121e20;
+  margin-top: 26px;
+  display: none;
+}
+
+.timeline:hover div.season {
+  display: block;
+}
+
+.stripes {
+  background:
+          repeating-linear-gradient(45deg,    var(--color-blue), #0000 2px, var(--color-blue) 4px),
+          repeating-linear-gradient(to right, var(--color-blue), #0000) !important;
+}
+
 div.timeline-item .range {
   width: 100%;
   height: 100%;
+  background-color: var(--color-blue)
 }
 
 
@@ -335,7 +372,7 @@ div.timeline-item .range {
 
 .tip:hover span p {
   margin-bottom: 0;
-  font-family: Overpass, Segoe UI, Ubuntu, sans-serif;
+  font-family: var(--font-tips);
   font-size: 13px;
 }
 
@@ -365,7 +402,7 @@ div.timeline-item .range {
   box-shadow: none;
   color: rgb(var(--color-text));
   outline: 0;
-  transition: .2s;
+  transition: 0.2s;
   height: 40px;
   line-height: 40px;
   border-radius: 4px;

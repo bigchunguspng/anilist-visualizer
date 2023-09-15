@@ -1,7 +1,6 @@
 // ReSharper disable InconsistentNaming
 
 using System.Text;
-using Microsoft.Extensions.Primitives;
 
 namespace AniListVisualizer.Models;
 

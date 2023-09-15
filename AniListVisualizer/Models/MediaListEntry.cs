@@ -36,6 +36,9 @@ public class Media
     /// <summary> Returns Anilist URL of the media. </summary>
     public string URL => $"{AnimeOrManga}/{id}";
 
+    /// <summary> Returns a string like "FALL 2023". </summary>
+    public string SeasonAndYear => $"{season.ToString()} {startDate.year}";
+
     /// <summary> Returns "anime" or "manga" based on media type. </summary>
     public string AnimeOrManga => type.ToString().ToLower();
 
@@ -47,9 +50,20 @@ public struct FuzzyDate
 {
     public int? year, month, day;
 
-    public override string ToString() => year is null ? "…" : $"{GetDateTime():MMM d}";
+    public override string ToString() => LongDate();
 
-    public DateTime GetDateTime() =>  year is null ? DateTime.Today : new DateTime(year.Value, month!.Value, day!.Value);
+    public string ShortDate() => year is null ? "…" : FormatShort(this);
+    public string  LongDate() => year is null ? "…" : FormatLong (this);
+
+    public static string FormatShort(FuzzyDate date) => $"{date.GetDateTime():MMM d}";
+    public static string FormatLong (FuzzyDate date) => $"{date.GetDateTime():MMM yyyy}";
+
+    public static string DateInterval(FuzzyDate a, FuzzyDate b, Func<FuzzyDate, string> format, char arrow = '➽')
+    {
+        return b.year is null ? $"{format(a)} {arrow}" : $"{format(a)} - {format(b)}";
+    }
+
+    public DateTime GetDateTime() =>  year is null ? DateTime.Today : new DateTime(year.Value, month ?? 1, day ?? 1);
 }
 
 public enum EntryStatus
