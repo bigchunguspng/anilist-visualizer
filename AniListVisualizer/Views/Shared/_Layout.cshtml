@@ -1,14 +1,18 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var container = ViewBag.Container ?? "container-xxl";
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - AniListVisualizer</title>
+    <title>@ViewBag.Title · AniList visualizer</title>
     <link rel="icon" type="image/png" sizes="16x16" href="/img/icons/favicon-16x16.png">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sawarabi+Gothic">
-    <link href="https://fonts.googleapis.com/css?family=Overpass:400,600,700,800" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Overpass:400,600,700,800">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 </head>
 <body>
@@ -33,14 +37,14 @@
         </div>
     </nav>
 </header>
-<div class="container">
+<div class="@container">
     <main role="main" class="pb-3">
         @RenderBody()
     </main>
 </div>
 
 <footer class="border-top footer text-muted">
-    <div class="container">
+    <div class="@container">
         &copy; 2023 - AniListVisualizer - <a asp-area="" asp-controller="Home" asp-action="About">About</a>
     </div>
 </footer>

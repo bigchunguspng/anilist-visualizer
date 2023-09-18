@@ -79,29 +79,68 @@
   --font-year: calibri, system-ui;
 }
 
-@media (max-width: 991px) {
-  #anime-manga .title {
-    font-size: small;
-  }
+.container-xd {
+  width: 100%;
+  padding-inline: 0.75rem;
+  margin-inline: auto;
+  transition: 0.2s;
 }
 
-@media (max-width: 767px) {
-  #anime-manga .title {
-    display: none;
+button#translate, #anime-manga .title {
+  display: none;
+}
+
+@media (min-width: 800px) {
+  .container-xd {
+    padding-right: 5rem;
   }
 
   button#translate {
-    display: none;
+    display: block;
+  }
+
+  #anime-manga .title {
+    font-size: 12px;
+    flex: 3.5;
+    display: inline-block;
+  }
+}
+
+@media (min-width: 970px) {
+  .container-xd {
+    padding-left: 10rem;
+  }
+
+  #anime-manga .title {
+    font-size: small;
+    flex: 5;
+  }
+}
+
+@media (min-width: 1560px) {
+  .container-xd {
+    padding-right: calc(100vw - 1480px);
+  }
+
+  #anime-manga .title {
+    font-size: inherit
+  }
+}
+
+@media (min-width: 1640px) {
+  .container-xd {
+    max-width: calc(1320px + 20rem);
+    padding-right: 10rem;
   }
 }
 
 @media (max-width: 449px) {
   .user-h1 {
-    font-size: 6vw !important;
+    font-size:   7vw !important;
   }
 
   .user-count {
-    font-size: 2.85vw !important;
+    font-size: 3.5vw !important;
   }
 
   .user-info.text * {
@@ -220,6 +259,7 @@ body {
 
 .title {
   flex: 5;
+  transition: 0.25s;
 }
 
 .title.CURRENT, .title.REPEATING {
