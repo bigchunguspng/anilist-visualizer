@@ -86,8 +86,35 @@
   transition: 0.2s;
 }
 
-button#translate, #anime-manga .title {
+button#translate {
   display: none;
+}
+
+@media (max-width: 799px) {
+  .medialist .title {
+    font-size: 10px;
+    padding-left: 9px;
+  }
+
+  .medialist .timeline {
+    flex-basis: 100%;
+  }
+
+  .medialist .entry {
+    flex-wrap: wrap;
+    padding-left: 75px;
+    padding-block: 5px;
+  }
+
+  .medialist .cover, .entry-status {
+    position: absolute;
+    left: 0;
+  }
+
+  .entry:hover .image {
+    top:   -60px !important;
+    left: -160px !important;
+  }
 }
 
 @media (min-width: 800px) {
@@ -102,7 +129,6 @@ button#translate, #anime-manga .title {
   #anime-manga .title {
     font-size: 12px;
     flex: 3.5;
-    display: inline-block;
   }
 }
 
@@ -133,6 +159,7 @@ button#translate, #anime-manga .title {
     padding-right: 10rem;
   }
 }
+
 
 @media (max-width: 449px) {
   .user-h1 {
@@ -217,14 +244,16 @@ body {
 }
 
 .user-info.text * {
- margin-left: 25px;
+  margin-left: 25px;
 }
 
 
 .user-pfp {
   border-radius: 4px 0 0 4px;
   height: 100px;
-  width: 100px;
+  width:  100px;
+  min-height: 48px;
+  min-width:  48px;
   background-size: cover;
 }
 
@@ -250,6 +279,7 @@ body {
 .entry {
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .entry-status {
@@ -305,17 +335,13 @@ body {
   background-color: var(--color-blue);
 }
 
-.entry:hover .cover {
-  position: relative;
-}
-
 .entry:hover .image {
-  box-shadow: 0 2px 20px rgba(49, 54, 68, .3);
-  height: 200px;
-  left: -160px;
   position: absolute;
-  top: -60px;
-  width: 140px;
+  top:   -75px;
+  left: -152px;
+  width:  140px;
+  height: 200px;
+  box-shadow: 0 2px 20px rgba(49, 54, 68, .3);
 }
 
 .entry:hover .link {
