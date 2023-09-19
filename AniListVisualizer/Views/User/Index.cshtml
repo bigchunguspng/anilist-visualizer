@@ -5,6 +5,7 @@
 @{
     ViewBag.Title = Model.User.name;
     ViewBag.Container = "container-xd";
+    ViewBag.Icon = Model.User.avatar["medium"];
     Layout = "_Layout";
     var list = Model.History
         .Where(x => x.status is not EntryStatus.PLANNING && x.watching_start.year is not null)
