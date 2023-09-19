@@ -7,7 +7,7 @@
     <div class="searchbar">
         <input class="search section" id="user-search" type="text" autocomplete="off" placeholder="Enter your username">
     </div>
-    <div id="result-container"></div>
+    <div id="users"></div>
     <p>Go to <a href="https://anilist.co">AniList</a> if you don't get it.</p>
 </div>
 <script>
@@ -29,7 +29,7 @@ $(document).ready(function() {
             url: url,
             method: "GET",
             success: function (data) {
-                $("#result-container").html(data);
+                $("#users").html(data);
             },
             error: function (error) {
                 console.error("AJAX error:", error);

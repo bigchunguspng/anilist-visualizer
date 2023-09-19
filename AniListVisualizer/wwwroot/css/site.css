@@ -90,29 +90,48 @@ button#translate {
   display: none;
 }
 
+@media (max-width: 280px) {
+  div.last-seen {
+    display: none;
+  }
+}
+
+@media (max-width: 320px) {
+  #users {
+    display: block !important;
+    min-width: 100% !important;
+  }
+
+  .search {
+    max-width: 250px;
+    width: 100% !important;
+  }
+}
+
+
 @media (max-width: 799px) {
-  .medialist .title {
+  #animanga .title {
     font-size: 10px;
     padding-left: 9px;
     padding-bottom: 1px;
   }
 
-  .medialist .timeline {
+  #animanga .timeline {
     flex-basis: 100%;
   }
 
-  .medialist .entry {
+  #animanga .entry {
     flex-wrap: wrap;
     min-height: 51px;
     padding-left: 75px;
   }
 
-  .medialist .cover, .entry-status {
+  #animanga .cover, .entry-status {
     position: absolute;
     left: 0;
   }
 
-  .entry:hover .image {
+  #animanga.entry:hover .image {
     top:   -60px !important;
     left: -160px !important;
   }
@@ -127,7 +146,7 @@ button#translate {
     display: block;
   }
 
-  #anime-manga .title {
+  #animanga .title {
     font-size: 12px;
     flex: 3.5;
   }
@@ -138,7 +157,7 @@ button#translate {
     padding-left: 10rem;
   }
 
-  #anime-manga .title {
+  #animanga .title {
     font-size: small;
     flex: 5;
   }
@@ -149,7 +168,7 @@ button#translate {
     padding-right: calc(100vw - 1480px);
   }
 
-  #anime-manga .title {
+  #animanga .title {
     font-size: inherit
   }
 }
@@ -181,13 +200,6 @@ button#translate {
   }
 }
 
-@media (max-width: 319px) {
-  div.last-seen {
-    width: 0;
-    color: transparent !important;
-  }
-}
-
 main {
   font-size: 62.5%;
   font-family: var(--font-main);
@@ -212,6 +224,11 @@ p {
 
 .invisible {
   display: none;
+}
+
+*:focus-visible {
+  background-color: var(--color-blue-300);
+  outline: 0;
 }
 
 html {
@@ -323,6 +340,11 @@ body {
   justify-content: flex-end;
   width: 60px;
   height: 48px;
+}
+
+#users .cover {
+  width: 48px;
+  justify-content: center;
 }
 
 .cover .image {
@@ -500,13 +522,13 @@ div.timeline-item .range {
 }
 
 .search {
-  border: 0;
-  color: rgb(var(--color-text));
-  outline: 0;
-  transition: 0.2s;
+  width: 250px;
   line-height: 40px;
+  color: rgb(var(--color-text));
   text-align: center;
-  padding-inline: 40px;
+  border: 0;
+  outline: 0;
+  transition: 0.2s box-shadow;
 }
 
 .search:focus {
@@ -517,23 +539,25 @@ div.timeline-item .range {
   text-decoration: none;
 }
 
-#result-container {
+#users {
   display: inline-grid;
+  min-width: 300px;
 }
 
-.search-result .title {
+#users .title {
   color: var(--color-text);
   text-decoration: none;
   white-space: nowrap;
   text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 div.last-seen {
   color: var(--color-background-500);
-  font-size: 0.75rem;
   padding-right: 20px;
-  flex: 3;
+  font-size: 0.75rem;
   font-weight: bold;
-  white-space: nowrap;
   text-align: end;
+  white-space: nowrap;
 }
