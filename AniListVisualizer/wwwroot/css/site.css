@@ -77,6 +77,8 @@
   --font-main: Roboto, Sawarabi Gothic, Segoe UI, Ubuntu, system-ui;
   --font-tips: Overpass, Segoe UI, Ubuntu, sans-serif;
   --font-year: calibri, system-ui;
+  --left:  0;
+  --width: 0;
 }
 
 .container-xd {
@@ -415,10 +417,10 @@ div.timeline-year:first-child {
 
 
 div.timeline-item {
+  margin-left: var(--left);
+  width: var(--width);
   height: 24px;
   min-width: 4px;
-  width: -moz-available;
-  width: -webkit-fill-available;
   color: white;
   display: flex;
   justify-content: center;

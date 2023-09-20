@@ -9,10 +9,9 @@
     Layout = "_Layout";
     var list = Model.History
         .Where(x => x.status is not EntryStatus.PLANNING && x.watching_start.year is not null)
-        .OrderBy(x => x.watching_start.GetDateTime())
-        .ThenBy(x => x.watching_end.GetDateTime())
+        .OrderBy(x => Math.Min(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
         .ToList();
-    var min = list.Min(a => a.watching_start.GetDateTime());
+    var min = list.Min(a => a.watching_start.Date);
     var max = DateTime.Today;
     var length = (int)(max - min).TotalDays;
 
@@ -70,19 +69,21 @@
             <div class="title @status" english="@title" romaji="@romaji">@title</div>
             <div class="timeline">
                 @{
-                    var a = item.watching_start;
-                    var b = item.watching_end;
+                    var start = item.watching_start;
+                    var end   = item.watching_end;
 
-                    var start = a.GetDateTime();
-                    var end   = b.GetDateTime();
+                    if (start.Date > end.Date) (start, end) = (end, start); // carelessness fix'
 
-                    var left  = (int)(start - min).TotalDays;
-                    var width = (int)(end - start).TotalDays;
+                    var a = start.Date;
+                    var b =   end.Date;
+
+                    var left  = (int)(a - min).TotalDays;
+                    var width = (int)(b - a)  .TotalDays;
 
                     var stripes = false;
 
                     var tip = new StringBuilder();
-                    tip.Append("<p>").Append(start == end ? a.ShortDate() : FuzzyDate.DateInterval(a, b, FuzzyDate.FormatShort)).Append("</p>");
+                    tip.Append("<p>").Append(a == b ? start.ShortDate() : FuzzyDate.DateRange(start, end, FuzzyDate.FormatShort)).Append("</p>");
                     if (item.EpisodeCountMatters)
                     {
                         var unit = item.media.EpisodeOrChapter;
@@ -90,7 +91,7 @@
                         if (item.progress > 1) tip.Append("s");
                         tip.Append("</p>");
 
-                        var days = (end - start + TimeSpan.FromDays(1)).TotalDays;
+                        var days = (b - a).TotalDays + 1;
                         if (days > 1)
                         {
                             var ppd = item.progress / days;
@@ -111,26 +112,28 @@
                     }
                 </div>
                 @{
-                    var aa = item.media.startDate;
-                    var bb = item.media.endDate;
+                    var release_a = item.media.startDate;
+                    var release_b = item.media.endDate;
 
-                    var release_a = aa.GetDateTime();
-                    var release_b = bb.GetDateTime();
+                    var date_a = release_a.Date;
+                    var date_b = release_b.Date;
 
-                    if (release_b > min)
+                    if (release_b.Date > min)
                     {
-                        var release_start = (int)(release_a - min).TotalDays;
+                        var release_start = (int)(date_a - min).TotalDays;
                         var release_left = Math.Max(0, release_start);
-                        var release_width = (int)(release_b - (release_a < min ? min : release_a)).TotalDays;
+                        var release_width = (int)(date_b - (date_a < min ? min : date_a)).TotalDays;
 
-                        var season = item.media.season is null ? FuzzyDate.DateInterval(aa, bb, FuzzyDate.FormatLong, '→') : item.media.SeasonAndYear;
+                        var season = item.media.season is null
+                            ? FuzzyDate.DateRange(release_a, release_b, FuzzyDate.FormatLong, '→')
+                            : item.media.SeasonAndYear;
 
                         <div class="timeline-item releasing stripes" style="margin-left: @Percent(release_left); width: @Percent(release_width)">
                             <div class="season">@season</div>
                         </div>
                     }
                 }
-                <div class="timeline-item tip" style="margin-left: @Percent(left); width: @Percent(width)">
+                <div class="timeline-item tip" style="--left: @Percent(left); --width: @Percent(width)">
                     <div class="range @(stripes ? "stripes" : "")" style="--color-blue: @color;">
                         <div class="hover-box"></div>
                     </div>

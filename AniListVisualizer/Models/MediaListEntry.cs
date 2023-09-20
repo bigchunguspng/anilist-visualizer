@@ -50,20 +50,27 @@ public struct FuzzyDate
 {
     public int? year, month, day;
 
+    private DateTime? _date;
+    public  DateTime   Date => _date ??= GetDate();
+    
+    private DateTime GetDate() => year is null ? DateTime.Today : new DateTime(year.Value, month ?? 1, day ?? 1);
+    
     public override string ToString() => LongDate();
 
     public string ShortDate() => year is null ? "…" : FormatShort(this);
     public string  LongDate() => year is null ? "…" : FormatLong (this);
 
-    public static string FormatShort(FuzzyDate date) => $"{date.GetDateTime():MMM d}";
-    public static string FormatLong (FuzzyDate date) => $"{date.GetDateTime():MMM yyyy}";
+    public static string FormatShort(FuzzyDate date) => $"{date.Date:MMM d}";
+    public static string FormatLong (FuzzyDate date) => $"{date.Date:MMM yyyy}";
 
-    public static string DateInterval(FuzzyDate a, FuzzyDate b, Func<FuzzyDate, string> format, char arrow = '➽')
-    {
-        return b.year is null ? $"{format(a)} {arrow}" : $"{format(a)} - {format(b)}";
-    }
-
-    public DateTime GetDateTime() =>  year is null ? DateTime.Today : new DateTime(year.Value, month ?? 1, day ?? 1);
+    public static string DateRange
+    (
+        FuzzyDate a,
+        FuzzyDate b,
+        Func<FuzzyDate, string> format,
+        char arrow = '➽'
+    )
+        => b.year is null ? $"{format(a)} {arrow}" : $"{format(a)} - {format(b)}";
 }
 
 public enum EntryStatus
