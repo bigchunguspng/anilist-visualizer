@@ -2,32 +2,30 @@
 
 @{ Layout = null; }
 
-<div class="mb-3 medialist">
-    <div class="section">
-        @{
-            if (Model.Count > 0)
+<div class="mb-3 medialist section">
+    @{
+        if (Model.Count > 0)
+        {
+            foreach (var user in Model)
             {
-                foreach (var user in Model)
-                {
-                    <a href="/user/@user.name" class="search-result entry">
-                        <div class="cover">
-                            <div class="image" style="background-image: url(@user.avatar["large"]), url(@user.avatar["medium"]);"></div>
-                        </div>
-                        <div class="title">@user.name</div>
-                        <div class="last-seen">@user.LastSeen()</div>
-                    </a>
-                }
-            }
-            else
-            {
-                <div href="https://anilist.co/" class="search-result entry">
+                <a href="/user/@user.name" class="search-result entry">
                     <div class="cover">
-                        <div class="image" style="background-image: url(img/nobody.png)"></div>
+                        <div class="image" style="background-image: url(@user.avatar["large"]), url(@user.avatar["medium"]);"></div>
                     </div>
-                    <div class="title">Nobody Was Found</div>
-                    <div class="last-seen">XD</div>
-                </div>
+                    <div class="title">@user.name</div>
+                    <div class="last-seen">@user.LastSeen()</div>
+                </a>
             }
         }
-    </div>
+        else
+        {
+            <div href="https://anilist.co/" class="search-result entry">
+                <div class="cover">
+                    <div class="image" style="background-image: url(img/nobody.png)"></div>
+                </div>
+                <div class="title">Nobody Was Found</div>
+                <div class="last-seen">XD</div>
+            </div>
+        }
+    }
 </div>

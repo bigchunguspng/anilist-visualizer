@@ -290,7 +290,7 @@ body {
   font-size: 1.5em;
 }
 
-.medialist > :not(caption) > * > * {
+.medialist > :not(caption) > * {
   margin: .1em .5em;
 }
 
