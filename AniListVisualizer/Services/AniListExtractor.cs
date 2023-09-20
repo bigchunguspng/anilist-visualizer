@@ -80,7 +80,7 @@ public class AniListExtractor : AniListEngine
             var data = JsonToDictionary((JObject)json["data"]);
             return JsonConvert.DeserializeObject<User>(((JObject)data["User"]).ToString())!;
         }
-        throw new Exception("User not found.");
+        throw new Exception("User Not Found");
     }
 
     private List<MediaListEntry> GetOtakuHistory(int user, EntryStatus status, int page = 1)

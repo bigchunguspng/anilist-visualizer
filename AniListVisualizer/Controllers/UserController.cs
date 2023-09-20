@@ -16,15 +16,23 @@ public class UserController : Controller
     [Route("user/{username}")]
     public async Task<IActionResult> Index(string username)
     {
-        var timer = new Stopwatch();
-        timer.Start();
+        try
+        {
+            var timer = new Stopwatch();
+            timer.Start();
         
-        var baka = new AniListExtractor();
-        var user = await baka.GetUserViewModel(username);
+            var baka = new AniListExtractor();
+            var user = await baka.GetUserViewModel(username);
 
-        timer.Stop();
-        _logger.LogInformation("USER: {name}. ENTRIES: {count}. TIME: {time:m\\:ss\\.fff}", user.User.name, user.History.Count, timer.Elapsed);
+            timer.Stop();
+            _logger.LogInformation("USER: {name}. ENTRIES: {count}. TIME: {time:m\\:ss\\.fff}", user.User.name, user.History.Count, timer.Elapsed);
         
-        return View(user);
+            return View(user);
+        }
+        catch (Exception)
+        {
+            Response.StatusCode = 404;
+            return View("../Error/PageNotFound");
+        }
     }
 }
