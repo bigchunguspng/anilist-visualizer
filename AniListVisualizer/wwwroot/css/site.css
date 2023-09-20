@@ -216,6 +216,14 @@ main {
   line-height: 1.15;
 }
 
+a {
+  color: var(--color-blue-900);
+}
+
+a:hover {
+  color: var(--color-blue-dim);
+}
+
 p {
   font-size: 1.5em;
 }
