@@ -6,11 +6,12 @@
   --color-foreground-blue: rgb(246, 248, 251);
   --color-foreground-blue-dark: rgb(241, 243, 247);
   --color-background-blue-dark: rgb(31, 35, 45);
-  --color-background-blue-png: rgba(31, 35, 45, 0.9);
+  --color-background-blue-dark-rgb: 31, 35, 45;
   --color-overlay: rgb(31, 38, 49);
-  --color-shadow: rgb(49, 54, 68);
-  --color-shadow-dark: rgb(6, 13, 34);
-  --color-shadow-blue: rgb(103, 132, 187);
+  --color-shadow: 49, 54, 68;
+  --color-shadow-dark: 6, 13, 34;
+  --color-shadow-text: 14, 18, 30;
+  --color-shadow-blue: 103, 132, 187;
   --color-text: rgb(92, 114, 138);
   --color-text-light: rgb(122, 133, 143);
   --color-text-lighter: rgb(146, 153, 161);
@@ -79,6 +80,7 @@
   --font-year: calibri, system-ui;
   --left:  0;
   --width: 0;
+  --shadow-opacity: 0.09;
 }
 
 .container-xd {
@@ -86,6 +88,10 @@
   padding-inline: 0.75rem;
   margin-inline: auto;
   transition: 0.2s;
+}
+
+.max-800 {
+  max-width: 800px;
 }
 
 button#translate {
@@ -168,6 +174,7 @@ button#translate {
 @media (min-width: 1560px) {
   .container-xd {
     padding-right: calc(100vw - 1480px);
+    transition: 0s padding-right;
   }
 
   #animanga .title {
@@ -179,6 +186,7 @@ button#translate {
   .container-xd {
     max-width: calc(1320px + 20rem);
     padding-right: 10rem;
+    transition: 0.2s;
   }
 }
 
@@ -241,14 +249,14 @@ html {
 body {
   margin-bottom: 60px;
   color: var(--color-text);
-  background: var(--color-background);
+  background-color: var(--color-background);
 }
 
 
 .section {
-  background: white;
+  background-color: white;
   border-radius: 4px;
-  box-shadow: 0 2px 20px rgba(49, 54, 68, .09);
+  box-shadow: 0 2px 20px rgba(var(--color-shadow), var(--shadow-opacity));
   padding-block: 4px;
 }
 
@@ -367,7 +375,7 @@ body {
   left: -152px;
   width:  140px;
   height: 200px;
-  box-shadow: 0 2px 20px rgba(49, 54, 68, .3);
+  box-shadow: 0 2px 20px rgba(var(--color-shadow), 0.3);
 }
 
 .entry:hover .link {
@@ -397,7 +405,6 @@ div.timeline-row.text {
 }
 
 div.timeline-year {
-  /*height: 24px;*/
   border-left: 2px solid white;
   opacity: 80%;
   overflow: hidden;
@@ -408,7 +415,7 @@ div.timeline-year.text {
   padding-left: 7px;
   font-family: var(--font-year);
   font-size: small;
-  text-shadow: 0 0 5px #0e121e73;
+  text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.45);
 }
 
 div.timeline-year:first-child {
@@ -445,7 +452,7 @@ div.season {
   font-family: var(--font-tips);
   font-size: 0.75em;
   white-space: nowrap;
-  text-shadow: 0 0 3px #0e121e20;
+  text-shadow: 0 0 3px rgba(var(--color-shadow-text), 0.12);
   margin-top: 26px;
   opacity: 0;
   transition: 0.25s;
@@ -485,7 +492,7 @@ div.timeline-item .range {
 .tip span {
   padding: 5px;
   z-index: 100;
-  background: var(--color-background-blue-png);
+  background-color: rgba(var(--color-background-blue-dark-rgb), 0.9);
   left: 0;
   margin: 10px;
   position: absolute;
@@ -534,7 +541,7 @@ div.timeline-item .range {
 }
 
 .search:focus {
-  box-shadow: 0 1px 10px rgba(49, 54, 68, .2);
+  box-shadow: 0 1px 10px rgba(var(--color-shadow), 0.2);
 }
 
 .search-result {
@@ -562,4 +569,59 @@ div.last-seen {
   font-weight: bold;
   text-align: end;
   white-space: nowrap;
+}
+
+
+.explanation {
+  display: flex;
+}
+
+.explanation * {
+  border-radius: 5px;
+}
+
+.osaka {
+  width: 8rem;
+  height: 10rem;
+  background-image: url(https://i.pinimg.com/564x/ac/b5/fa/acb5fab8bb91d2b1736889a3c38afa52.jpg);
+  background-color: var(--color-background-200);
+  background-size: cover;
+  background-position-y: 54%;
+  background-position-x: 51%;
+  flex: 1;
+  min-width: 95px;
+  opacity: 0.95;
+  --shadow-opacity: 0.25;
+  transition: 0.075s transform;
+}
+
+.osaka:hover {
+  transform: scale(0.95);
+}
+
+.caption {
+  margin-left: 5px;
+  background-color: var(--color-background-200);
+  flex: 4;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  transition: 0.2s background-color;
+}
+
+.caption p {
+  margin: 0;
+  width: 100%;
+  padding-inline: 5%;
+  text-align: center;
+  text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.18);
+  transition: 0.1s;
+}
+
+.caption:hover {
+  background-color: var(--color-background-100);
+}
+
+.caption:hover p {
+  font-size: 1.45em;
 }
