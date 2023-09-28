@@ -591,7 +591,7 @@ div.last-seen {
 .osaka {
   width: 8rem;
   height: 10rem;
-  background-image: url(../img/static_osaka_reaction.png);
+  background-image: url(https://i.imgur.com/kDRpvgw.png);
   background-color: var(--color-background-200);
   background-size: cover;
   background-position-y: 54%;
@@ -605,7 +605,7 @@ div.last-seen {
 
 .osaka:hover {
   transform: scale(0.95);
-  background-image: url(../img/live_osaka_reaction.png), url(../img/static_osaka_reaction.png);
+  background-image: url(https://i.imgur.com/NBWHKtF.png), url(https://i.imgur.com/kDRpvgw.png);
 }
 
 .caption {
