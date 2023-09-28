@@ -139,7 +139,7 @@ button#translate {
     left: 0;
   }
 
-  #animanga.entry:hover .image {
+  #animanga .entry:hover .image {
     top:   -60px !important;
     left: -160px !important;
   }
