@@ -78,6 +78,7 @@
   --font-main: Roboto, Sawarabi Gothic, Segoe UI, Ubuntu, system-ui;
   --font-tips: Overpass, Segoe UI, Ubuntu, sans-serif;
   --font-year: calibri, system-ui;
+  --font-logo: "Kaushan Script";
   --left:  0;
   --width: 0;
   --shadow-opacity: 0.09;
@@ -637,9 +638,19 @@ div.last-seen {
 
 .logo {
   max-width: 100%;
+  font-size: 1.5em;
   transition: 0.075s transform;
 }
 
 .logo:hover {
   transform: scale(1.015) rotate(-1deg);
+}
+
+.text-center h1 {
+  margin-block: 0.5em;
+  font-family: var(--font-logo);
+}
+
+.diffuse {
+  text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.15);
 }
