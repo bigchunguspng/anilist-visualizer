@@ -420,10 +420,10 @@ div.timeline-year {
 }
 
 div.timeline-year.text {
-  padding-top: 5px;
   padding-left: 7px;
   font-family: var(--font-year);
-  font-size: small;
+  font-size: clamp(10px, 2.5vw, 13px);
+  line-height: 24px;
   text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.45);
 }
 
