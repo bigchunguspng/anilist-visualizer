@@ -132,7 +132,7 @@
                         {
                             var release_start = (int)(date_a - min).TotalDays;
                             var release_left = Math.Max(0, release_start);
-                            var release_width = (int)(date_b - (date_a < min ? min : date_a)).TotalDays;
+                            var release_width = (int)((date_b > max ? max : date_b) - (date_a < min ? min : date_a)).TotalDays;
 
                             var season = item.media.season is null
                                 ? FuzzyDate.DateRange(release_a, release_b, FuzzyDate.FormatLong, '→')
