@@ -234,11 +234,14 @@ p {
 }
 
 .butt {
+  min-width: 48px;
+  min-height: 32px;
   position: fixed;
   top: 90px;
   right: 10px;
   border: none;
   z-index: 100;
+  color: var(--color-text);
 }
 
 .invisible {

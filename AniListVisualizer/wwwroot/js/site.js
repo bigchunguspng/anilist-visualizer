@@ -1,4 +1,8 @@
-﻿
+﻿function delay(milliseconds)
+{
+    return new Promise(resolve => { setTimeout(resolve, milliseconds); });
+}
+
 function ToggleInnerHTML(target_class, toggle_id)
 {
     let targets = document.getElementsByClassName(target_class);
@@ -14,7 +18,11 @@ function ToggleInnerHTML(target_class, toggle_id)
     toggler.setAttribute("b", a);
 }
 
-function delay(milliseconds)
+function ReverseList(target_id)
 {
-    return new Promise(resolve => { setTimeout(resolve, milliseconds); });
+    let target = document.getElementById(target_id);
+    var children = target.childNodes;
+    var i = children.length;
+
+    while (i--) target.appendChild(children[i]);
 }
