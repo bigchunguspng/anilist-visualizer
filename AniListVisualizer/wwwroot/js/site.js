@@ -1,17 +1,20 @@
-﻿function SetInnerHTML(obj, value) {
-    obj.innerHTML = value;
-}
+﻿
+function ToggleInnerHTML(target_class, toggle_id)
+{
+    let targets = document.getElementsByClassName(target_class);
+    let toggler = document.getElementById(toggle_id);
+    let a = toggler.getAttribute("a");
+    let b = toggler.getAttribute("b");
 
-function ToggleInnerHTML(class_name, toggle_id) {
-    let elements = document.getElementsByClassName(class_name);
-    let toggle = document.getElementById(toggle_id);
-    let off = toggle.getAttribute("off");
-    let on = toggle.getAttribute("on");
-    for (const element of elements) {
-        SetInnerHTML(element, element.getAttribute(off));
+    for (const target of targets)
+    {
+        target.innerHTML = target.getAttribute(b);
     }
-    toggle.setAttribute("on", off);
-    toggle.setAttribute("off", on);
+    toggler.setAttribute("a", b);
+    toggler.setAttribute("b", a);
 }
 
-function delay(milliseconds){ return new Promise(resolve => { setTimeout(resolve, milliseconds); }); }
+function delay(milliseconds)
+{
+    return new Promise(resolve => { setTimeout(resolve, milliseconds); });
+}

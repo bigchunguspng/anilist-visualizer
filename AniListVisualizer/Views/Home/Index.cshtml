@@ -5,35 +5,35 @@
 <div class="text-center">
     <img class="logo" src="https://i.imgur.com/tgGcE0v.png" alt="AniList Visualizer (WHOLESOME 100 | ifunny.co)">
     <div class="searchbar">
-        <input class="search section" id="user-search" type="text" autocomplete="off" placeholder="Enter your username">
+        <input id="user-search" class="search section" type="text" autocomplete="off" placeholder="Enter your username">
     </div>
     <div id="users"></div>
     <p>Go to <a href="https://anilist.co">AniList</a> if you don't get it.</p>
 </div>
 <script>
-$(document).ready(function() {
+$(document).ready(function ()
+{
     const search = $("#user-search");
-    
-    var temp;
 
-    search.on("input", async function () {
+    var tmp;
+
+    search.on("input", async function ()
+    {
         const text = search.val();
+        tmp = text;
 
-        temp = text;
         await delay(300);
-        if (temp != text) return;
+        if (tmp != text) return;
 
-        const url = "/search/" + text;
-
-        $.ajax({
-            url: url,
+        $.ajax
+        ({
+            url: "/search/" + text,
             method: "GET",
-            success: function (data) {
+            success: function (data)
+            {
                 $("#users").html(data);
             },
-            error: function (error) {
-                console.error("AJAX error:", error);
-            }
+            error: function (error) { console.error("AJAX error:", error); }
         });
     });
 });

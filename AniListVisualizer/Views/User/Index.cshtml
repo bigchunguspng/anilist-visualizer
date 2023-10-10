@@ -30,11 +30,12 @@
 @if (!empty)
 {
     <div id="buttons">
-        <button class="butt section" id="translate" onclick="ToggleInnerHTML('title', 'naming')">
+        <button class="butt section" id="translate" onclick="ToggleInnerHTML('title', 'lang')">
             <img src="~/svg/translate.svg" alt="JAP / ENG"/>
-            <span class="invisible" id="naming" on="english" off="romaji"></span>
+            <span class="invisible" id="lang" a="english" b="japanese"></span>
         </button>
     </div>
+
     <div class="medialist section" id="animanga">
         @{
             var min = new DateTime(Math.Min(list.Min(a => a.watching_start.Date.Ticks), list.Min(a => a.watching_end.Date.Ticks)));
@@ -68,11 +69,11 @@
                     <a class="link" href="https://anilist.co/@item.media.URL" target="_blank">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
                 </div>
                 @{
-                    var romaji = item.media.title["native"];
-                    var title = item.media.title["english"] ?? item.media.title["romaji"];
+                    var japanese = item.media.title["native"];
+                    var english = item.media.title["english"] ?? item.media.title["romaji"];
                     var status = item.status.ToString();
                 }
-                <div class="title @status" english="@title" romaji="@romaji">@title</div>
+                <div class="title @status" english="@english" japanese="@japanese">@english</div>
                 <div class="timeline">
                     @{
                         var start = item.watching_start;
