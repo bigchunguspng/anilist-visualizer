@@ -193,10 +193,6 @@ button#translate {
 
 
 @media (max-width: 449px) {
-  .user-h1 {
-    font-size:   7vw !important;
-  }
-
   .user-count {
     font-size: 3.5vw !important;
   }
@@ -204,17 +200,16 @@ button#translate {
   .user-info.text * {
     margin-left: 3vw !important;
   }
-
-  .user-pfp {
-    width:  20vw !important;
-    height: 20vw !important;
-  }
 }
 
 main {
+  min-height: 100vh;
+  line-height: 1.15;
+}
+
+main, header {
   font-size: 62.5%;
   font-family: var(--font-main);
-  line-height: 1.15;
 }
 
 a {
@@ -258,10 +253,47 @@ html {
   min-height: 100%;
 }
 
+header.user {
+  background-color: #242538;
+  background-position: 50% 35%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 240px;
+  margin-bottom: 12px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.banner-shadow {
+  background: linear-gradient(180deg, rgba(var(--color-shadow-dark), 0) 40%, rgba(var(--color-shadow-dark), 0.6));
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
 body {
-  margin-bottom: 60px;
   color: var(--color-text);
   background-color: var(--color-background);
+}
+
+footer {
+  background-color: #11161d;
+  padding-bottom: 60px;
+}
+
+footer a {
+  color: #a0b1c5;
+  font-family: var(--font-tips);
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  padding: 10px;
+  display: inline-block;
+}
+
+footer a:hover {
+  color: var(--color-blue);
 }
 
 
@@ -273,8 +305,14 @@ body {
 }
 
 .user-info {
-  padding: 0;
-  margin-bottom: 15px;
+  align-items: flex-end;
+  display: flex;
+  width: 100%;
+  z-index: 1;
+}
+
+.user-info.text {
+  margin-bottom: 18px;
 }
 
 .user-info * {
@@ -288,23 +326,25 @@ body {
 }
 
 
-.user-pfp {
-  border-radius: 4px 0 0 4px;
-  height: 100px;
-  width:  100px;
-  min-height: 48px;
-  min-width:  48px;
-  background-size: cover;
+.avatar {
+  border-radius: 4px 4px 0 0;
+  display: inline-block;
+  max-height: 230px;
+  max-width: 160px;
+  width: 100%;
 }
 
-.user-h1 {
-  font-size: 1.9rem;
+.user-name {
+  color: var(--color-text-bright);
   font-family: var(--font-tips);
+  font-weight: 800;
+  display: inline-block;
 }
 
 .user-count {
-  display: block;
   font-size: 1.5em;
+  color: var(--color-background-500);
+  display: block;
 }
 
 
@@ -649,6 +689,10 @@ div.last-seen {
   transform: scale(1.015) rotate(-1deg);
 }
 
+.logo[alt*="AniList"] {
+  margin-top: 7vh;
+}
+
 .text-center h1 {
   margin-block: 0.5em;
   font-family: var(--font-logo);
@@ -656,4 +700,75 @@ div.last-seen {
 
 .diffuse {
   text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.15);
+}
+
+
+.nav-mini {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.user .nav-mini {
+  position: absolute;
+  top: 0;
+  z-index: 420;
+}
+
+.nav-logo {
+  font-size: 1.25rem;
+  margin-block: 0.25em;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: 0.25s;
+}
+
+.nav-logo:hover {
+  transform: scale(1.05) rotate(-5deg);
+  transition: 0.05s;
+}
+
+.nav-logo span, .nav-logo img::before {
+  font-size: 24px;
+  font-family: var(--font-logo);
+  transition: 0.25s ease-in-out;
+}
+
+.nav-logo span {
+  color: var(--color-blue-100);
+  margin-left: -19px;
+  padding-right: 7px;
+  text-shadow: 1px 1px 3px var(--color-blue-900);
+}
+
+.nav-logo img::before {
+  margin-right: 23px;
+  line-height: 50px;
+  color: var(--color-background-100);
+  text-shadow: 1px 1px 2px var(--color-background-300);
+}
+
+.user .nav-logo img::before {
+  color: var(--color-blue-500);
+  text-shadow: 1px 2px 1px var(--color-blue-900);
+}
+
+.user .nav-logo span {
+  text-shadow: 1px 2px 1px var(--color-blue-900);
+}
+
+.nav-logo:hover span {
+  color: var(--color-blue);
+  text-shadow: 1px 2px 7px var(--color-blue-400);
+  transition: 0.05s;
+}
+
+.user .nav-logo:hover span {
+  text-shadow: 1px 2px 3px var(--color-blue-1000);
+}
+
+header:not(.user) .nav-logo img {
+  filter: drop-shadow(1px 2px 5px var(--color-background-500));
+  z-index: -1;
 }

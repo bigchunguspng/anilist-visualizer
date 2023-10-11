@@ -17,15 +17,22 @@
     Layout = "_Layout";
 }
 
-<div class="user-info section">
-    <a href="@Model.User.URL">
-        <div class="user-pfp" style="background-image: url(@Model.User.avatar["large"]);"></div>
-    </a>
-    <div class="user-info text">
-        <h1 class="user-h1">@ViewBag.Title</h1>
-        <p class="user-count">@list.Count @(list.Count == 1 ? "title" : "titles")</p>
-    </div>
-</div>
+@section header
+{
+    <header class="user">
+        @await Html.PartialAsync("_Navigation");
+        <div class="banner-shadow"></div>
+        <div class="@ViewBag.Container user-info">
+            <a href="@Model.User.URL">
+                <img class="avatar" src="@Model.User.avatar["large"]" alt="avatar"/>
+            </a>
+            <div class="user-info text">
+                <h1 class="user-name">@ViewBag.Title</h1>
+                <p class="user-count">@list.Count @(list.Count == 1 ? "title" : "titles")</p>
+            </div>
+        </div>
+    </header>
+}
 
 @if (!empty)
 {
