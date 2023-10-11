@@ -703,6 +703,7 @@ div.last-seen {
 .logo {
   max-width: 100%;
   font-size: 1.5em;
+  user-select: none;
   transition: 0.075s transform;
 }
 
@@ -792,4 +793,18 @@ div.last-seen {
 header:not(.user) .nav-logo img {
   filter: drop-shadow(1px 2px 5px var(--color-background-500));
   z-index: -1;
+}
+
+.ifunny {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  max-width: 20vw;
+  cursor: text;
+  mix-blend-mode: screen;
+  font-family: var(--font-tips);
+  font-weight: bold;
+  text-align: end;
+  color: var(--color-yellow);
 }
