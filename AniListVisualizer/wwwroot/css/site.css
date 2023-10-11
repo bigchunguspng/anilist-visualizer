@@ -95,10 +95,6 @@
   max-width: 800px;
 }
 
-button#translate {
-  display: none;
-}
-
 @media (max-width: 280px) {
   div.last-seen {
     display: none;
@@ -149,10 +145,6 @@ button#translate {
 @media (min-width: 800px) {
   .container-xd {
     padding-right: 5rem;
-  }
-
-  button#translate {
-    display: block;
   }
 
   #animanga .title {
@@ -228,15 +220,32 @@ p {
   padding-bottom: 2rem !important;
 }
 
-.butt {
-  min-width: 48px;
+.btn-xd {
+  font-size: 1.1em;
   min-height: 32px;
-  position: fixed;
-  top: 252px;
-  right: 10px;
+  margin: 0 0 6px 6px;
+  padding-inline: 15px;
   border: none;
-  z-index: 100;
   color: var(--color-text);
+}
+
+.section-name {
+  font-size: 1.9em;
+  font-weight: 400;
+  padding-left: 30px;
+  margin-block: 0.8em;
+}
+
+.control-panel {
+  position: relative;
+  margin-top: 40px;
+}
+
+.actions {
+  position: absolute;
+  top: -20px;
+  right: 0;
+  display: flex;
 }
 
 .invisible {
