@@ -220,13 +220,25 @@ p {
   padding-bottom: 2rem !important;
 }
 
-.btn-xd {
+.actions button {
   font-size: 1.1em;
   min-height: 32px;
-  margin: 0 0 6px 6px;
+  margin-left: 6px;
   padding-inline: 15px;
   border: none;
   color: var(--color-text);
+  transition: 0.1s;
+}
+
+.actions button:hover {
+  color: var(--color-background);
+  background-color: var(--color-text);
+}
+
+.actions button:active {
+  transform: scale(0.95);
+  color: var(--color-background);
+  background-color: var(--color-background-900);
 }
 
 .section-name {
@@ -238,7 +250,7 @@ p {
 
 .control-panel {
   position: relative;
-  margin-top: 40px;
+  margin-top: 32px;
 }
 
 .actions {
