@@ -1,4 +1,30 @@
-﻿function delay(milliseconds)
+﻿class Toggler
+{
+    static FindById(id)
+    {
+        return new Toggler(document.getElementById(id));
+    }
+
+    constructor(toggler)
+    {
+        this.a = toggler.getAttribute("a");
+        this.b = toggler.getAttribute("b");
+        this.t = toggler;
+    }
+
+    toggle()
+    {
+        this.t.setAttribute("a", this.b);
+        this.t.setAttribute("b", this.a);
+    }
+
+    setText(text)
+    {
+        this.t.innerText = text;
+    }
+}
+
+function delay(milliseconds)
 {
     return new Promise(resolve =>
     {
@@ -6,28 +32,21 @@
     });
 }
 
-function ToggleInnerHTML(target_class, toggle_id)
+function ToggleInnerHTML(target_selector, toggle_id)
 {
-    let targets = document.getElementsByClassName(target_class);
-    let toggler = document.getElementById(toggle_id);
-    let a = toggler.getAttribute("a");
-    let b = toggler.getAttribute("b");
+    let toggler = Toggler.FindById(toggle_id);
 
-    for (const target of targets)
-    {
-        target.innerHTML = target.getAttribute(b);
-    }
-    toggler.setAttribute("a", b);
-    toggler.setAttribute("b", a);
+    document.querySelectorAll(target_selector).forEach(x => x.innerHTML = x.getAttribute(toggler.b));
 
-    return a;
+    toggler.toggle();
+    return toggler;
 }
 
 function ReverseList(target_id)
 {
     let target = document.getElementById(target_id);
-    var children = target.children;
-    var i = children.length;
+    let children = target.children;
+    let i = children.length;
 
     while (i--) target.appendChild(children[i]);
 }

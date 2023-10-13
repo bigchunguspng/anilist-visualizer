@@ -1,46 +1,37 @@
 function SwitchLanguage()
 {
-    let text = ToggleInnerHTML('title', 'lang');
-    document.getElementById('lang').innerText = text == "english" ? "English" : "日本語";
+    let lang = ToggleInnerHTML('#animanga .entry .title', 'lang');
+    lang.setText(lang.a === "english" ? "English" : "日本語");
 }
 
 function ChangeOrder()
 {
-    let toggler = document.getElementById('reverse');
-    let a = toggler.getAttribute("a");
-    let b = toggler.getAttribute("b");
+    let toggler = Toggler.FindById("reverse");
 
     ReverseList("animanga");
 
-    toggler.setAttribute("a", b);
-    toggler.setAttribute("b", a);
+    toggler.toggle();
 }
 
 function ToggleGrouping()
 {
-    let toggler = document.getElementById('group');
-    let a = toggler.getAttribute("a");
-    let b = toggler.getAttribute("b");
-
-    if (a == "default")
+    let toggler = Toggler.FindById("group");
+    if (toggler.a === "default")
     {
         GroupElements();
-        toggler.innerText = "Restore";
+        toggler.setText("Restore");
     }
     else
     {
         UngroupElements();
+        toggler.setText("Group");
 
-        let reverse = document.getElementById('reverse');
-        if (reverse.getAttribute("a") != "default")
+        if (Toggler.FindById("reverse").a !== "default")
         {
             ReverseList("animanga");
         }
-        toggler.innerText = "Group";
     }
-
-    toggler.setAttribute("a", b);
-    toggler.setAttribute("b", a);
+    toggler.toggle();
 }
 
 function GroupElements()
