@@ -6,6 +6,7 @@
     var list = Model.History
         .Where(x => x.status is not EntryStatus.PLANNING && x.watching_start.year is not null)
         .OrderBy(x => Math.Min(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
+        .ThenBy (x => Math.Max(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
         .ToList();
 
     var empty = list.Count == 0;
@@ -17,7 +18,7 @@
     Layout = "_Layout";
 }
 
-@section header
+@section Header
 {
     <header class="user">
         @await Html.PartialAsync("_Navigation")
@@ -33,17 +34,26 @@
         </div>
     </header>
 }
+@section Scripts
+{
+    <script src="~/js/user.js"></script>
+}
 
 @if (!empty)
 {
     <div class="control-panel">
         <h3 class="section-name">All:</h3>
         <div class="actions" id="buttons">
-            <button class="section" id="translate" onclick="ToggleInnerHTML('title', 'lang')">
+            <button class="section" onclick="SwitchLanguage()">
                 @*<img src="~/svg/translate.svg" alt="JAP / ENG"/>*@
-                <span id="lang" a="english" b="japanese">Eng / 日本語</span>
+                <span id="lang" a="english" b="japanese">日本語</span>
             </button>
-            <button class="section" id="reverse" onclick="ReverseList('animanga')">Reverse</button>
+            <button class="section" onclick="ToggleGrouping()">
+                <span id="group" a="default" b="groups">Group</span>
+            </button>
+            <button class="section" onclick="ChangeOrder()">
+                <span id="reverse" a="default" b="reverse">Reverse</span>
+            </button>
         </div>
     </div>
 
@@ -67,6 +77,8 @@
                 var width = Percent(days);
                 divs.Add(year, width);
             }
+
+            var number = 0;
         }
         @foreach (var item in list)
         {
@@ -74,7 +86,7 @@
             var medium = item.media.coverImage["medium"];
             var color  = item.media.coverImage["color"] ?? "var()";
 
-            <div class="entry">
+            <div class="entry" series="@item.media.Series" n="@(number++)">
                 <div class="cover">
                     <div class="image color" style="background-image: url(@large), url(@medium); --color-blue: @color;"></div>
                     <a class="link" href="https://anilist.co/@item.media.URL" target="_blank">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>

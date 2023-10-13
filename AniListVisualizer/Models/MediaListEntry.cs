@@ -31,7 +31,22 @@ public class Media
     public FuzzyDate startDate;
     public FuzzyDate   endDate;
     public MediaFormat? format;
-    public MediaStatus? Status;
+    public MediaStatus? status;
+    public Relations relations;
+    
+    public class Relations { public List<MediaEdge> edges; }
+    public class MediaEdge { public MediaRelation type; public MediaKey node; }
+    public class MediaKey  { public int id; }
+
+    public HashSet<int> Related;
+
+    public void ProcessRelations()
+    {
+        Related = relations.edges.Where(x => x.type != MediaRelation.CHARACTER).Select(x => x.node.id).ToHashSet();
+        Related.Add(id);
+    }
+
+    public int Series;
 
     /// <summary> Returns Anilist URL of the media. </summary>
     public string URL => $"{AnimeOrManga}/{id}";
@@ -86,6 +101,23 @@ public enum EntryStatus
 public enum MediaType
 {
     ANIME, MANGA
+}
+
+public enum MediaRelation
+{
+    ADAPTATION,
+    PREQUEL,
+    SEQUEL,
+    PARENT,
+    SIDE_STORY,
+    CHARACTER,
+    SUMMARY,
+    ALTERNATIVE,
+    SPIN_OFF,
+    OTHER,
+    SOURCE,
+    COMPILATION,
+    CONTAINS
 }
 
 public enum MediaSource

@@ -28,7 +28,7 @@ public class AniListExtractor : AniListEngine
                 endDate   { year month day }
                 format
                 status
-              }
+                relations { edges { type: relationType node { id } } } }
               status
               progress
               watching_start: startedAt { year month day }
@@ -62,6 +62,8 @@ public class AniListExtractor : AniListEngine
         {
             list.AddRange(task.Result);
         }
+
+        GroupBySeries(list);
 
         return new UserViewModel { User = user, History = list };
     }
@@ -118,5 +120,38 @@ public class AniListExtractor : AniListEngine
         }
         
         return list.Select(json => JsonConvert.DeserializeObject<MediaListEntry>(json)!).ToList();
+    }
+
+    private static void GroupBySeries(List<MediaListEntry> list)
+    {
+        foreach (var entry in list)
+        {
+            entry.media.ProcessRelations();
+        }
+        
+        var relations = list.ToDictionary(x => x.media.id, x => x.media.Related);
+
+        foreach (var relation in relations)
+        {
+            if (relation.Value.Count == 0) continue;
+
+            var related = relations.Where(x => x.Key != relation.Key && x.Value.Overlaps(relation.Value));
+            foreach (var link in related)
+            {
+                relation.Value.UnionWith(link.Value);
+                relations[link.Key].Clear();
+            }
+        }
+
+        foreach (var relation in relations.Where(x => x.Value.Count > 0))
+        {
+            var series = relation.Value.Min();
+            foreach (var id in relation.Value)
+            {
+                var entry = list.FirstOrDefault(x => x.media.id == id);
+                if (entry is not null)
+                    entry.media.Series = series;
+            }
+        }
     }
 }

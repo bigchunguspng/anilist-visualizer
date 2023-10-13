@@ -22,9 +22,9 @@
 
 @if (nav)
 {
-    if (IsSectionDefined("header"))
+    if (IsSectionDefined("Header"))
     {
-        @(await RenderSectionAsync("header", required: false))
+        @await RenderSectionAsync("Header", required: false)
     }
     else
     {
