@@ -186,7 +186,11 @@
 
 @media (max-width: 449px) {
   .user-count {
-    font-size: 3.5vw !important;
+    font-size: calc(6px + 2vw) !important;
+  }
+
+  .user-info.text h1 {
+    font-size: calc(10px + 3vw) !important;
   }
 
   .user-info.text * {
@@ -230,7 +234,7 @@ p {
   transition: 0.1s;
 }
 
-.actions button:hover {
+.actions button:hover, .actions button:active {
   color: var(--color-background);
   background-color: var(--color-text);
 }
@@ -338,7 +342,6 @@ footer a:hover {
 
 .user-info * {
   display: inline-block;
-  vertical-align: middle;
   margin-block: 0;
 }
 
@@ -349,17 +352,20 @@ footer a:hover {
 
 .avatar {
   border-radius: 4px 4px 0 0;
-  display: inline-block;
   max-height: 230px;
   max-width: 160px;
   width: 100%;
+}
+
+a:hover .avatar {
+  transform: scale(1.05);
+  transform-origin: bottom;
 }
 
 .user-name {
   color: var(--color-text-bright);
   font-family: var(--font-tips);
   font-weight: 800;
-  display: inline-block;
 }
 
 .user-count {
