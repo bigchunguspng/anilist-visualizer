@@ -68,6 +68,20 @@
         </div>
     </div>
 
+    <script>
+    $(document).ready(function()
+        {
+            $(document).on("keydown", function(event)
+            {
+                var key = event.which;
+
+                if      (key == 74) SwitchLanguage();
+                else if (key == 71) ToggleGrouping();
+                else if (key == 82) ChangeOrder();
+            });
+        });
+    </script>
+
     <div class="medialist section" id="animanga">
         @{
             var min = new DateTime(Math.Min(list.Min(a => a.watching_start.Date.Ticks), list.Min(a => a.watching_end.Date.Ticks)));
