@@ -75,7 +75,8 @@
   --color-red-500: rgb(213, 0, 37);
   --color-red-600: rgb(165, 1, 29);
   --color-red-700: rgb(117, 0, 20);
-  --font-main: Roboto, Sawarabi Gothic, Segoe UI, Ubuntu, system-ui;
+  --font-main: Roboto, Segoe UI, Ubuntu, system-ui;
+  --font-kana: Roboto, Sawarabi Gothic, Segoe UI, Ubuntu, system-ui;
   --font-tips: Overpass, Segoe UI, Ubuntu, sans-serif;
   --font-year: calibri, system-ui;
   --font-logo: "Kaushan Script";
@@ -396,6 +397,7 @@ a:hover .avatar {
 }
 
 .title {
+  font-family: var(--font-kana);
   flex: 5;
   transition: 0.25s;
 }
@@ -545,6 +547,7 @@ div.season {
   background:
           repeating-linear-gradient(45deg,    var(--color-blue), #0000 2px, var(--color-blue) 4px),
           repeating-linear-gradient(to right, var(--color-blue), #0000) !important;
+  background-blend-mode: screen;
 }
 
 div.timeline-item .range {

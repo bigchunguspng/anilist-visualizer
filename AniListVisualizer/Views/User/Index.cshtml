@@ -1,5 +1,6 @@
 @using System.Globalization
 @using System.Text
+@using AniListVisualizer.Services
 @model UserViewModel
 
 @{
@@ -11,11 +12,21 @@
 
     var empty = list.Count == 0;
 
-    ViewBag.Title = Model.User.name;
+    ViewBag.Title = Model.User.name + " · AniList Visualizer";
     ViewBag.Container = empty ? "container-xl max-800" : "container-xd";
     ViewBag.Icon = Model.User.avatar["medium"];
 
     Layout = "_Layout";
+
+    var series_shown = empty ? 0 : list.DistinctBy(x => x.media.Series).Count();
+    var series_total =    Model.History.DistinctBy(x => x.media.Series).Count();
+
+    string GetTitleCountText()
+    {
+        var total = Model.History.Count;
+
+        return $"{list.Count}/{Helpers.Ending_ENG(total, "title")} · {series_shown}/{series_total} series";
+    }
 }
 
 @section Header
@@ -28,8 +39,8 @@
                 <img class="avatar" src="@Model.User.avatar["large"]" alt="avatar"/>
             </a>
             <div class="user-info text">
-                <h1 class="user-name">@ViewBag.Title</h1>
-                <p class="user-count">@list.Count @(list.Count == 1 ? "title" : "titles")</p>
+                <h1 class="user-name">@Model.User.name</h1>
+                <p class="user-count">@GetTitleCountText()</p>
             </div>
         </div>
     </header>
