@@ -834,6 +834,27 @@ header:not(.user) .nav-logo img {
   font-size: 14px;
   max-width: 1220px;
   text-align: center;
+  cursor: default;
+  background: var(--color-foreground);
+  position: relative;
+}
+
+.timeline-nav::before, .timeline-nav::after {
+  content: "+";
+  position: absolute;
+  height: 100%;
+  min-width: 12px;
+  color: var(--color-foreground);
+  background: var(--color-foreground);
+}
+
+.timeline-nav::before {
+  left: -12px;
+}
+
+.timeline-nav::after {
+  top: 0;
+  right: -12px;
 }
 
 .nav-strip {
@@ -859,4 +880,27 @@ header:not(.user) .nav-logo img {
 .year-link:hover {
   color: var(--color-background-500);
   transform: scale(1.1) rotate(-5deg);
+}
+
+.year-link.plus {
+  opacity: 0;
+}
+
+.cut-l {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.cut-r {
+  padding-right: 0;
+  margin-right: 0;
+}
+
+.year-link:hover + .year-link.plus {
+  opacity: 100%;
+  transform: rotate(3deg);
+}
+
+.year-link.plus:hover {
+  opacity: 100%;
 }

@@ -75,7 +75,13 @@
         }
         @foreach (var year in all_years)
         {
-            <a class="year-link" href="/user/@Model.User.name/@year">@year</a>
+            var plus = Model.Years is { } range && year > range.Max();
+            
+            <a class="year-link @(plus ? "cut-r" : "")" href="/user/@Model.User.name/@year">@year</a>
+            if (plus)
+            {
+                <a class="year-link plus cut-l cut-r" href="/user/@Model.User.name/@Model.Years!.Min()/@year">[+]</a>
+            }
         }
     </div>
 
