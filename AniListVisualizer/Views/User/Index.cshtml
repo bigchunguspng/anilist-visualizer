@@ -9,6 +9,11 @@
         .OrderBy(x => Math.Min(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
         .ThenBy (x => Math.Max(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
         .ToList();
+    
+    if (Model.Years is not null)
+    {
+        list = list.Where(x => x.Years.Overlaps(Model.Years)).ToList();
+    }
 
     var empty = list.Count == 0;
 
@@ -84,8 +89,10 @@
 
     <div class="medialist section" id="animanga">
         @{
-            var min = new DateTime(Math.Min(list.Min(a => a.watching_start.Date.Ticks), list.Min(a => a.watching_end.Date.Ticks)));
-            var max = DateTime.Today;
+            var yrs = Model.Years is not null;
+            
+            var min = yrs ? new DateTime(Model.Years!.Min(),  1,  1) : new DateTime(list.Min(x => x.min.Ticks));
+            var max = yrs ? new DateTime(Model.Years!.Max(), 12, 31) : DateTime.Today;
             var length = (int)(max - min).TotalDays;
 
             string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
@@ -129,8 +136,8 @@
 
                         if (start.Date > end.Date) (start, end) = (end, start); // carelessness fix'
 
-                        var a = start.Date;
-                        var b =   end.Date;
+                        var a = min > start.Date ? min : start.Date;
+                        var b = max <   end.Date ? max :   end.Date;
 
                         var left  = (int)(a - min).TotalDays;
                         var width = (int)(b - a)  .TotalDays;
