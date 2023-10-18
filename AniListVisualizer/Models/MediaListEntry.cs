@@ -1,5 +1,7 @@
 // ReSharper disable InconsistentNaming
 
+using System.Runtime.Serialization;
+
 namespace AniListVisualizer.Models;
 
 public class MediaListEntry
@@ -12,6 +14,19 @@ public class MediaListEntry
     public FuzzyDate watching_end;
     public int times_rewatched;
     public int score;
+
+    public DateTime min, max;
+    
+    public HashSet<int> Years;
+    
+    [OnDeserialized]
+    public void ProcessYears(StreamingContext context)
+    {
+        min = new DateTime(Math.Min(watching_start.Date.Ticks, watching_end.Date.Ticks));
+        max = new DateTime(Math.Max(watching_start.Date.Ticks, watching_end.Date.Ticks));
+
+        Years = Enumerable.Range(min.Year, max.Year - min.Year + 1).ToHashSet();
+    }
 
     public bool EpisodeCountMatters => (media.episodes ?? media.chapters) != 1 && progress > 0;
 }
@@ -40,7 +55,8 @@ public class Media
 
     public HashSet<int> Related;
 
-    public void ProcessRelations()
+    [OnDeserialized]
+    public void ProcessRelations(StreamingContext context)
     {
         Related = relations.edges.Where(x => x.type != MediaRelation.CHARACTER).Select(x => x.node.id).ToHashSet();
         Related.Add(id);

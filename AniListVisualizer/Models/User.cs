@@ -8,6 +8,8 @@ public class UserViewModel
 {
     public required User User;
     public required List<MediaListEntry> History;
+
+    public HashSet<int>? Years;
 }
 
 public class User

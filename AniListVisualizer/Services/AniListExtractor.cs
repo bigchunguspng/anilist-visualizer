@@ -124,11 +124,6 @@ public class AniListExtractor : AniListEngine
 
     private static void GroupBySeries(List<MediaListEntry> list)
     {
-        foreach (var entry in list)
-        {
-            entry.media.ProcessRelations();
-        }
-        
         var relations = list.ToDictionary(x => x.media.id, x => x.media.Related);
 
         foreach (var relation in relations)
