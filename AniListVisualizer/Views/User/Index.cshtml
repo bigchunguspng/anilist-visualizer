@@ -126,18 +126,29 @@
             var length = (int)(max - min).TotalDays;
 
             string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
-
-            var years = Enumerable.Range(min.Year, max.Year - min.Year + 1).ToList();
-            var divs = new Dictionary<int, string>(years.Count);
-            foreach (var year in years)
+            
+            var divs = new Dictionary<int, string>(12);
+            if (Model.Years?.Count == 1)
             {
-                var days = year == min.Year
-                    ? (int)(new DateTime(year, 12, 31) - min).TotalDays
-                    : year == max.Year
-                        ? (int)(max - new DateTime(year, 1, 1)).TotalDays
-                        : DateTime.IsLeapYear(year) ? 366 : 365;
-                var width = Percent(days);
-                divs.Add(year, width);
+                foreach (var month in Enumerable.Range(1, 12))
+                {
+                    var days = DateTime.DaysInMonth(min.Year, month);
+                    var width = Percent(days);
+                    divs.Add(month, width);
+                }
+            }
+            else
+            {
+                foreach (var year in Enumerable.Range(min.Year, max.Year - min.Year + 1))
+                {
+                    var days = year == min.Year
+                        ? (int)(new DateTime(year, 12, 31) - min).TotalDays
+                        : year == max.Year
+                            ? (int)(max - new DateTime(year, 1, 1)).TotalDays
+                            : DateTime.IsLeapYear(year) ? 366 : 365;
+                    var width = Percent(days);
+                    divs.Add(year, width);
+                }
             }
 
             var number = 0;
@@ -234,7 +245,8 @@
                     <div class="timeline-row text">
                         @foreach (var x in divs)
                         {
-                            <div class="timeline-year text" style="width: @x.Value;">@x.Key</div>
+                            var text = x.Key < 13 ? CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(x.Key) : x.Key.ToString();
+                            <div class="timeline-year text" style="width: @x.Value;">@text</div>
                         }
                     </div>
                 </div>
