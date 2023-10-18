@@ -663,6 +663,7 @@ div.last-seen {
 
 .explanation {
   display: flex;
+  margin-top: 12px;
 }
 
 .explanation * {
@@ -839,7 +840,7 @@ header:not(.user) .nav-logo img {
   position: relative;
 }
 
-.timeline-nav::before, .timeline-nav::after {
+/*.timeline-nav::before, .timeline-nav::after {
   content: "+";
   position: absolute;
   height: 100%;
@@ -855,7 +856,7 @@ header:not(.user) .nav-logo img {
 .timeline-nav::after {
   top: 0;
   right: -12px;
-}
+}*/
 
 .nav-strip {
   background: var(--color-foreground);

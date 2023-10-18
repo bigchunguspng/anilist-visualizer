@@ -78,3 +78,13 @@ function UngroupElements()
         target.appendChild(element);
     }
 }
+
+function fixNav()
+{
+    console.log('fix nav a');
+    let height = document.querySelector('.timeline-nav').offsetHeight;
+    document.querySelector('.nav-strip').style.height = height + 'px';
+
+    document.querySelector('.timeline-nav').onresize = fixNav;
+    console.log('fix nav b');
+}

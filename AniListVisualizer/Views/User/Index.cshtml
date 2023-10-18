@@ -10,14 +10,14 @@
         .ThenBy (x => Math.Max(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
         .ToList();
 
-    var all_years = GetAllYears();
+    var empty = list.Count == 0;
+
+    var all_years = empty ? null : GetAllYears();
     
     if (Model.Years is not null)
     {
         list = list.Where(x => x.Years.Overlaps(Model.Years)).ToList();
     }
-
-    var empty = list.Count == 0;
 
     ViewBag.Title = Model.User.name + " · AniList Visualizer";
     ViewBag.Container = empty ? "container-xl max-800" : "container-xd";
@@ -59,7 +59,10 @@
             </div>
         </div>
     </header>
-    <div class="nav-strip"></div>
+    @if (!empty)
+    {
+        <div class="nav-strip"></div>
+    }
 }
 @section Scripts
 {
@@ -73,7 +76,7 @@
         {
             <a class="year-link" href="/user/@Model.User.name">All</a>
         }
-        @foreach (var year in all_years)
+        @foreach (var year in all_years!)
         {
             var plus = Model.Years is { } range && year > range.Max();
             
@@ -115,9 +118,11 @@
                 else if (key == 82) ChangeOrder();
             });
         });
+
+    $(document).ready(function(){fixNav();});
     </script>
 
-    <div class="medialist section" id="animanga">
+    <div class="medialist section" id="animanga" onmouseenter="fixNav()" onmouseleave="fixNav()" @*temp fix*@>
         @{
             var yrs = Model.Years is not null;
             
