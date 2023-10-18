@@ -14,6 +14,6 @@ https://fgsfds.bsite.net
 
 ## Features I'll probably implement 🔩
 
-- zoomable and scrollable timelines 🔍
-- grouping titles by their franchise 📽
-- dark mode 🌙
+- [ ] zoomable and scrollable timelines 🔍
+- [x] grouping titles by their franchise 📽
+- [ ] dark mode 🌙
