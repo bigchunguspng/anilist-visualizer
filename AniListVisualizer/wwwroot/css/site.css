@@ -293,7 +293,6 @@ header.user {
   background-repeat: no-repeat;
   background-size: cover;
   height: 240px;
-  margin-bottom: 12px;
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -829,4 +828,35 @@ header:not(.user) .nav-logo img {
 .section hr {
   margin-block: 8px;
   border-top: 1px dashed white;
+}
+
+.timeline-nav {
+  font-size: 14px;
+  max-width: 1220px;
+  text-align: center;
+}
+
+.nav-strip {
+  background: var(--color-foreground);
+  width: 100%;
+  height: 46px;
+  position: absolute;
+  z-index: -1;
+}
+
+.year-link {
+  display: inline-block;
+  margin: 0 10px;
+  padding: 15px;
+  text-decoration: none;
+  transition: 0.025s;
+  outline: 0;
+  font-weight: 600;
+  font-family: var(--font-tips);
+  color: var(--color-text-light);
+}
+
+.year-link:hover {
+  color: var(--color-background-500);
+  transform: scale(1.1) rotate(-5deg);
 }

@@ -9,6 +9,8 @@
         .OrderBy(x => Math.Min(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
         .ThenBy (x => Math.Max(x.watching_start.Date.Ticks, x.watching_end.Date.Ticks))
         .ToList();
+
+    var all_years = GetAllYears();
     
     if (Model.Years is not null)
     {
@@ -32,6 +34,14 @@
 
         return $"{list.Count}/{Helpers.Ending_ENG(total, "title")} · {series_shown}/{series_total} series";
     }
+
+    IEnumerable<int> GetAllYears()
+    {
+        var min = list.Min(x => x.min).Year;
+        var max = list.Max(x => x.max).Year;
+
+        return Enumerable.Range(min, max - min + 1);
+    }
 }
 
 @section Header
@@ -49,6 +59,7 @@
             </div>
         </div>
     </header>
+    <div class="nav-strip"></div>
 }
 @section Scripts
 {
@@ -57,8 +68,21 @@
 
 @if (!empty)
 {
+    <div class="timeline-nav">
+        @if (Model.Years is not null)
+        {
+            <a class="year-link" href="/user/@Model.User.name">All</a>
+        }
+        @foreach (var year in all_years)
+        {
+            <a class="year-link" href="/user/@Model.User.name/@year">@year</a>
+        }
+    </div>
+
+    var header = Model.Years is null ? "All:" : Model.Years.Count == 1 ? $"{Model.Years.First()}:" : $"{Model.Years.Min()} - {Model.Years.Max()}:";
+    
     <div class="control-panel">
-        <h3 class="section-name">All:</h3>
+        <h3 class="section-name">@header</h3>
         <div class="actions" id="buttons">
             <button class="section" onclick="SwitchLanguage()">
                 @*<img src="~/svg/translate.svg" alt="JAP / ENG"/>*@
