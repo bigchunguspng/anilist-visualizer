@@ -235,15 +235,23 @@ p {
   transition: 0.1s;
 }
 
-.actions button:hover, .actions button:active {
-  color: var(--color-background);
-  background-color: var(--color-text);
+@media (hover: hover) {
+  .actions button:hover {
+    color: var(--color-background);
+    background-color: var(--color-text);
+  }
+
+  .actions button:active {
+    transform: scale(0.95);
+    color: var(--color-background);
+    background-color: var(--color-background-900);
+  }
 }
 
-.actions button:active {
-  transform: scale(0.95);
-  color: var(--color-background);
-  background-color: var(--color-background-900);
+@media (hover: none) {
+  .actions button:active {
+    transform: scale(0.9);
+  }
 }
 
 .section-name {
