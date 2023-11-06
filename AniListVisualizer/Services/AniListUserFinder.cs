@@ -1,6 +1,4 @@
 using AniListVisualizer.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AniListVisualizer.Services;
 
@@ -18,11 +16,7 @@ public class AniListUserFinder : AniListEngine
         var response = ExecuteRequest<int>(query);
         if (response.StatusCode.GetHashCode() == 200)
         {
-            var json = DeserializeResponse(response);
-            var data = JsonToDictionary((JObject)json["data"]);
-            var page = JsonToDictionary((JObject)data["Page"]);
-            
-            var list = JsonConvert.DeserializeObject<List<User>>(((JArray)page["users"]).ToString())!;
+            var list = JTokenToList<User>(response.Content!, "data.Page.users");
 
             return list.OrderByDescending(u => u.updatedAt).ToList();
         }
