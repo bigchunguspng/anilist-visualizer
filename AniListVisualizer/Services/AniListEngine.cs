@@ -15,14 +15,19 @@ public abstract class AniListEngine
         return anilist.Execute<T>(request);
     }
 
-    protected static Dictionary<string, object> DeserializeResponse(RestResponse response)
+    protected static T JTokenToObject<T>(string json, string path)
     {
-        return JsonConvert.DeserializeObject<Dictionary<string, object>>(response.Content!)!;
+        return SelectJToken(json, path).ToObject<T>()!;
     }
 
-    protected static Dictionary<string, object> JsonToDictionary(JToken j)
+    protected static List<T> JTokenToList<T>(string json, string path)
     {
-        return j.ToObject<Dictionary<string, object>>() ?? throw new NullReferenceException();
+        return SelectJToken(json, path).Select(jt => jt.ToObject<T>()!).ToList();
+    }
+
+    private static JToken SelectJToken(string json, string path)
+    {
+        return JObject.Parse(json).SelectToken(path)!;
     }
 }
 

@@ -1,6 +1,4 @@
 using AniListVisualizer.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AniListVisualizer.Services;
 
@@ -91,16 +89,14 @@ public class AniListExtractor : AniListEngine
         var response = ExecuteRequest<int>(query);
         if (response.StatusCode.GetHashCode() == 200)
         {
-            var json = DeserializeResponse(response);
-            var data = JsonToDictionary((JObject)json["data"]);
-            return JsonConvert.DeserializeObject<User>(((JObject)data["User"]).ToString())!;
+            return JTokenToObject<User>(response.Content!, "data.User");
         }
         throw new Exception("User Not Found");
     }
 
     private List<MediaListEntry> GetOtakuHistory(int user, EntryStatus status, int page = 1)
     {
-        var list = new List<string>();
+        var list = new List<MediaListEntry>();
         var query = new GraphQLQuery
         {
             Query = MEDIALIST_QUERY,
@@ -113,13 +109,11 @@ public class AniListExtractor : AniListEngine
             var response = ExecuteRequest<int>(query);
             if (response.StatusCode.GetHashCode() == 200)
             {
-                var json = DeserializeResponse(response);
-                var data = JsonToDictionary((JObject)json["data"]);
-                var part = JsonToDictionary((JObject)data["Page"]);
-                
-                list.AddRange(((JArray)part["mediaList"]).Select(x => x.ToString()));
+                var json = response.Content!;
 
-                var nextpage = (bool)JsonToDictionary((JObject)part["pageInfo"])["hasNextPage"];
+                list.AddRange(JTokenToList<MediaListEntry>(json, "data.Page.mediaList"));
+
+                var nextpage = JTokenToObject<bool>(json, "data.Page.pageInfo.hasNextPage");
                 if (nextpage)
                 {
                     page++;
@@ -131,8 +125,8 @@ public class AniListExtractor : AniListEngine
             else
                 return new List<MediaListEntry>();
         }
-        
-        return list.Select(json => JsonConvert.DeserializeObject<MediaListEntry>(json)!).ToList();
+
+        return list;
     }
 
     private static void GroupBySeries(List<MediaListEntry> list)
