@@ -6,7 +6,7 @@ namespace AniListVisualizer.Services;
 
 public class AniListExtractor : AniListEngine
 {
-    private const string USER_ID_QUERY = "query ($name: String) { User(name: $name) { id name avatar { large medium } } }";
+    private const string USER_ID_QUERY = "query ($name: String) { User(name: $name) { id name avatar { large medium } updatedAt } }";
     private const string MEDIALIST_QUERY =
         """
         query ($id: Int, $status: MediaListStatus, $page: Int) {
@@ -50,9 +50,22 @@ public class AniListExtractor : AniListEngine
         EntryStatus.REPEATING
     };
 
+    private readonly CacheService<UserViewModel> _cache;
+
+    public AniListExtractor(CacheService<UserViewModel> users)
+    {
+        _cache = users;
+    }
+
     public async Task<UserViewModel> GetUserViewModel(string username)
     {
         var user = GetAniListUser(username);
+
+        if (_cache.Data.TryGetValue(username, out var cache))
+        {
+            if (cache.User.updatedAt == user.updatedAt) return cache;
+        }
+
         var list = new List<MediaListEntry>();
 
         var tasks = Statuses.Select(status => Task.Run(() => GetOtakuHistory(user.id, status))).ToArray();
@@ -65,7 +78,7 @@ public class AniListExtractor : AniListEngine
 
         GroupBySeries(list);
 
-        return new UserViewModel { User = user, History = list };
+        return _cache.Update(username, new UserViewModel { User = user, History = list });
     }
 
     private User GetAniListUser(string username)

@@ -17,13 +17,9 @@ public class User
     public int id;
     public string name = null!;
     public Dictionary<string, string> avatar = null!;
+    public long updatedAt;
 
     public string URL => $"https://anilist.co/user/{name}";
-}
-
-public class UserSearchResult : User
-{
-    public int updatedAt;
     
     public string LastSeen()
     {
