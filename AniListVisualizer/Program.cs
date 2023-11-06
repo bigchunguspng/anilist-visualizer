@@ -1,4 +1,6 @@
 using System.Globalization;
+using AniListVisualizer.Models;
+using AniListVisualizer.Services;
 
 namespace AniListVisualizer;
 
@@ -14,6 +16,9 @@ internal static class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddRouting(o => o.LowercaseUrls = true);
+
+        builder.Services.AddSingleton<CacheService<UserViewModel>>();
+        builder.Services.AddScoped<AniListExtractor>();
 
         var app = builder.Build();
 
