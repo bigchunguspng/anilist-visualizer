@@ -8,7 +8,7 @@ public class AniListUserFinder : AniListEngine
 {
     private const string USERS_QUERY = "query ($search: String) { Page(perPage: 10) { users(search: $search) { id name avatar { large medium } updatedAt } } }";
 
-    public List<UserSearchResult> FindUsers(string search)
+    public List<User> FindUsers(string search)
     {
         var query = new GraphQLQuery
         {
@@ -22,7 +22,7 @@ public class AniListUserFinder : AniListEngine
             var data = JsonToDictionary((JObject)json["data"]);
             var page = JsonToDictionary((JObject)data["Page"]);
             
-            var list = JsonConvert.DeserializeObject<List<UserSearchResult>>(((JArray)page["users"]).ToString())!;
+            var list = JsonConvert.DeserializeObject<List<User>>(((JArray)page["users"]).ToString())!;
 
             return list.OrderByDescending(u => u.updatedAt).ToList();
         }

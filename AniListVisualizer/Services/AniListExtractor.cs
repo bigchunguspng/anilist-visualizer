@@ -6,7 +6,7 @@ namespace AniListVisualizer.Services;
 
 public class AniListExtractor : AniListEngine
 {
-    private const string USER_ID_QUERY = "query ($name: String) { User(name: $name) { id name avatar { large medium } } }";
+    private const string USER_ID_QUERY = "query ($name: String) { User(name: $name) { id name avatar { large medium } updatedAt } }";
     private const string MEDIALIST_QUERY =
         """
         query ($id: Int, $status: MediaListStatus, $page: Int) {
