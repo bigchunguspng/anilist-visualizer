@@ -64,6 +64,7 @@
         <div class="nav-strip"></div>
     }
 }
+
 @section Scripts
 {
     <script src="~/js/user.js"></script>
@@ -122,148 +123,177 @@
     $(document).ready(function(){fixNav();});
     </script>
 
-    <div class="medialist section" id="animanga" onmouseenter="fixNav()" onmouseleave="fixNav()" @*temp fix*@>
-        @{
-            var yrs = Model.Years is not null;
-            
-            var min = yrs ? new DateTime(Model.Years!.Min(),  1,  1) : new DateTime(list.Min(x => x.min.Ticks));
-            var max = yrs ? new DateTime(Model.Years!.Max(), 12, 31) : DateTime.Today;
-            var length = (int)(max - min).TotalDays;
+    <div>
+        <div class="medialist section" id="animanga" onmouseenter="fixNav()" onmouseleave="fixNav()" @*temp fix*@>
+            @{
+                var yrs = Model.Years is not null;
 
-            string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
-            
-            var divs = new Dictionary<int, string>(12);
-            if (Model.Years?.Count == 1)
-            {
-                foreach (var month in Enumerable.Range(1, 12))
+                var min = yrs ? new DateTime(Model.Years!.Min(), 1, 1) : new DateTime(list.Min(x => x.min.Ticks));
+                var max = yrs ? new DateTime(Model.Years!.Max(), 12, 31) : DateTime.Today;
+                var length = (int)(max - min).TotalDays;
+
+                string Percent(int px) => $"{(100 * px / (double)length).ToString(CultureInfo.InvariantCulture)}%";
+
+                var divs = new Dictionary<int, string>(12);
+                if (Model.Years?.Count == 1)
                 {
-                    var days = DateTime.DaysInMonth(min.Year, month);
-                    var width = Percent(days);
-                    divs.Add(month, width);
+                    foreach (var month in Enumerable.Range(1, 12))
+                    {
+                        var days = DateTime.DaysInMonth(min.Year, month);
+                        var width = Percent(days);
+                        divs.Add(month, width);
+                    }
                 }
-            }
-            else
-            {
-                foreach (var year in Enumerable.Range(min.Year, max.Year - min.Year + 1))
+                else
                 {
-                    var days = year == min.Year
-                        ? (int)(new DateTime(year, 12, 31) - min).TotalDays
-                        : year == max.Year
-                            ? (int)(max - new DateTime(year, 1, 1)).TotalDays
-                            : DateTime.IsLeapYear(year) ? 366 : 365;
-                    var width = Percent(days);
-                    divs.Add(year, width);
+                    foreach (var year in Enumerable.Range(min.Year, max.Year - min.Year + 1))
+                    {
+                        var days = year == min.Year
+                            ? (int)(new DateTime(year, 12, 31) - min).TotalDays
+                            : year == max.Year
+                                ? (int)(max - new DateTime(year, 1, 1)).TotalDays
+                                : DateTime.IsLeapYear(year) ? 366 : 365;
+                        var width = Percent(days);
+                        divs.Add(year, width);
+                    }
                 }
+
+                var number = 0;
             }
+            @foreach (var item in list)
+            {
+                var large = item.media.coverImage["large"];
+                var medium = item.media.coverImage["medium"];
+                var color = item.media.coverImage["color"] ?? "var()";
 
-            var number = 0;
-        }
-        @foreach (var item in list)
-        {
-            var large  = item.media.coverImage["large"];
-            var medium = item.media.coverImage["medium"];
-            var color  = item.media.coverImage["color"] ?? "var()";
-
-            <div class="entry" series="@item.media.Series" n="@(number++)">
-                <div class="cover">
-                    <div class="image color" style="background-image: url(@large), url(@medium); --color-blue: @color;"></div>
-                    <a class="link" href="https://anilist.co/@item.media.URL" target="_blank">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
-                </div>
-                @{
-                    var japanese = item.media.title["native"];
-                    var english = item.media.title["english"] ?? item.media.title["romaji"];
-                    var status = item.status.ToString();
-                }
-                <div class="title @status" english="@english" japanese="@japanese">@english</div>
-                <div class="timeline">
+                <div class="entry" series="@item.media.Series" n="@(number++)">
+                    <div class="cover">
+                        <div class="image color" style="background-image: url(@large), url(@medium); --color-blue: @color;"></div>
+                        <a class="link" href="https://anilist.co/@item.media.URL" target="_blank">@(item.media.type == MediaType.ANIME ? "ア" : "マ")</a>
+                    </div>
                     @{
-                        var start = item.watching_start;
-                        var end   = item.watching_end;
+                        var japanese = item.media.title["native"];
+                        var english = item.media.title["english"] ?? item.media.title["romaji"];
+                        var status = item.status.ToString();
+                    }
+                    <div class="title @status" english="@english" japanese="@japanese">@english</div>
+                    <div class="timeline">
+                        @{
+                            var start = item.watching_start;
+                            var end = item.watching_end;
 
-                        if (start.Date > end.Date) (start, end) = (end, start); // carelessness fix'
+                            if (start.Date > end.Date) (start, end) = (end, start); // carelessness fix'
 
-                        var a = min > start.Date ? min : start.Date;
-                        var b = max <   end.Date ? max :   end.Date;
+                            var a = min > start.Date ? min : start.Date;
+                            var b = max < end.Date ? max : end.Date;
 
-                        var left  = (int)(a - min).TotalDays;
-                        var width = (int)(b - a)  .TotalDays;
+                            var left = (int)(a - min).TotalDays;
+                            var width = (int)(b - a).TotalDays;
 
-                        var stripes = false;
+                            var stripes = false;
 
-                        var tip = new StringBuilder();
-                        tip.Append("<p>").Append(a == b ? start.ShortDate() : FuzzyDate.DateRange(start, end, FuzzyDate.FormatShort)).Append("</p>");
-                        if (item.EpisodeCountMatters)
-                        {
-                            var unit = item.media.EpisodeOrChapter;
-                            tip.Append("<p>").Append(item.progress).Append(" ").Append(unit);
-                            if (item.progress > 1) tip.Append("s");
-                            tip.Append("</p>");
-
-                            var days = (b - a).TotalDays + 1;
-                            if (days > 1)
+                            var tip = new StringBuilder();
+                            tip.Append("<p>").Append(a == b ? start.ShortDate() : FuzzyDate.DateRange(start, end, FuzzyDate.FormatShort)).Append("</p>");
+                            if (item.EpisodeCountMatters)
                             {
-                                var ppd = item.progress / days;
-                                var boring_ah = ppd < 1;
-                                var n = Math.Round(boring_ah ? 1 / ppd : ppd, 1);
-                                var one = Math.Abs(n - 1) < 0.1;
-                                var details = boring_ah ? $"{unit} every {(one ? "day" : $"{n} days")}" : $"{n} {unit}{(one ? "" : "s")}/day";
-                                tip.Append("<p>").Append(details).Append("</p>");
+                                var unit = item.media.EpisodeOrChapter;
+                                tip.Append("<p>").Append(item.progress).Append(" ").Append(unit);
+                                if (item.progress > 1) tip.Append("s");
+                                tip.Append("</p>");
 
-                                stripes = days / item.progress > 30;
+                                var days = (b - a).TotalDays + 1;
+                                if (days > 1)
+                                {
+                                    var ppd = item.progress / days;
+                                    var boring_ah = ppd < 1;
+                                    var n = Math.Round(boring_ah ? 1 / ppd : ppd, 1);
+                                    var one = Math.Abs(n - 1) < 0.1;
+                                    var details = boring_ah ? $"{unit} every {(one ? "day" : $"{n} days")}" : $"{n} {unit}{(one ? "" : "s")}/day";
+                                    tip.Append("<p>").Append(details).Append("</p>");
+
+                                    stripes = days / item.progress > 30;
+                                }
                             }
                         }
-                    }
-                    <div class="timeline-row">
-                        @foreach (var x in divs)
-                        {
-                            <div class="timeline-year" style="width: @x.Value;"></div>
-                        }
-                    </div>
-                    @{
-                        var release_a = item.media.startDate;
-                        var release_b = item.media.endDate;
-
-                        var date_a = release_a.Date;
-                        var date_b = release_b.Date;
-
-                        if (release_b.Date > min)
-                        {
-                            var release_start = (int)(date_a - min).TotalDays;
-                            var release_left = Math.Max(0, release_start);
-                            var release_width = (int)((date_b > max ? max : date_b) - (date_a < min ? min : date_a)).TotalDays;
-
-                            var season = item.media.season is null
-                                ? FuzzyDate.DateRange(release_a, release_b, FuzzyDate.FormatLong, '→')
-                                : item.media.SeasonAndYear;
-
-                            <div class="timeline-item releasing stripes" style="margin-left: @Percent(release_left); width: @Percent(release_width)">
-                                <div class="season">@season</div>
-                            </div>
-                        }
-                    }
-                    <div class="timeline-item tip" style="--left: @Percent(left); --width: @Percent(width)">
-                        <div class="range @(stripes ? "stripes" : "")" style="--color-blue: @color;">
-                            <div class="hover-box"></div>
+                        <div class="timeline-row">
+                            @foreach (var x in divs)
+                            {
+                                <div class="timeline-year" style="width: @x.Value;"></div>
+                            }
                         </div>
-                        <span>@Html.Raw(tip.ToString())</span>
-                    </div>
-                    <div class="timeline-row text">
-                        @foreach (var x in divs)
-                        {
-                            var text = x.Key < 13 ? CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(x.Key) : x.Key.ToString();
-                            <div class="timeline-year text" style="width: @x.Value;">@text</div>
+                        @{
+                            var release_a = item.media.startDate;
+                            var release_b = item.media.endDate;
+
+                            var date_a = release_a.Date;
+                            var date_b = release_b.Date;
+
+                            if (release_b.Date > min)
+                            {
+                                var release_start = (int)(date_a - min).TotalDays;
+                                var release_left = Math.Max(0, release_start);
+                                var release_width = (int)((date_b > max ? max : date_b) - (date_a < min ? min : date_a)).TotalDays;
+
+                                var season = item.media.season is null
+                                    ? FuzzyDate.DateRange(release_a, release_b, FuzzyDate.FormatLong, '→')
+                                    : item.media.SeasonAndYear;
+
+                                <div class="timeline-item releasing stripes" style="margin-left: @Percent(release_left); width: @Percent(release_width)">
+                                    <div class="season">@season</div>
+                                </div>
+                            }
                         }
+                        <div class="timeline-item tip" style="--left: @Percent(left); --width: @Percent(width)">
+                            <div class="range @(stripes ? "stripes" : "")" style="--color-blue: @color;">
+                                <div class="hover-box" onmouseover="tipShow(this, '@Html.Raw(tip.ToString())')" onmouseout="tipHide()"></div>
+                            </div>
+                        </div>
+                        <div class="timeline-row text">
+                            @foreach (var x in divs)
+                            {
+                                var text = x.Key < 13 ? CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(x.Key) : x.Key.ToString();
+                                <div class="timeline-year text" style="width: @x.Value;">@text</div>
+                            }
+                        </div>
                     </div>
+                    @if (item.status != EntryStatus.COMPLETED)
+                    {
+                        <span class="entry-status">
+                            <img src="~/svg/status/@(status).svg" alt="@status"/>
+                        </span>
+                    }
                 </div>
-                @if (item.status != EntryStatus.COMPLETED)
-                {
-                    <span class="entry-status">
-                        <img src="~/svg/status/@(status).svg" alt="@status"/>
-                    </span>
-                }
-            </div>
-        }
+            }
+        </div>
+        <div class="tipbox absolute">
+            <span id="tip"></span>
+        </div>
     </div>
+
+    <script>
+    function tipShow(element, data)
+    {
+        let hoverbox = element.getBoundingClientRect();
+        let body = document.body.getBoundingClientRect();
+        let tip =  document.getElementById("tip");
+        let edge = document.querySelector(".timeline").getBoundingClientRect().right - 20;
+
+        tip.innerHTML = data;
+        tip.style.display = "block";
+
+        let tipbox = tip.getBoundingClientRect();
+        let top = hoverbox.top - body.top - 12 - tipbox.height;
+        let left = hoverbox.left - body.left;        
+        if (left + tipbox.width > edge) left -= (tipbox.width + 5);
+
+        tip.style.top = top + "px";
+        tip.style.left = left + "px";
+    }
+    function tipHide()
+    {
+        document.getElementById("tip").style.display = "none";
+    }
+    </script>
 }
 else
 {
