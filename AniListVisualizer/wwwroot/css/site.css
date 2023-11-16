@@ -579,38 +579,43 @@ div.timeline-item .range {
   margin-inline: -6px;
 }
 
-.tip span {
+.tipbox {
+  font-size: 1.5em;
+}
+
+.tipbox span {
   padding: 5px;
   z-index: 100;
   background-color: rgba(var(--color-background-blue-dark-rgb), 0.9);
-  left: 0;
   margin: 10px;
   position: absolute;
-  bottom: 15px;
   border-radius: 6px;
   white-space: nowrap;
   font-size: 0.8em;
   display: none;
 }
 
-.tip:hover span {
-  display: block;
-}
-
-.tip span p {
+.tipbox span p {
   margin-bottom: 0;
+  color: white;
   font-family: var(--font-tips);
   font-size: 13px;
 }
 
-.tip span p:nth-child(n+2) {
+.tipbox span p:nth-child(n+2) {
   font-size: 0.8em;
   margin-top: 4px;
   color: var(--color-background-300);
 }
 
-.tip span p:only-child {
+.tipbox span p:only-child {
   margin-top: 4px;
+}
+
+.absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .searchbar {
