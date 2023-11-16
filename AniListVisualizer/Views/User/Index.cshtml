@@ -81,6 +81,13 @@
                 else if (key == 82) ChangeOrder();
             });
         });
+    $(document).ready(function ()
+    {
+        let cookies = document.cookie.toString();
+        if (cookies.includes('lang=japanese')) SwitchLanguage();
+        if (cookies.includes('group=groups')) ToggleGrouping();
+        if (cookies.includes('reverse=reverse')) ChangeOrder();
+    });
     </script>
 
     <div>

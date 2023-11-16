@@ -2,6 +2,8 @@ function SwitchLanguage()
 {
     let lang = ToggleInnerHTML('#animanga .entry .title', 'lang');
     lang.setText(lang.a === "english" ? "English" : "日本語");
+    
+    document.cookie = 'lang=' + lang.b + '; max-age=7776000; path=/'
 }
 
 function ChangeOrder()
@@ -11,6 +13,8 @@ function ChangeOrder()
     ReverseList("animanga");
 
     toggler.toggle();
+
+    document.cookie = 'reverse=' + toggler.b + '; max-age=7776000; path=/'
 }
 
 function ToggleGrouping()
@@ -32,6 +36,8 @@ function ToggleGrouping()
         }
     }
     toggler.toggle();
+
+    document.cookie = 'group=' + toggler.b + '; max-age=7776000; path=/'
 }
 
 function GroupElements()
