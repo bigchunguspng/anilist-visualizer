@@ -119,8 +119,15 @@
                 else if (key == 82) ChangeOrder();
             });
         });
-
-    $(document).ready(function(){fixNav();});
+    $(document).ready(function ()
+    {
+        let cookies = document.cookie.toString();
+        if (cookies.includes('lang=japanese')) SwitchLanguage();
+        if (cookies.includes('group=groups')) ToggleGrouping();
+        if (cookies.includes('reverse=reverse')) ChangeOrder();
+        
+        fixNav();
+    });
     </script>
 
     <div>
@@ -162,9 +169,9 @@
             }
             @foreach (var item in list)
             {
-                var large = item.media.coverImage["large"];
+                var large  = item.media.coverImage["large"];
                 var medium = item.media.coverImage["medium"];
-                var color = item.media.coverImage["color"] ?? "var()";
+                var color  = item.media.coverImage["color"] ?? "var()";
 
                 <div class="entry" series="@item.media.Series" n="@(number++)">
                     <div class="cover">
@@ -180,15 +187,15 @@
                     <div class="timeline">
                         @{
                             var start = item.watching_start;
-                            var end = item.watching_end;
+                            var end   = item.watching_end;
 
                             if (start.Date > end.Date) (start, end) = (end, start); // carelessness fix'
 
                             var a = min > start.Date ? min : start.Date;
                             var b = max < end.Date ? max : end.Date;
 
-                            var left = (int)(a - min).TotalDays;
-                            var width = (int)(b - a).TotalDays;
+                            var left  = (int)(a - min).TotalDays;
+                            var width = (int)(b - a)  .TotalDays;
 
                             var stripes = false;
 
