@@ -34,6 +34,8 @@ public class UserController : Controller
 
                 user.Years = same ? new HashSet<int> { min } : Enumerable.Range(min, max - min + 1).ToHashSet();
             }
+            else
+                user.Years = null;
 
             timer.Stop();
             _logger.LogInformation("USER: {name}. ENTRIES: {count}. TIME: {time:m\\:ss\\.fff}", user.User.name, user.History.Count, timer.Elapsed);
