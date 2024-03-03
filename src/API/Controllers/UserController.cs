@@ -26,7 +26,7 @@ namespace API.Controllers
             try
             {
                 var user = await _client.GetAsync<User>(id, "User");
-
+                LogUser(user);
                 return Ok(user);
             }
             catch (Exception)
@@ -44,13 +44,19 @@ namespace API.Controllers
                 var options = new AniPaginationOptions(1, 1);
                 var users = await _client.SearchAsync<User>(filter, "users", options);
 
-                if (users.TotalCount != 1) throw new Exception();
+                if (users.TotalCount < 1)
+                {
+                    LogNotFound(username);
+                    return NotFound();
+                }
 
-                return Ok(users.Data[0]);
+                var user = users.Data[0];
+                LogUser(user);
+                return Ok(user);
             }
             catch (Exception)
             {
-                return NotFound();
+                return BadRequest();
             }
         }
         
@@ -62,14 +68,29 @@ namespace API.Controllers
                 var filter = new SearchUserFilter { Query = query.Replace(" ", "") };
                 var users = await _client.SearchAsync<User>(filter, "users");
 
-                if (users.TotalCount == 0) return NotFound();
+                if (users.TotalCount == 0)
+                {
+                    LogNotFound(query);
+                    return NotFound();
+                }
 
+                _logger.LogInformation("Users Found: {count} [{query}]", users.TotalCount, query);
                 return Ok(users.Data);
             }
             catch (Exception)
             {
                 return BadRequest();
             }
+        }
+        
+        private void LogUser(User user)
+        {
+            _logger.LogInformation("USER: [{id} - {name}]", user.Id, user.Name);
+        }
+
+        private void LogNotFound(string query)
+        {
+            _logger.LogInformation("No User Found [{query}]", query);
         }
 
         /*[HttpGet("/{username}/{from:int?}/{to:int?}")]
