@@ -1,0 +1,3 @@
+[submodule "src/AniListNet"]
+	path = src/AniListNet
+	url = https://github.com/bigchunguspng/AniListNet.git

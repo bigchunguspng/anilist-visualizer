@@ -1,30 +1,33 @@
+using AniListNet;
+using AniListNet.Parameters;
+using API.Objects;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [ApiController, Route("[controller]")]
+    [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
         private readonly AniListExtractor _baka;
+        private readonly AniClient _client;
 
-        public UserController(ILogger<UserController> logger, AniListExtractor extractor)
+        public UserController(ILogger<UserController> logger, AniListExtractor extractor, AniClient client)
         {
             _logger = logger;
             _baka = extractor;
+            _client = client;
         }
     
-        [HttpGet("/{id:int}")]
-        public async Task<ActionResult<DTO.User>> Get(int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<User>> Get(int id)
         {
             try
             {
-                var client = new AniListNet.AniClient();
+                var user = await _client.GetAsync<User>(id, "User");
 
-                var user = await client.GetUserAsync(id);
-
-                return Ok(new DTO.User(user));
+                return Ok(user);
             }
             catch (Exception)
             {
@@ -32,22 +35,40 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("/by-name/{username}")]
-        public async Task<ActionResult<DTO.User>> Get(string username)
+        [HttpGet("by-name/{username}")]
+        public async Task<ActionResult<User>> Get(string username)
         {
             try
             {
-                var client = new AniListNet.AniClient();
-
-                var users = await client.SearchUserAsync(username);
+                var filter = new SearchUserFilter { Query = username };
+                var options = new AniPaginationOptions(1, 1);
+                var users = await _client.SearchAsync<User>(filter, "users", options);
 
                 if (users.TotalCount != 1) throw new Exception();
 
-                return Ok(new DTO.User(users.Data[0]));
+                return Ok(users.Data[0]);
             }
             catch (Exception)
             {
                 return NotFound();
+            }
+        }
+        
+        [HttpGet("search/{query}")]
+        public async Task<ActionResult<IEnumerable<User>>> Search(string query)
+        {
+            try
+            {
+                var filter = new SearchUserFilter { Query = query.Replace(" ", "") };
+                var users = await _client.SearchAsync<User>(filter, "users");
+
+                if (users.TotalCount == 0) return NotFound();
+
+                return Ok(users.Data);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
         }
 

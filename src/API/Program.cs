@@ -1,6 +1,9 @@
 using System.Globalization;
+using AniListNet;
 using API.Models;
 using API.Services;
+
+namespace API;
 
 internal class Program
 {
@@ -17,6 +20,7 @@ internal class Program
 
         builder.Services.AddSingleton<CacheService<UserViewModel>>();
         builder.Services.AddScoped<AniListExtractor>();
+        builder.Services.AddScoped<AniClient>();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();

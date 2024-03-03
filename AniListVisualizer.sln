@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniListVisualizer", "AniLis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "src\API\API.csproj", "{DA8230B9-6E73-40DD-AE9C-FF15E20792AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniListNet", "src\AniListNet\src\AniListNet\AniListNet.csproj", "{86915FD0-260C-4238-BB09-8DB3266C6DF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{DA8230B9-6E73-40DD-AE9C-FF15E20792AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA8230B9-6E73-40DD-AE9C-FF15E20792AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA8230B9-6E73-40DD-AE9C-FF15E20792AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86915FD0-260C-4238-BB09-8DB3266C6DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86915FD0-260C-4238-BB09-8DB3266C6DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86915FD0-260C-4238-BB09-8DB3266C6DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86915FD0-260C-4238-BB09-8DB3266C6DF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

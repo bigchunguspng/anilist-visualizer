@@ -7,11 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AniListNet" Version="1.7.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="RestSharp" Version="110.2.1-alpha.0.11" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AniListNet\src\AniListNet\AniListNet.csproj" />
     </ItemGroup>
 
 </Project>
