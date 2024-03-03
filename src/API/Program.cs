@@ -1,5 +1,6 @@
 using System.Globalization;
 using AniListNet;
+using API.Middleware;
 using API.Models;
 using API.Services;
 
@@ -21,6 +22,7 @@ internal class Program
         builder.Services.AddSingleton<CacheService<UserViewModel>>();
         builder.Services.AddScoped<AniListExtractor>();
         builder.Services.AddScoped<AniClient>();
+        builder.Services.AddScoped<StopwatchMiddleware>();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -40,6 +42,8 @@ internal class Program
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.UseMiddleware(typeof(StopwatchMiddleware));
 
         app.Run();
     }
