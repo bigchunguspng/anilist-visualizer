@@ -1,7 +1,7 @@
 using AniListNet;
 using AniListNet.Parameters;
 using API.Objects;
-using API.Services;
+using API.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -11,11 +11,13 @@ namespace API.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly AniClient _client;
+        private readonly Cache<User> _userCache;
 
-        public UserController(ILogger<UserController> logger, AniClient client)
+        public UserController(ILogger<UserController> logger, AniClient client, Cache<User> userCache)
         {
             _logger = logger;
             _client = client;
+            _userCache = userCache;
         }
     
         [HttpGet("{id:int}")]
@@ -25,6 +27,7 @@ namespace API.Controllers
             {
                 var user = await _client.GetAsync<User>(id, "User");
                 LogUser(user);
+                UpdateUserCache(user);
                 return Ok(user);
             }
             catch (Exception)
@@ -50,6 +53,7 @@ namespace API.Controllers
 
                 var user = users.Data[0];
                 LogUser(user);
+                UpdateUserCache(user);
                 return Ok(user);
             }
             catch (Exception)
@@ -57,7 +61,7 @@ namespace API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpGet("search/{query}")]
         public async Task<ActionResult<IEnumerable<User>>> Search(string query)
         {
@@ -82,7 +86,12 @@ namespace API.Controllers
                 return BadRequest();
             }
         }
-        
+
+        private void UpdateUserCache(User user)
+        {
+            _userCache.Update(user.Id, user, user.UpdatedAt);
+        }
+
         private void LogUser(User user)
         {
             _logger.LogInformation("USER: [{id} - {name}]", user.Id, user.Name);

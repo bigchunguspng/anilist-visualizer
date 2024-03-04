@@ -1,8 +1,11 @@
 using AniListNet;
 using AniListNet.Objects;
 using AniListNet.Parameters;
+using API.Services;
+using API.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
 using MediaEntry = API.Objects.MediaEntry;
+using User = API.Objects.User;
 
 namespace API.Controllers;
 
@@ -11,11 +14,21 @@ public class AnimangaController : ControllerBase
 {
     private readonly ILogger<AnimangaController> _logger;
     private readonly AniClient _client;
+    private readonly Cache<User> _userCache;
+    private readonly Cache<List<MediaEntry>> _entryCache;
 
-    public AnimangaController(ILogger<AnimangaController> logger, AniClient client)
+    public AnimangaController
+    (
+        ILogger<AnimangaController> logger,
+        AniClient client,
+        Cache<User> userCache,
+        Cache<List<MediaEntry>> entryCache
+    )
     {
         _logger = logger;
         _client = client;
+        _userCache = userCache;
+        _entryCache = entryCache;
     }
 
     /// <summary>
@@ -24,25 +37,22 @@ public class AnimangaController : ControllerBase
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<IEnumerable<MediaEntry>>> Get(int userId)
     {
-        try // todo cache
+        try
         {
-            var list = new List<MediaEntry>();
-            
-            var tasks = Statuses.Select(status => GetEntriesByStatus(userId, status)).ToArray();
+            var userCache =  _userCache.GetNodeOrNull(userId);
+            var listCache = _entryCache.GetNodeOrNull(userId);
 
-            foreach (var result in await Task.WhenAll(tasks))
+            if (listCache != null && userCache != null && userCache.IsNotYoungerThan(listCache))
             {
-                list.AddRange(result);
+                return listCache.Data;
             }
 
-            GroupBySeries(list);
-
-            var entries = list
-                .OrderBy(x => x.StartDate)
-                .ThenBy(x => x.CompleteDate)
-                .ThenBy(x => x.Id).ToList();
+            var entries = await GetEntries(userId);
 
             _logger.LogInformation("USER: [{id}] ENTRIES: [{count}]", userId, entries.Count);
+
+            var updatedAt = userCache?.UpdatedAt ?? Helpers.DateTimeToUnixTimeStamp(DateTime.Now);
+            _entryCache.Update(userId, entries, updatedAt);
 
             return Ok(entries);
         }
@@ -50,6 +60,25 @@ public class AnimangaController : ControllerBase
         {
             return NotFound();
         }
+    }
+
+    private async Task<List<MediaEntry>> GetEntries(int userId)
+    {
+        var list = new List<MediaEntry>();
+
+        var tasks = Statuses.Select(status => GetEntriesByStatus(userId, status));
+
+        foreach (var result in await Task.WhenAll(tasks))
+        {
+            list.AddRange(result);
+        }
+
+        GroupBySeries(list);
+
+        return list
+            .OrderBy(x => x.StartDate)
+            .ThenBy(x => x.CompleteDate)
+            .ThenBy(x => x.Id).ToList();
     }
 
     private static readonly MediaEntryStatus[] Statuses =
@@ -90,7 +119,7 @@ public class AnimangaController : ControllerBase
         var parameters = _client.GetUserIdParams(userId).Concat(filter.ToParameters());
         return _client.GetPaginatedAsync<MediaEntry>(parameters, "mediaList", options);
     }
-    
+
     private static void GroupBySeries(List<MediaEntry> list)
     {
         foreach (var entry in list) entry.Media.PopulateRelated();
