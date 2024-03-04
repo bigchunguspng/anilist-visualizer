@@ -16,7 +16,9 @@ public class Date : IComparable<Date>
             return new DateTime(Year.Value, Month.Value, Day.Value);
         return null;
     }
-    
+
+    public bool IsNull() => Year is null; // believe me, it's enough
+
     //private DateTime GetDate() => year is null ? DateTime.Today : new DateTime(year.Value, month ?? 1, day ?? 1);
 
     public int CompareTo(Date? other)
@@ -32,4 +34,7 @@ public class Date : IComparable<Date>
 
         return Nullable.Compare(Day, other.Day);
     }
+
+    public static bool operator > (Date a, Date b) => a.CompareTo(b) > 0;
+    public static bool operator < (Date a, Date b) => a.CompareTo(b) < 0;
 }

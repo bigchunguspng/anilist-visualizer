@@ -74,6 +74,7 @@ public class AnimangaController : ControllerBase
         }
 
         GroupBySeries(list);
+        Minimize(list);
 
         return list
             .OrderBy(x => x.StartDate)
@@ -154,6 +155,23 @@ public class AnimangaController : ControllerBase
             {
                 media[id].SeriesId = series;
             }
+        }
+    }
+
+    private static void Minimize(List<MediaEntry> list)
+    {
+        foreach (var entry in list)
+        {
+            if (entry.StartDate?.IsNull() ?? false)
+                entry.StartDate = null;
+
+            if (entry.CompleteDate?.IsNull() ?? false)
+                entry.CompleteDate = null;
+
+            entry.FixDates();
+
+            if (entry.Media.EndDate?.IsNull() ?? false)
+                entry.Media.EndDate = null;
         }
     }
 }

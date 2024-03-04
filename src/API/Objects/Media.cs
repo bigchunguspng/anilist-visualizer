@@ -24,9 +24,8 @@ public class Media
     [GqlSelection("season"    )] public MediaSeason? Season { get; private set; }
     [GqlSelection("seasonYear")] public int?           Year { get; private set; }
 
-    [GqlSelection("startDate")] public Date StartDate { get; private set; }
-    [GqlSelection(  "endDate")] public Date   EndDate { get; private set; }
-    [GqlSelection("updatedAt")] public int  UpdatedAt { get; private set; }
+    [GqlSelection("startDate")] public Date StartDate { get; set; }
+    [GqlSelection(  "endDate")] public Date?  EndDate { get; set; }
 
     [GqlSelection("coverImage")] public MediaCover Cover { get; private set; }
     [GqlSelection("siteUrl"   )] public Uri        Url   { get; private set; }
