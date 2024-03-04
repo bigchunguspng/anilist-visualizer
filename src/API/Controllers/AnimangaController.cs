@@ -9,10 +9,12 @@ namespace API.Controllers;
 [ApiController, Route("api/[controller]")]
 public class AnimangaController : ControllerBase
 {
+    private readonly ILogger<AnimangaController> _logger;
     private readonly AniClient _client;
 
-    public AnimangaController(AniClient client)
+    public AnimangaController(ILogger<AnimangaController> logger, AniClient client)
     {
+        _logger = logger;
         _client = client;
     }
 
@@ -22,7 +24,7 @@ public class AnimangaController : ControllerBase
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<IEnumerable<MediaEntry>>> Get(int userId)
     {
-        try
+        try // todo cache
         {
             var list = new List<MediaEntry>();
             
@@ -33,15 +35,22 @@ public class AnimangaController : ControllerBase
                 list.AddRange(result);
             }
 
-            return Ok(list.OrderBy(x => x.StartDate).ThenBy(x => x.CompleteDate).ThenBy(x => x.Id));
+            GroupBySeries(list);
+
+            var entries = list
+                .OrderBy(x => x.StartDate)
+                .ThenBy(x => x.CompleteDate)
+                .ThenBy(x => x.Id).ToList();
+
+            _logger.LogInformation("USER: [{id}] ENTRIES: [{count}]", userId, entries.Count);
+
+            return Ok(entries);
         }
         catch (Exception)
         {
             return NotFound();
         }
     }
-
-    // todo cache
 
     private static readonly MediaEntryStatus[] Statuses =
     {
@@ -72,8 +81,6 @@ public class AnimangaController : ControllerBase
             if (entries.HasNextPage) page++;
             else done = true;
         }
-
-        GroupBySeries(list);
 
         return list;
     }
