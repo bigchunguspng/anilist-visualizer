@@ -5,7 +5,9 @@ namespace API.Objects;
 
 #pragma warning disable CS8618
 
-public class MediaCover : Image
+public class MediaCover
 {
-    [GqlSelection("color")] public string? Color { get; private set; }
+    [GqlSelection("color" )] public string? Color  { get; private set; }
+    [GqlSelection("large" )] public Uri     Large  { get; private set; }
+    [GqlSelection("medium")] public Uri     Medium { get; private set; }
 }

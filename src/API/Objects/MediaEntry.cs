@@ -16,5 +16,5 @@ public class MediaEntry
  // [GqlSelection("score"      )] public float Score             { get; private set; }
     [GqlSelection("media"      )] public Media Media             { get; private set; }
 
-    public bool ProgressMatters => Media.Divisions > 1 && Progress > 0;
+    public bool ProgressMatters => Media.Episodes > 1 && Progress > 0;
 }

@@ -6,5 +6,5 @@ namespace API.Objects;
 
 public class MediaConnection
 {
-    [GqlSelection("edges")] public MediaRelationEdge[] Type { get; private set; }
+    [GqlSelection("edges")] public MediaRelationEdge[] Egdes { get; private set; }
 }

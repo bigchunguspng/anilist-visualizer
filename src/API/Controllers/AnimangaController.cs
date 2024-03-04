@@ -41,6 +41,8 @@ public class AnimangaController : ControllerBase
         }
     }
 
+    // todo cache
+
     private static readonly MediaEntryStatus[] Statuses =
     {
         MediaEntryStatus.Current,
@@ -71,6 +73,8 @@ public class AnimangaController : ControllerBase
             else done = true;
         }
 
+        GroupBySeries(list);
+
         return list;
     }
 
@@ -78,5 +82,42 @@ public class AnimangaController : ControllerBase
     {
         var parameters = _client.GetUserIdParams(userId).Concat(filter.ToParameters());
         return _client.GetPaginatedAsync<MediaEntry>(parameters, "mediaList", options);
+    }
+    
+    private static void GroupBySeries(List<MediaEntry> list)
+    {
+        foreach (var entry in list) entry.Media.PopulateRelated();
+
+        var relations = list.ToDictionary(x => x.Media.Id, x => x.Media.GetRelations());
+
+        // get missing relations
+        foreach (var relation in relations)
+        {
+            if (relation.Value.Count == 0) continue;
+
+            // relations (except this title) that has matching relations
+            var related = relations.Where(x => x.Key != relation.Key && x.Value.Overlaps(relation.Value));
+            foreach (var link in related)
+            {
+                relation.Value.UnionWith(link.Value);
+                relations[link.Key].Clear();
+            }
+        }
+
+        SetSeriesId(list, relations.Values);
+    }
+
+    private static void SetSeriesId(List<MediaEntry> list, IEnumerable<HashSet<int>> sets)
+    {
+        var media = list.ToDictionary(x => x.Media.Id, x => x.Media);
+
+        foreach (var set in sets.Where(set => set.Count > 0))
+        {
+            var series = set.Min();
+            foreach (var id in set.Where(id => media.ContainsKey(id)))
+            {
+                media[id].SeriesId = series;
+            }
+        }
     }
 }

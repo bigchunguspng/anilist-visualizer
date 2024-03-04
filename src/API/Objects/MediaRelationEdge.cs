@@ -8,7 +8,7 @@ namespace API.Objects;
 public class MediaRelationEdge
 {
     [GqlSelection("relationType"), GqlParameter("version", 2)]
-    public MediaRelation Relation { get; private set; }
+    public MediaRelation Type { get; private set; }
 
     [GqlSelection("node")]
     public Node Media { get; private set; }
