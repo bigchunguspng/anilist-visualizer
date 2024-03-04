@@ -74,8 +74,10 @@ namespace API.Controllers
                     return NotFound();
                 }
 
-                _logger.LogInformation("Users Found: {count} [{query}]", users.TotalCount, query);
-                return Ok(users.Data);
+                var result = users.Data.OrderByDescending(u => u.UpdatedAt).ToList();
+
+                _logger.LogInformation("Users Found: {count} [{query}]", result.Count, query);
+                return Ok(result);
             }
             catch (Exception)
             {
