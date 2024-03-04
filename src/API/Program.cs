@@ -1,9 +1,7 @@
 using System.Globalization;
 using AniListNet;
 using API.Middleware;
-using API.Models;
 using API.Objects;
-using API.Services;
 using API.Services.Cache;
 using User = API.Objects.User;
 
@@ -22,11 +20,9 @@ internal class Program
         builder.Services.AddControllers();
         builder.Services.AddRouting(o => o.LowercaseUrls = true);
 
-        builder.Services.AddSingleton<CacheService<UserViewModel>>();
         builder.Services.AddSingleton<Cache<User>>();
         builder.Services.AddSingleton<Cache<List<MediaEntry>>>();
 
-        builder.Services.AddScoped<AniListExtractor>();
         builder.Services.AddScoped<AniClient>();
         builder.Services.AddScoped<StopwatchMiddleware>();
 

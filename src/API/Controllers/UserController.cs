@@ -105,11 +105,6 @@ namespace API.Controllers
         /*[HttpGet("/{username}/{from:int?}/{to:int?}")]
         public async Task<ActionResult<UserViewModel>> Get(string username, int? from, int? to)
         {
-            try
-            {
-                var timer = new Stopwatch();
-                timer.Start();
-
                 var user = await _baka.GetUserViewModel(username);
 
                 if (from is not null)
@@ -123,16 +118,6 @@ namespace API.Controllers
                 }
                 else
                     user.Years = null;
-
-                timer.Stop();
-                _logger.LogInformation("USER: {name}. ENTRIES: {count}. TIME: {time:m\\:ss\\.fff}", user.User.name, user.History.Count, timer.Elapsed);
-        
-                return Ok(user);
-            }
-            catch (Exception)
-            {
-                return NotFound();
-            }
         }*/
     }
 }
