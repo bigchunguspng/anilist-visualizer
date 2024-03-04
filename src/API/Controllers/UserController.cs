@@ -10,13 +10,11 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
-        private readonly AniListExtractor _baka;
         private readonly AniClient _client;
 
-        public UserController(ILogger<UserController> logger, AniListExtractor extractor, AniClient client)
+        public UserController(ILogger<UserController> logger, AniClient client)
         {
             _logger = logger;
-            _baka = extractor;
             _client = client;
         }
     
