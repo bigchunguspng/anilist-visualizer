@@ -2,6 +2,8 @@ using AniListNet.Helpers;
 using AniListNet.Objects;
 using API.Services;
 
+#pragma warning disable CS8618
+
 namespace API.Objects;
 
 public class User
