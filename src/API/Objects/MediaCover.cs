@@ -1,5 +1,4 @@
 using AniListNet.Helpers;
-using AniListNet.Objects;
 
 namespace API.Objects;
 
@@ -8,6 +7,14 @@ namespace API.Objects;
 public class MediaCover
 {
     [GqlSelection("color" )] public string? Color  { get; private set; }
-    [GqlSelection("large" )] public Uri     Large  { get; private set; }
-    [GqlSelection("medium")] public Uri     Medium { get; private set; }
+    [GqlSelection("large" )] public string  Large  { get; private set; }
+    [GqlSelection("medium")] public string  Medium { get; private set; }
+
+    public void FixUrls()
+    {
+        Large  = Large [BaseUrl.Length..];
+        Medium = Medium[BaseUrl.Length..];
+    }
+
+    private const string BaseUrl = "https://s4.anilist.co/file/anilistcdn/media/anime/cover/";
 }

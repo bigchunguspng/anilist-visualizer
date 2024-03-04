@@ -172,6 +172,8 @@ public class AnimangaController : ControllerBase
 
             if (entry.Media.EndDate?.IsNull() ?? false)
                 entry.Media.EndDate = null;
+
+            entry.Media.Cover.FixUrls();
         }
     }
 }
