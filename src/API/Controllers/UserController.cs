@@ -70,12 +70,6 @@ namespace API.Controllers
                 var filter = new SearchUserFilter { Query = query.Replace(" ", "") };
                 var users = await _client.SearchAsync<User>(filter, "users");
 
-                if (users.TotalCount == 0)
-                {
-                    LogNotFound(query);
-                    return NotFound();
-                }
-
                 var result = users.Data.OrderByDescending(u => u.UpdatedAt).ToList();
 
                 _logger.LogInformation("Users Found: {count} [{query}]", result.Count, query);
