@@ -10,16 +10,22 @@ public class Date : IComparable<Date>
     [GqlSelection("month")] public int? Month { get; private set; }
     [GqlSelection("day"  )] public int? Day   { get; private set; }
 
+    public Date(DateTime dateTime)
+    {
+        Year  = dateTime.Year;
+        Month = dateTime.Month;
+        Day   = dateTime.Day;
+    }
+
     public DateTime? ToDateTime()
     {
         if (Year.HasValue && Month.HasValue && Day.HasValue)
-            return new DateTime(Year.Value, Month.Value, Day.Value);
+            return new DateTime(Year.Value, Month ?? 1, Day ?? 1);
+
         return null;
     }
 
-    public bool IsNull() => Year is null; // believe me, it's enough
-
-    //private DateTime GetDate() => year is null ? DateTime.Today : new DateTime(year.Value, month ?? 1, day ?? 1);
+    public static bool IsNull(Date? date) => date?.Year is null; // believe me, it's enough
 
     public int CompareTo(Date? other)
     {

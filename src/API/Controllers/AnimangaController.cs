@@ -1,11 +1,13 @@
 using AniListNet;
 using AniListNet.Objects;
 using AniListNet.Parameters;
+using API.Objects;
 using API.Services;
 using API.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
 using MediaEntry = API.Objects.MediaEntry;
 using User = API.Objects.User;
+using Date = API.Objects.Date;
 
 namespace API.Controllers;
 
@@ -35,7 +37,7 @@ public class AnimangaController : ControllerBase
     /// Returns all user entries, exept for PLANNING ones, from oldest to newest.
     /// </summary>
     [HttpGet("{userId:int}")]
-    public async Task<ActionResult<IEnumerable<MediaEntry>>> Get(int userId)
+    public async Task<ActionResult<Animanga>> Get(int userId)
     {
         try
         {
@@ -44,7 +46,7 @@ public class AnimangaController : ControllerBase
 
             if (listCache != null && userCache != null && userCache.IsNotYoungerThan(listCache))
             {
-                return listCache.Data;
+                return new Animanga(listCache.Data);
             }
 
             var entries = await GetEntries(userId);
@@ -54,7 +56,7 @@ public class AnimangaController : ControllerBase
             var updatedAt = userCache?.UpdatedAt ?? Helpers.DateTimeToUnixTimeStamp(DateTime.Now);
             _entryCache.Update(userId, entries, updatedAt);
 
-            return Ok(entries);
+            return Ok(new Animanga(entries));
         }
         catch (Exception)
         {
@@ -64,14 +66,16 @@ public class AnimangaController : ControllerBase
 
     private async Task<List<MediaEntry>> GetEntries(int userId)
     {
-        var list = new List<MediaEntry>();
+        var resluts = new List<MediaEntry>();
 
         var tasks = Statuses.Select(status => GetEntriesByStatus(userId, status));
 
         foreach (var result in await Task.WhenAll(tasks))
         {
-            list.AddRange(result);
+            resluts.AddRange(result);
         }
+
+        var list = resluts.DistinctBy(x => x.Id).ToList();
 
         GroupBySeries(list);
         Minimize(list);
@@ -162,15 +166,15 @@ public class AnimangaController : ControllerBase
     {
         foreach (var entry in list)
         {
-            if (entry.StartDate?.IsNull() ?? false)
+            if (Date.IsNull(entry.StartDate))
                 entry.StartDate = null;
 
-            if (entry.CompleteDate?.IsNull() ?? false)
+            if (Date.IsNull(entry.CompleteDate))
                 entry.CompleteDate = null;
 
             entry.FixDates();
 
-            if (entry.Media.EndDate?.IsNull() ?? false)
+            if (Date.IsNull(entry.Media.EndDate))
                 entry.Media.EndDate = null;
 
             entry.Media.Cover.FixUrls();

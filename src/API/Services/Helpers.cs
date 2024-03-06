@@ -13,5 +13,21 @@ namespace API.Services
         {
             return (int) new DateTimeOffset(dateTime).ToUnixTimeSeconds();
         }
+
+        public static int SecondsToDays(int seconds)
+        {
+            const int secondsInOneDay = 60 * 60 * 24;
+            return seconds / secondsInOneDay;
+        }
+
+        public static string DateToStringShort(DateTime date) => $"{date:MMM d}";
+        public static string DateToStringLong (DateTime date) => $"{date:MMM yyyy}";
+
+        public static string GetDateRange(DateTime a, DateTime? b, Func<DateTime, string> format, char arrow = '➽')
+        {
+            return b is null
+                ? $"{format(a)} {arrow}"
+                : $"{format(a)} - {format(b.Value)}";
+        }
     }
 }
