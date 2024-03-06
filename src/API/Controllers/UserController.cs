@@ -7,15 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController, Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : ControllerWithLogger
     {
-        private readonly ILogger<UserController> _logger;
         private readonly AniClient _client;
         private readonly Cache<User> _userCache;
 
-        public UserController(ILogger<UserController> logger, AniClient client, Cache<User> userCache)
+        public UserController(ILogger<UserController> logger, AniClient client, Cache<User> userCache) : base(logger)
         {
-            _logger = logger;
             _client = client;
             _userCache = userCache;
         }
@@ -26,8 +24,8 @@ namespace API.Controllers
             try
             {
                 var user = await _client.GetAsync<User>(id, "User");
-                LogUser(user);
                 UpdateUserCache(user);
+                LogUser(user);
                 return Ok(user);
             }
             catch (Exception e)
@@ -37,7 +35,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("by-name/{username}")]
+        [HttpGet("{username}")]
         public async Task<ActionResult<User>> Get(string username)
         {
             try
@@ -53,8 +51,8 @@ namespace API.Controllers
                 }
 
                 var user = users.Data[0];
-                LogUser(user);
                 UpdateUserCache(user);
+                LogUser(user);
                 return Ok(user);
             }
             catch (Exception e)
@@ -74,7 +72,7 @@ namespace API.Controllers
 
                 var result = users.Data.OrderByDescending(u => u.UpdatedAt).ToList();
 
-                _logger.LogInformation("Users Found: {count} [{query}]", result.Count, query);
+                LogUsersFound(query, result.Count);
                 return Ok(result);
             }
             catch (Exception e)
@@ -91,17 +89,17 @@ namespace API.Controllers
 
         private void LogUser(User user)
         {
-            _logger.LogInformation("USER: [{id} - {name}]", user.Id, user.Name);
+            Logger.LogInformation("USER: [{id} / {name}]", user.Id, user.Name);
+        }
+
+        private void LogUsersFound(string query, int count)
+        {
+            Logger.LogInformation("USERS FOUND: {count} [{query}]", count, query);
         }
 
         private void LogNotFound(string query)
         {
-            _logger.LogInformation("No User Found [{query}]", query);
-        }
-
-        private void LogException(Exception e)
-        {
-            _logger.LogError("EXCEPTION --> {exception}", e.Message);
+            Logger.LogInformation("NO USER FOUND [{query}]", query);
         }
     }
 }

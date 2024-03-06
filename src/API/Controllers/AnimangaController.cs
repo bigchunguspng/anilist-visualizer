@@ -12,9 +12,8 @@ using Date = API.Objects.Date;
 namespace API.Controllers;
 
 [ApiController, Route("api/[controller]")]
-public class AnimangaController : ControllerBase
+public class AnimangaController : ControllerWithLogger
 {
-    private readonly ILogger<AnimangaController> _logger;
     private readonly AniClient _client;
     private readonly Cache<User> _userCache;
     private readonly Cache<List<MediaEntry>> _entryCache;
@@ -25,9 +24,8 @@ public class AnimangaController : ControllerBase
         AniClient client,
         Cache<User> userCache,
         Cache<List<MediaEntry>> entryCache
-    )
+    ) : base(logger)
     {
-        _logger = logger;
         _client = client;
         _userCache = userCache;
         _entryCache = entryCache;
@@ -51,23 +49,22 @@ public class AnimangaController : ControllerBase
 
             var entries = await GetEntries(userId);
 
-            _logger.LogInformation("USER: [{id}] ENTRIES: [{count}]", userId, entries.Count);
-
             var updatedAt = userCache?.UpdatedAt ?? Helpers.DateTimeToUnixTimeStamp(DateTime.Now);
             _entryCache.Update(userId, entries, updatedAt);
 
+            LogEntries(userId, entries.Count);
             return Ok(new Animanga(entries));
         }
         catch (Exception e)
         {
             LogException(e);
-            return NotFound();
+            return BadRequest();
         }
     }
-
-    private void LogException(Exception e)
+    
+    private void LogEntries(int userId, int count)
     {
-        _logger.LogError("EXCEPTION --> {exception}", e.Message);
+        Logger.LogInformation("USER: [{id}] ENTRIES: {count}", userId, count);
     }
 
     private async Task<List<MediaEntry>> GetEntries(int userId)
