@@ -18,7 +18,7 @@ namespace API.Controllers
             _userCache = userCache;
         }
     
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}"), ResponseCache(Duration = 30)]
         public async Task<ActionResult<User>> Get(int id)
         {
             try
@@ -35,7 +35,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("{username}")]
+        [HttpGet("{username}"), ResponseCache(Duration = 30)]
         public async Task<ActionResult<User>> Get(string username)
         {
             try
@@ -62,7 +62,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("search/{query}")]
+        [HttpGet("search/{query}"), ResponseCache(Duration = 10)]
         public async Task<ActionResult<IEnumerable<User>>> Search(string query)
         {
             try
