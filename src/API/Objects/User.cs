@@ -1,6 +1,5 @@
 using AniListNet.Helpers;
-using AniListNet.Objects;
-using API.Services;
+using Humanizer;
 
 #pragma warning disable CS8618
 
@@ -15,5 +14,5 @@ public class User
 
     public Uri Url => new($"https://anilist.co/user/{Name}/");
 
-    public TimeSpan LastSeen => DateTime.Now - Helpers.UnixTimeStampToDateTime(UpdatedAt);
+    public string LastActivity => DateTimeOffset.FromUnixTimeSeconds(UpdatedAt).Humanize();
 }
