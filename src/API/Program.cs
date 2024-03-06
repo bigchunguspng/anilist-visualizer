@@ -40,7 +40,7 @@ internal class Program
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
         }
 
         app.UseHttpsRedirection();
