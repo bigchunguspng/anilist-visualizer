@@ -6,35 +6,35 @@ public class Animanga
 {
     public int MinDay { get; private set; }
     public int MaxDay { get; private set; }
-    public int Today  { get; private set; }
+    public int Today  { get; private set; } // (days since 1 Jan 1970)
 
-    public Dictionary<int, int> Years { get; private set; } // durations in days
+    public Dictionary<int, int> Years { get; private set; } // year durations in days
 
     public int SeriesShown { get; private set; }
     public int SeriesTotal { get; private set; }
 
-    public List<MediaEntry> Entries { get; set; }
+    public List<MediaEntry> Entries { get; private set; }
 
 
     public Animanga(List<MediaEntry> entries, DateOnly? from = null, DateOnly? to = null)
     {
         Entries = entries;
 
-        var tracked = entries.Where(x => !x.OutsideTimeline).ToList();
-
-        var empty = tracked.Count == 0;
-
-        SeriesShown = empty ? 0 : tracked.DistinctBy(x => x.Media.SeriesId).Count();
-        SeriesTotal =             entries.DistinctBy(x => x.Media.SeriesId).Count();
-
+        var tracked = entries.Where(x => !x.IsOutsideTimeline()).ToList();
 
         var min = tracked.Min(x => x.StartDate!.ToDateTime()!.Value);
         var max = DateTime.Today;
         
         foreach (var entry in tracked)
         {
+            entry.FixDates();
             entry.SetTooltip(min);
         }
+
+        var empty = tracked.Count == 0;
+
+        SeriesShown = empty ? 0 : tracked.DistinctBy(x => x.Media.SeriesId).Count();
+        SeriesTotal =             entries.DistinctBy(x => x.Media.SeriesId).Count();
 
         MinDay = Helpers.SecondsToDays(Helpers.DateTimeToUnixTimeStamp(min));
         MaxDay = Helpers.SecondsToDays(Helpers.DateTimeToUnixTimeStamp(max));

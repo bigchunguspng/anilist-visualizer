@@ -175,8 +175,6 @@ public class AnimangaController : ControllerWithLogger
             if (Date.IsNull(entry.CompleteDate))
                 entry.CompleteDate = null;
 
-            entry.FixDates();
-
             if (Date.IsNull(entry.Media.EndDate))
                 entry.Media.EndDate = null;
 
