@@ -58,10 +58,16 @@ public class AnimangaController : ControllerBase
 
             return Ok(new Animanga(entries));
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            LogException(e);
             return NotFound();
         }
+    }
+
+    private void LogException(Exception e)
+    {
+        _logger.LogError("EXCEPTION --> {exception}", e.Message);
     }
 
     private async Task<List<MediaEntry>> GetEntries(int userId)

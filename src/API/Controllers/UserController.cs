@@ -30,8 +30,9 @@ namespace API.Controllers
                 UpdateUserCache(user);
                 return Ok(user);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogException(e);
                 return NotFound();
             }
         }
@@ -56,8 +57,9 @@ namespace API.Controllers
                 UpdateUserCache(user);
                 return Ok(user);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogException(e);
                 return BadRequest();
             }
         }
@@ -75,8 +77,9 @@ namespace API.Controllers
                 _logger.LogInformation("Users Found: {count} [{query}]", result.Count, query);
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogException(e);
                 return BadRequest();
             }
         }
@@ -96,22 +99,9 @@ namespace API.Controllers
             _logger.LogInformation("No User Found [{query}]", query);
         }
 
-        /*[HttpGet("/{username}/{from:int?}/{to:int?}")]
-        public async Task<ActionResult<UserViewModel>> Get(string username, int? from, int? to)
+        private void LogException(Exception e)
         {
-                var user = await _baka.GetUserViewModel(username);
-
-                if (from is not null)
-                {
-                    var same = to is null;
-
-                    var min = same ? from.Value : Math.Min(from.Value, to!.Value);
-                    var max = same ? from.Value : Math.Max(from.Value, to!.Value);
-
-                    user.Years = same ? new HashSet<int> { min } : Enumerable.Range(min, max - min + 1).ToHashSet();
-                }
-                else
-                    user.Years = null;
-        }*/
+            _logger.LogError("EXCEPTION --> {exception}", e.Message);
+        }
     }
 }
