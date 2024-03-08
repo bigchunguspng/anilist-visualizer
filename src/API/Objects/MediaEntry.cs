@@ -43,7 +43,7 @@ public class MediaEntry
         TimelineItem.Offset = (int)(start - min).TotalDays;
         TimelineItem.Length = (int)(end - start).TotalDays + 1;
 
-        var progressMatters = Media.Episodes is null or > 1;
+        var progressMatters = Media.Episodes is null or > 1 && Progress > 0;
 
         TimelineItem.Tip = new TimelineItem.ToolTip
         {
@@ -67,8 +67,8 @@ public class MediaEntry
                 var x = Math.Round(value, 1);
                 var one = Math.Abs(x - 1) < 0.1;
 
-                TimelineItem.Tip.AverageSpeed = slow 
-                    ? $"{unit} every {(one ? "day" : $"{x} days")}" 
+                TimelineItem.Tip.AverageSpeed = slow
+                    ? $"{unit} every {(one ? "day" : $"{x} days")}"
                     : $"{x} {unit}{(one ? "" : "s")}/day";
 
                 TimelineItem.Stripes = days / Progress > 30;
