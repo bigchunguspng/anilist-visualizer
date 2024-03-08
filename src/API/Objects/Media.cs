@@ -1,5 +1,6 @@
 ﻿using AniListNet.Helpers;
 using AniListNet.Objects;
+using API.Services;
 
 #pragma warning disable CS0649
 #pragma warning disable CS8618
@@ -34,6 +35,8 @@ public class Media
 
     public int? SeriesId { get; set; }
 
+    public AiringTimelineItem? TimelineItem { get; set; }
+
     public  HashSet<int> GetRelations() => Related;
     private HashSet<int> Related { get; set; } = default!;
 
@@ -41,5 +44,28 @@ public class Media
     {
         Related = Relations.Egdes.Where(x => x.Type != MediaRelation.Character).Select(x => x.Media.Id).ToHashSet();
         Related.Add(Id);
+    }
+
+    public void SetAiringTooltip(int min, int max)
+    {
+        var dateA = StartDate .ToDateTime() ?? Helpers.UnixDaysToDateTime(min);
+        var dateB =   EndDate?.ToDateTime();
+
+        var daysA = Helpers.DateTimeToUnixDays(dateA);
+        var daysB = Helpers.DateTimeToUnixDays(dateB ?? DateTime.Today);
+
+        if (daysB > min)
+        {
+            TimelineItem = new AiringTimelineItem
+            {
+                Offset = Math.Max(daysA - min, 0),
+                Length = Math.Min(daysB, max) - Math.Max(daysA, min),
+                Season = Season is null
+                    ? Helpers.GetDateRange(dateA, dateB, Helpers.DateToStringLong, '→')
+                    : $"{Season.ToString()!.ToUpper()} {Year}"
+            };
+        }
+        else
+            TimelineItem = null;
     }
 }

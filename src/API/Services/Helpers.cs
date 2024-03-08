@@ -2,7 +2,8 @@ namespace API.Services
 {
     public static class Helpers
     {
-        public static string Ending_ENG(int number, string word) => $"{number} {word}{(number == 1 ? "" : "s")}";
+        private const int SecondsInOneDay = 60 * 60 * 24;
+
 
         public static DateTime UnixTimeStampToDateTime(int unixTimeStamp)
         {
@@ -14,11 +15,29 @@ namespace API.Services
             return (int) new DateTimeOffset(dateTime).ToUnixTimeSeconds();
         }
 
-        public static int SecondsToDays(int seconds)
+
+        /// <summary> Returns the number of days since 1 Jan 1970 </summary>
+        public static int DateTimeToUnixDays(DateTime dateTime)
         {
-            const int secondsInOneDay = 60 * 60 * 24;
-            return seconds / secondsInOneDay;
+            return SecondsToDays(DateTimeToUnixTimeStamp(dateTime));
         }
+
+        public static DateTime UnixDaysToDateTime(int days)
+        {
+            return UnixTimeStampToDateTime(DaysToSeconds(days));
+        }
+
+
+        private static int SecondsToDays(int seconds)
+        {
+            return seconds / SecondsInOneDay;
+        }
+
+        private static int DaysToSeconds(int days)
+        {
+            return days * SecondsInOneDay;
+        }
+
 
         public static string DateToStringShort(DateTime date) => $"{date:MMM d}";
         public static string DateToStringLong (DateTime date) => $"{date:MMM yyyy}";
