@@ -31,23 +31,26 @@ public class MediaEntry
         if (wrongOrder) (StartDate, CompleteDate) = (CompleteDate, StartDate);
     }
 
-    public void SetTooltip(DateTime min)
+    public void SetTooltip(int min)
     {
         if (IsOutsideTimeline()) return;
 
         TimelineItem = new TimelineItem();
 
         var start =    StartDate!.ToDateTime()!.Value;
-        var end   = CompleteDate?.ToDateTime() ?? DateTime.Today;
+        var end   = CompleteDate?.ToDateTime();
 
-        TimelineItem.Offset = (int)(start - min).TotalDays;
-        TimelineItem.Length = (int)(end - start).TotalDays + 1;
+        var dayA = Helpers.DateTimeToUnixDays(start);
+        var dayB = Helpers.DateTimeToUnixDays(end ?? DateTime.Today);
+
+        TimelineItem.Offset = dayA - min;
+        TimelineItem.Length = dayB - dayA + 1;
 
         var progressMatters = Media.Episodes is null or > 1 && Progress > 0;
 
         TimelineItem.Tip = new TimelineItem.ToolTip
         {
-            DateRange = start == end
+            DateRange = dayA == dayB
                 ? Helpers.DateToStringShort(start)
                 : Helpers.GetDateRange(start, end, Helpers.DateToStringShort),
             Episodes = progressMatters ? Progress : null
@@ -55,7 +58,7 @@ public class MediaEntry
 
         if (progressMatters) // calculate average watching / reading speed
         {
-            var days = (end - start).TotalDays + 1;
+            var days = (double)TimelineItem.Length;
             if (days > 1)
             {
                 var unit = Media.Type == MediaType.Anime ? "episode" : "chapter";

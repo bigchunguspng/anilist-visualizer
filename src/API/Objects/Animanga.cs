@@ -48,7 +48,7 @@ public class Animanga
         foreach (var entry in tracked)
         {
             entry.FixDates();
-            entry.SetTooltip(min);
+            entry.SetTooltip(MinDay);
             entry.Media.SetAiringTooltip(MinDay, MaxDay);
         }
     }
