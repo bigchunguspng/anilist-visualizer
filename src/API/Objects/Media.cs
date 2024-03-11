@@ -48,20 +48,20 @@ public class Media
 
     public void SetAiringTooltip(int min, int max)
     {
-        var dateA = StartDate .ToDateTime() ?? Helpers.UnixDaysToDateTime(min);
-        var dateB =   EndDate?.ToDateTime();
+        var start = StartDate .ToDateTime() ?? Helpers.UnixDaysToDateTime(min);
+        var end   =   EndDate?.ToDateTime();
 
-        var daysA = Helpers.DateTimeToUnixDays(dateA);
-        var daysB = Helpers.DateTimeToUnixDays(dateB ?? DateTime.Today);
+        var dayA = Helpers.DateTimeToUnixDays(start);
+        var dayB = Helpers.DateTimeToUnixDays(end ?? DateTime.Today);
 
-        if (daysB > min)
+        if (dayB > min)
         {
             TimelineItem = new AiringTimelineItem
             {
-                Offset = Math.Max(daysA - min, 0),
-                Length = Math.Min(daysB, max) - Math.Max(daysA, min),
+                Offset = Math.Max(dayA - min, 0),
+                Length = Math.Min(dayB, max) - Math.Max(dayA, min),
                 Season = Season is null
-                    ? Helpers.GetDateRange(dateA, dateB, Helpers.DateToStringLong, '→')
+                    ? Helpers.GetDateRange(start, end, Helpers.DateToStringLong, '→')
                     : $"{Season.ToString()!.ToUpper()} {Year}"
             };
         }
