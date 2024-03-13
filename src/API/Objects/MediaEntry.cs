@@ -38,8 +38,8 @@ public class MediaEntry
         var start =    StartDate!.ToDateTime()!.Value;
         var end   = CompleteDate?.ToDateTime();
 
-        var dayA = Helpers.DateTimeToUnixDays(start);
-        var dayB = Helpers.DateTimeToUnixDays(end ?? Helpers.UnixDaysToDateTime(today));
+        var dayA = start.ToUnixDays();
+        var dayB = end ?.ToUnixDays() ?? today;
 
         if (dayB > min && dayA < max)
         {

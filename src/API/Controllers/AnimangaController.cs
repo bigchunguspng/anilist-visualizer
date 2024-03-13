@@ -75,7 +75,7 @@ public class AnimangaController : ControllerWithLogger
 
             var entries = await GetEntries(userId);
 
-            var updatedAt = userCache?.UpdatedAt ?? Helpers.DateTimeToUnixTimeStamp(DateTime.Now);
+            var updatedAt = userCache?.UpdatedAt ?? DateTime.Now.ToUnixTimeStamp();
             _entryCache.Update(userId, entries, updatedAt);
 
             LogEntries(userId, entries.Count);

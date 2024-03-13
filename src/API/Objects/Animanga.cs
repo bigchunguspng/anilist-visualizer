@@ -42,9 +42,9 @@ public class Animanga
         SeriesShown = empty ? 0 : visible.DistinctBy(x => x.Media.SeriesId).Count();
         SeriesTotal =             entries.DistinctBy(x => x.Media.SeriesId).Count();
 
-        MinDay = Helpers.DateTimeToUnixDays(min);
-        MaxDay = Helpers.DateTimeToUnixDays(max);
-        Today  = Helpers.DateTimeToUnixDays(DateTime.Today);
+        MinDay = min.ToUnixDays();
+        MaxDay = max.ToUnixDays();
+        Today  = DateTime.Today.ToUnixDays();
 
         Years = YearsRange(allMin.Year, allMax.Year).ToArray();
         TimelineSections = YearsRange(min.Year, max.Year).ToDictionary(x => x, DaysInYear); // todo months if year.len == 1

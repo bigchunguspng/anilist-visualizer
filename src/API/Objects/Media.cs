@@ -51,8 +51,8 @@ public class Media
         var start = StartDate .ToDateTime() ?? Helpers.UnixDaysToDateTime(min);
         var end   =   EndDate?.ToDateTime();
 
-        var dayA = Helpers.DateTimeToUnixDays(start);
-        var dayB = Helpers.DateTimeToUnixDays(end ?? Helpers.UnixDaysToDateTime(today));
+        var dayA = start.ToUnixDays();
+        var dayB = end ?.ToUnixDays() ?? today;
 
         if (dayB > min && dayA < max)
         {

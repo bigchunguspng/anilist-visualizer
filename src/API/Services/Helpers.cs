@@ -10,21 +10,21 @@ namespace API.Services
             return DateTimeOffset.FromUnixTimeSeconds(unixTimeStamp).LocalDateTime;
         }
 
-        public static int DateTimeToUnixTimeStamp(DateTime dateTime)
+        public static int ToUnixTimeStamp(this DateTime dateTime)
         {
             return (int) new DateTimeOffset(dateTime).ToUnixTimeSeconds();
         }
 
         public static int GetDateTimeMinutesAgo(double minutes)
         {
-            return DateTimeToUnixTimeStamp(DateTime.Now - TimeSpan.FromMinutes(minutes));
+            return ToUnixTimeStamp(DateTime.Now - TimeSpan.FromMinutes(minutes));
         }
 
 
         /// <summary> Returns the number of days since 1 Jan 1970 </summary>
-        public static int DateTimeToUnixDays(DateTime dateTime)
+        public static int ToUnixDays(this DateTime dateTime)
         {
-            return SecondsToDays(DateTimeToUnixTimeStamp(dateTime));
+            return SecondsToDays(ToUnixTimeStamp(dateTime));
         }
 
         public static DateTime UnixDaysToDateTime(int days)
