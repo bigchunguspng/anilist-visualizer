@@ -60,7 +60,7 @@ public class MediaEntry
 
             if (progressMatters)
             {
-                var days = (double)TimelineItem.Length;
+                var days = (double)(dayB - dayA + 1);
                 if (days > 1)
                 {
                     TimelineItem.Tip.AverageSpeed = CalculateReadingWatchingSpeed(days);
