@@ -15,6 +15,11 @@ namespace API.Services
             return (int) new DateTimeOffset(dateTime).ToUnixTimeSeconds();
         }
 
+        public static int GetDateTimeMinutesAgo(double minutes)
+        {
+            return DateTimeToUnixTimeStamp(DateTime.Now - TimeSpan.FromMinutes(minutes));
+        }
+
 
         /// <summary> Returns the number of days since 1 Jan 1970 </summary>
         public static int DateTimeToUnixDays(DateTime dateTime)

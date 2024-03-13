@@ -32,19 +32,45 @@ public class AnimangaController : ControllerWithLogger
     }
 
     /// <summary>
-    /// Returns all user entries, exept for PLANNING ones, from oldest to newest.
+    /// Returns all user entries, except for PLANNING ones, from oldest to newest.
     /// </summary>
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<Animanga>> Get(int userId)
+    {
+        return await GetAnimangaInternal(userId, null, null);
+    }
+
+    /// <summary>
+    /// Returns all user entries for the selected years, except for PLANNING ones, from oldest to newest.
+    /// </summary>
+    [HttpGet("{userId:int}/{from:int}/{to:int}")]
+    public async Task<ActionResult<Animanga>> Get(int userId, int from, int to)
+    {
+        if (to < from) (from, to) = (to, from);
+
+        return await GetAnimangaInternal(userId, from, to);
+    }
+
+    private async Task<ActionResult<Animanga>> GetAnimangaInternal(int userId, int? from, int? to)
     {
         try
         {
             var userCache =  _userCache.GetNodeOrNull(userId);
             var listCache = _entryCache.GetNodeOrNull(userId);
 
-            if (listCache != null && userCache != null && userCache.IsNotYoungerThan(listCache))
+            if (listCache != null)
             {
-                return new Animanga(listCache.Data);
+                if (userCache != null)
+                {
+                    if (userCache.IsNotYoungerThan(listCache))
+                    {
+                        return new Animanga(listCache.Data, from, to);
+                    }
+                }
+                else if (listCache.UpdatedAt > Helpers.GetDateTimeMinutesAgo(15))
+                {
+                    return new Animanga(listCache.Data, from, to);
+                }
             }
 
             var entries = await GetEntries(userId);
@@ -53,7 +79,7 @@ public class AnimangaController : ControllerWithLogger
             _entryCache.Update(userId, entries, updatedAt);
 
             LogEntries(userId, entries.Count);
-            return Ok(new Animanga(entries));
+            return Ok(new Animanga(entries, from, to));
         }
         catch (Exception e)
         {
@@ -61,7 +87,7 @@ public class AnimangaController : ControllerWithLogger
             return BadRequest();
         }
     }
-    
+
     private void LogEntries(int userId, int count)
     {
         Logger.LogInformation("USER: [{id}] ENTRIES: {count}", userId, count);

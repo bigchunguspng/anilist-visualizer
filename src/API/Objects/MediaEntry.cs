@@ -31,51 +31,60 @@ public class MediaEntry
         if (wrongOrder) (StartDate, CompleteDate) = (CompleteDate, StartDate);
     }
 
-    public void SetTooltip(int min)
+    public void SetTooltip(int min, int max, int today)
     {
         if (IsOutsideTimeline()) return;
-
-        TimelineItem = new TimelineItem();
 
         var start =    StartDate!.ToDateTime()!.Value;
         var end   = CompleteDate?.ToDateTime();
 
         var dayA = Helpers.DateTimeToUnixDays(start);
-        var dayB = Helpers.DateTimeToUnixDays(end ?? DateTime.Today);
+        var dayB = Helpers.DateTimeToUnixDays(end ?? Helpers.UnixDaysToDateTime(today));
 
-        TimelineItem.Offset = dayA - min;
-        TimelineItem.Length = dayB - dayA + 1;
-
-        var progressMatters = Media.Episodes is null or > 1 && Progress > 0;
-
-        TimelineItem.Tip = new TimelineItem.ToolTip
+        if (dayB > min && dayA < max)
         {
-            DateRange = dayA == dayB
-                ? Helpers.DateToStringShort(start)
-                : Helpers.GetDateRange(start, end, Helpers.DateToStringShort),
-            Episodes = progressMatters ? Progress : null
-        };
+            var progressMatters = Media.Episodes is null or > 1 && Progress > 0;
 
-        if (progressMatters) // calculate average watching / reading speed
-        {
-            var days = (double)TimelineItem.Length;
-            if (days > 1)
+            TimelineItem = new TimelineItem
             {
-                var unit = Media.Type == MediaType.Anime ? "episode" : "chapter";
+                Offset = Math.Max(dayA - min, 0),
+                Length = Math.Min(dayB, max) - Math.Max(dayA, min) + 1,
+                Tip = new TimelineItem.ToolTip
+                {
+                    DateRange = dayA == dayB
+                        ? Helpers.DateToStringShort(start)
+                        : Helpers.GetDateRange(start, end, Helpers.DateToStringShort),
+                    Episodes = progressMatters ? Progress : null
+                }
+            };
 
-                var dailyProgress = Progress / days;
-                var slow = dailyProgress < 1;
-
-                var value = slow ? 1 / dailyProgress : dailyProgress;
-                var x = Math.Round(value, 1);
-                var one = Math.Abs(x - 1) < 0.1;
-
-                TimelineItem.Tip.AverageSpeed = slow
-                    ? $"{unit} every {(one ? "day" : $"{x} days")}"
-                    : $"{x} {unit}{(one ? "" : "s")}/day";
-
-                TimelineItem.Stripes = days / Progress > 30;
+            if (progressMatters)
+            {
+                var days = (double)TimelineItem.Length;
+                if (days > 1)
+                {
+                    TimelineItem.Tip.AverageSpeed = CalculateReadingWatchingSpeed(days);
+                    TimelineItem.Stripes = days / Progress > 30;
+                }
             }
         }
+        else
+            TimelineItem = null;
+    }
+
+    private string CalculateReadingWatchingSpeed(double days)
+    {
+        var unit = Media.Type == MediaType.Anime ? "episode" : "chapter";
+
+        var speed = Progress / days;
+        var slow = speed < 1;
+
+        var value = slow ? 1 / speed : speed;
+        var x = Math.Round(value, 1);
+        var one = Math.Abs(x - 1) < 0.1;
+
+        return slow
+            ? $"{unit} every {(one ? "day" : $"{x} days")}"
+            : $"{x} {unit}{(one ? "" : "s")}/day";
     }
 }
