@@ -104,7 +104,7 @@ public class AnimangaController : ControllerWithLogger
             resluts.AddRange(result);
         }
 
-        var list = resluts.DistinctBy(x => x.Id).ToList();
+        var list = resluts.DistinctBy(x => x.Media.Id).ToList();
 
         GroupBySeries(list);
         Minimize(list);
