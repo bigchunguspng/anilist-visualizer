@@ -73,7 +73,7 @@ public class AnimangaController : ControllerWithLogger
                 }
             }
 
-            var entries = await GetEntries(userId);
+            var entries = await GetEntriesAsync(userId);
 
             var updatedAt = userCache?.UpdatedAt ?? DateTime.Now.ToUnixTimeStamp();
             _entryCache.Update(userId, entries, updatedAt);
@@ -93,26 +93,59 @@ public class AnimangaController : ControllerWithLogger
         Logger.LogInformation("USER: [{id}] ENTRIES: {count}", userId, count);
     }
 
-    private async Task<List<MediaEntry>> GetEntries(int userId)
+    private async Task<List<MediaEntry>> GetEntriesAsync(int userId)
     {
-        var resluts = new List<MediaEntry>();
+        var results = new List<MediaEntry>();
 
-        var tasks = Statuses.Select(status => GetEntriesByStatus(userId, status));
+        var tasks = Statuses.Select(status => GetEntriesByStatusAsync(userId, status));
 
         foreach (var result in await Task.WhenAll(tasks))
         {
-            resluts.AddRange(result);
+            results.AddRange(result);
         }
 
-        var list = resluts.DistinctBy(x => x.Media.Id).ToList();
+        var entries = results.DistinctBy(x => x.Media.Id).ToList();
 
-        GroupBySeries(list);
-        Minimize(list);
+        GroupBySeries(entries);
+        MinimizeData(entries);
 
-        return list
+        return entries
             .OrderBy(x => x.StartDate)
             .ThenBy(x => x.CompleteDate)
             .ThenBy(x => x.Id).ToList();
+    }
+
+    private async Task<List<MediaEntry>> GetEntriesByStatusAsync(int userId, MediaEntryStatus status, int page = 1)
+    {
+        var results = new List<MediaEntry>();
+        var filter = new MediaEntryFilter
+        {
+            Status = status,
+            Sort = MediaEntrySort.StartedDate, SortDescending = false
+        };
+
+        var done = false;
+        while (!done)
+        {
+            var pagination = new AniPaginationOptions(page, 50);
+            var entries = await GetEntriesPageAsync(userId, filter, pagination);
+
+            results.AddRange(entries.Data);
+
+            if (entries.HasNextPage) page++;
+            else done = true;
+        }
+
+        return results;
+    }
+
+    private Task<AniPagination<MediaEntry>> GetEntriesPageAsync
+    (
+        int userId, MediaEntryFilter filter, AniPaginationOptions options
+    )
+    {
+        var parameters = _client.GetUserIdParams(userId).Concat(filter.ToParameters());
+        return _client.GetPaginatedAsync<MediaEntry>(parameters, "mediaList", options);
     }
 
     private static readonly MediaEntryStatus[] Statuses =
@@ -124,41 +157,14 @@ public class AnimangaController : ControllerWithLogger
         MediaEntryStatus.Repeating
     };
 
-    private async Task<List<MediaEntry>> GetEntriesByStatus(int userId, MediaEntryStatus status, int page = 1)
+
+    #region POST-PROCESSING
+
+    private static void GroupBySeries(List<MediaEntry> entries)
     {
-        var list = new List<MediaEntry>();
-        var filter = new MediaEntryFilter
-        {
-            Status = status,
-            Sort = MediaEntrySort.StartedDate, SortDescending = false
-        };
+        foreach (var entry in entries) entry.Media.PopulateRelated();
 
-        var done = false;
-        while (!done)
-        {
-            var pagination = new AniPaginationOptions(page, 50);
-            var entries = await GetUserEntriesAsync(userId, filter, pagination);
-
-            list.AddRange(entries.Data);
-
-            if (entries.HasNextPage) page++;
-            else done = true;
-        }
-
-        return list;
-    }
-
-    private Task<AniPagination<MediaEntry>> GetUserEntriesAsync(int userId, MediaEntryFilter filter, AniPaginationOptions options)
-    {
-        var parameters = _client.GetUserIdParams(userId).Concat(filter.ToParameters());
-        return _client.GetPaginatedAsync<MediaEntry>(parameters, "mediaList", options);
-    }
-
-    private static void GroupBySeries(List<MediaEntry> list)
-    {
-        foreach (var entry in list) entry.Media.PopulateRelated();
-
-        var relations = list.ToDictionary(x => x.Media.Id, x => x.Media.GetRelations());
+        var relations = entries.ToDictionary(x => x.Media.Id, x => x.Media.GetRelations());
 
         // get missing relations
         foreach (var relation in relations)
@@ -174,12 +180,12 @@ public class AnimangaController : ControllerWithLogger
             }
         }
 
-        SetSeriesId(list, relations.Values);
+        SetSeriesId(entries, relations.Values);
     }
 
-    private static void SetSeriesId(List<MediaEntry> list, IEnumerable<HashSet<int>> sets)
+    private static void SetSeriesId(List<MediaEntry> entries, IEnumerable<HashSet<int>> sets)
     {
-        var media = list.ToDictionary(x => x.Media.Id, x => x.Media);
+        var media = entries.ToDictionary(x => x.Media.Id, x => x.Media);
 
         foreach (var set in sets.Where(set => set.Count > 0))
         {
@@ -191,7 +197,7 @@ public class AnimangaController : ControllerWithLogger
         }
     }
 
-    private static void Minimize(List<MediaEntry> list)
+    private static void MinimizeData(List<MediaEntry> list)
     {
         foreach (var entry in list)
         {
@@ -207,4 +213,6 @@ public class AnimangaController : ControllerWithLogger
             entry.Media.Cover.FixUrls();
         }
     }
+
+    #endregion
 }

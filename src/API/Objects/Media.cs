@@ -40,6 +40,9 @@ public class Media
     public  HashSet<int> GetRelations() => Related;
     private HashSet<int> Related { get; set; } = default!;
 
+    /// <summary>
+    /// Populates <see cref="Related"/> HashSet. Use <see cref="GetRelations"/> to access the data.
+    /// </summary>
     public void PopulateRelated()
     {
         Related = Relations.Egdes.Where(x => x.Type != MediaRelation.Character).Select(x => x.Media.Id).ToHashSet();
