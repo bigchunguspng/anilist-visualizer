@@ -62,13 +62,21 @@ public class Media
             TimelineItem = new AiringTimelineItem
             {
                 Offset = Math.Max(dayA - min, 0),
-                Length = Math.Min(dayB, max) - Math.Max(dayA, min) + 1,
-                Season = Season is null
-                    ? Helpers.GetDateRange(start, end, Helpers.DateToStringLong, '→')
-                    : $"{Season.ToString()!.ToUpper()} {Year}"
+                Length = Math.Min(dayB, max) - Math.Max(dayA, min) + 1
             };
+
+            TimelineItem.Season = TimelineItem.Length == 1
+                ? Helpers.DateToStringShort(start)
+                : Season is not null && TimelineItem.Length > 30
+                    ? $"{Season.ToString()!.ToUpper()} {Year}"
+                    : Helpers.GetDateRange(start, end, GetDateTimeFormat(), '→');
         }
         else
             TimelineItem = null;
+    }
+
+    private Func<DateTime, string> GetDateTimeFormat()
+    {
+        return Season is null ? Helpers.DateToStringLong : Helpers.DateToStringShort;
     }
 }
