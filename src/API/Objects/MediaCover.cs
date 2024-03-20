@@ -10,7 +10,7 @@ public class MediaCover
     [GqlSelection("large" )] public string  Large  { get; private set; }
     [GqlSelection("medium")] public string  Medium { get; private set; }
 
-    public void FixUrls()
+    public void ChopUrls()
     {
         Large  = Large [BaseUrl.Length..];
         Medium = Medium[BaseUrl.Length..];

@@ -42,8 +42,8 @@ public class AnimangaService
         MinimizeData(entries);
 
         return entries
-            .OrderBy(x => x.StartDate)
-            .ThenBy(x => x.CompleteDate)
+            .OrderBy(x => x.GetStartDate())
+            .ThenBy(x => x.GetCompleteDate())
             .ThenBy(x => x.Id).ToList();
     }
 
@@ -87,8 +87,6 @@ public class AnimangaService
 
     private static void GroupBySeries(List<MediaEntry> entries)
     {
-        foreach (var entry in entries) entry.Media.PopulateRelated();
-
         var relations = entries.ToDictionary(x => x.Media.Id, x => x.Media.GetRelations());
 
         // get missing relations
@@ -126,16 +124,7 @@ public class AnimangaService
     {
         foreach (var entry in list)
         {
-            if (Date.IsNull(entry.StartDate))
-                entry.StartDate = null;
-
-            if (Date.IsNull(entry.CompleteDate))
-                entry.CompleteDate = null;
-
-            if (Date.IsNull(entry.Media.EndDate))
-                entry.Media.EndDate = null;
-
-            entry.Media.Cover.FixUrls();
+            entry.Media.Cover.ChopUrls();
         }
     }
 

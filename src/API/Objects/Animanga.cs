@@ -25,7 +25,7 @@ public class Animanga
 
         var showable = entries.Where(x => !x.IsOutsideTimeline()).ToList();
 
-        var allMin = showable.Min(x => x.StartDate!.ToDateTime()!.Value);
+        var allMin = showable.Min(x => x.GetStartDate()!.ToDateTime()!.Value);
         var allMax = DateTime.Today;
 
         var min = subframe ? new DateTime(from!.Value, 1, 1) : allMin;
@@ -33,7 +33,7 @@ public class Animanga
 
         var visible = subframe
             ? showable
-                .Where(x => x.StartDate!.Year <= to && (x.CompleteDate?.Year ?? DateTime.Today.Year) >= from)
+                .Where(x => x.GetStartDate()!.Year <= to && (x.GetCompleteDate()?.Year ?? DateTime.Today.Year) >= from)
                 .ToList()
             : showable;
 
