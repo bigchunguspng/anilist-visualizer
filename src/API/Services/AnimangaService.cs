@@ -39,7 +39,7 @@ public class AnimangaService
         var entries = results.DistinctBy(x => x.Media.Id).ToList();
 
         GroupBySeries(entries);
-        MinimizeData(entries);
+        AdjustData(entries);
 
         return entries
             .OrderBy(x => x.GetStartDate())
@@ -120,10 +120,11 @@ public class AnimangaService
         }
     }
 
-    private static void MinimizeData(List<MediaEntry> list)
+    private static void AdjustData(List<MediaEntry> list)
     {
         foreach (var entry in list)
         {
+            entry.FixDates();
             entry.Media.Cover.ChopUrls();
         }
     }

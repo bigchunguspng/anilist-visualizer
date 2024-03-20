@@ -62,7 +62,7 @@ public class Media
             };
 
             TimelineItem.Season = TimelineItem.Length == 1
-                ? Helpers.DateToStringShort(start)
+                ? Helpers.DateToStringFull(start)
                 : Season is not null && TimelineItem.Length > 30
                     ? $"{Season.ToString()!.ToUpper()} {Year}"
                     : Helpers.GetDateRange(start, end, GetDateTimeFormat(), '→');

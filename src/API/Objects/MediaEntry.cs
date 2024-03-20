@@ -31,6 +31,12 @@ public class MediaEntry
     /// </summary>
     public void FixDates()
     {
+        if (Date.IsNull(StartDate))
+            StartDate = null;
+
+        if (Date.IsNull(CompleteDate))
+            CompleteDate = null;
+
         var wrongOrder = StartDate is { } start && CompleteDate is { } end && end < start;
         if (wrongOrder) (StartDate, CompleteDate) = (CompleteDate, StartDate);
     }

@@ -44,8 +44,9 @@ namespace API.Services
         }
 
 
-        public static string DateToStringShort(DateTime date) => $"{date:MMM d}";
         public static string DateToStringLong (DateTime date) => $"{date:MMM yyyy}";
+        public static string DateToStringShort(DateTime date) => $"{date:d MMM}";
+        public static string DateToStringFull (DateTime date) => $"{date:d MMM yyyy}";
 
         public static string GetDateRange(DateTime a, DateTime? b, Func<DateTime, string> format, char arrow = '➽')
         {
