@@ -2,6 +2,7 @@ using System.Globalization;
 using AniListNet;
 using API.Middleware;
 using API.Objects;
+using API.Services;
 using API.Services.Cache;
 using User = API.Objects.User;
 
@@ -25,6 +26,7 @@ internal class Program
         builder.Services.AddSingleton<Cache<List<MediaEntry>>>();
 
         builder.Services.AddScoped<AniClient>();
+        builder.Services.AddScoped<AnimangaService>();
         builder.Services.AddScoped<StopwatchMiddleware>();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
