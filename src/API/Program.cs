@@ -27,6 +27,7 @@ internal class Program
 
         builder.Services.AddScoped<AniClient>();
         builder.Services.AddScoped<AnimangaService>();
+        builder.Services.AddScoped<ActivitiesService>();
         builder.Services.AddScoped<StopwatchMiddleware>();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
