@@ -10,4 +10,10 @@ public class ListActivity
     [GqlSelection("progress")] public string? Progress { get; set; }
 
     [GqlSelection("createdAt")] public int CreatedAt { get; set; }
+
+
+    public class Type
+    {
+        [GqlSelection("__typename ... on ListActivity")] public ListActivity[]? Activity { get; set; }
+    }
 }

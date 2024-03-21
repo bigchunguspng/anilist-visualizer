@@ -40,6 +40,6 @@ public class ActivitiesService
 
     private Task<AniPagination<ListActivity>> GetEntriesPageAsync(ActivityFilter filter, AniPaginationOptions options)
     {
-        return _client.GetPaginatedAsync<ListActivityType, ListActivity>(filter.ToParameters(), "activities", options);
+        return _client.GetPaginatedAsync<ListActivity.Type, ListActivity>(filter.ToParameters(), "activities", options);
     }
 }
