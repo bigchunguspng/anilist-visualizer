@@ -2,6 +2,7 @@
 using AniListNet.Helpers;
 using AniListNet.Objects;
 using API.Services;
+using API.Services.Cache;
 
 #pragma warning disable CS8618
 
@@ -41,7 +42,7 @@ public class MediaEntry
         if (wrongOrder) (StartDate, CompleteDate) = (CompleteDate, StartDate);
     }
 
-    public void SetTooltip(int min, int max, int today)
+    public void SetTooltip(int min, int max, int today, Cache<TitleActivities>? cache)
     {
         if (IsOutsideTimeline()) return;
 
@@ -65,7 +66,8 @@ public class MediaEntry
                         ? Helpers.DateToStringShort(start)
                         : Helpers.GetDateRange(start, end, Helpers.DateToStringShort),
                     Episodes = progressMatters ? Progress : null
-                }
+                },
+                Activities = cache?.GetNodeOrNull(Media.Id)?.Data
             };
 
             if (progressMatters)

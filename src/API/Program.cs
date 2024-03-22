@@ -24,6 +24,7 @@ internal class Program
 
         builder.Services.AddSingleton<Cache<User>>();
         builder.Services.AddSingleton<Cache<List<MediaEntry>>>();
+        builder.Services.AddSingleton<Cache<Cache<TitleActivities>>>();
 
         builder.Services.AddScoped<AniClient>();
         builder.Services.AddScoped<AnimangaService>();

@@ -1,5 +1,6 @@
 using System.Globalization;
 using API.Services;
+using API.Services.Cache;
 
 namespace API.Objects;
 
@@ -18,7 +19,7 @@ public class Animanga
     public List<MediaEntry> Entries { get; private set; }
 
 
-    public Animanga(List<MediaEntry> entries, int? from = null, int? to = null)
+    public Animanga(List<MediaEntry> entries, Cache<TitleActivities>? cache, int? from = null, int? to = null)
     {
         var subframe = from is not null && to is not null;
 
@@ -80,7 +81,7 @@ public class Animanga
 
         foreach (var entry in showable)
         {
-            entry.SetTooltip(MinDay, MaxDay, Today);
+            entry.SetTooltip(MinDay, MaxDay, Today, cache);
             entry.Media.SetAiringTooltip(MinDay, MaxDay, Today);
         }
     }

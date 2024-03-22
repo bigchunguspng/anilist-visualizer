@@ -13,18 +13,21 @@ public class AnimangaController : ControllerWithLogger
     private readonly AnimangaService _service;
     private readonly Cache<User> _userCache;
     private readonly Cache<List<MediaEntry>> _entryCache;
+    private readonly Cache<Cache<TitleActivities>> _activityCache;
 
     public AnimangaController
     (
         ILogger<AnimangaController> logger,
         AnimangaService service,
         Cache<User> userCache,
-        Cache<List<MediaEntry>> entryCache
+        Cache<List<MediaEntry>> entryCache,
+        Cache<Cache<TitleActivities>> activityCache
     ) : base(logger)
     {
         _service = service;
         _userCache = userCache;
         _entryCache = entryCache;
+        _activityCache = activityCache;
     }
 
     /// <summary>
@@ -54,18 +57,20 @@ public class AnimangaController : ControllerWithLogger
             var userCache =  _userCache.GetNodeOrNull(userId);
             var listCache = _entryCache.GetNodeOrNull(userId);
 
+            var activities = _activityCache.GetNodeOrNull(userId)?.Data;
+
             if (listCache != null)
             {
                 if (userCache != null)
                 {
                     if (userCache.IsNotYoungerThan(listCache))
                     {
-                        return new Animanga(listCache.Data, from, to);
+                        return new Animanga(listCache.Data, activities, from, to);
                     }
                 }
                 else if (listCache.UpdatedAt > Helpers.GetDateTimeMinutesAgo(15))
                 {
-                    return new Animanga(listCache.Data, from, to);
+                    return new Animanga(listCache.Data, activities, from, to);
                 }
             }
 
@@ -75,7 +80,7 @@ public class AnimangaController : ControllerWithLogger
             _entryCache.Update(userId, entries, updatedAt);
 
             LogEntries(userId, entries.Count);
-            return Ok(new Animanga(entries, from, to));
+            return Ok(new Animanga(entries, activities, from, to));
         }
         catch (Exception e)
         {

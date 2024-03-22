@@ -33,12 +33,12 @@ namespace API.Services
         }
 
 
-        private static int SecondsToDays(int seconds)
+        public static int SecondsToDays(int seconds)
         {
             return seconds / SecondsInOneDay;
         }
 
-        private static int DaysToSeconds(int days)
+        public static int DaysToSeconds(int days)
         {
             return days * SecondsInOneDay;
         }

@@ -7,6 +7,8 @@ public class TimelineItem : BaseTimelineItem
     public ToolTip  Tip { get; set; }
     public bool Stripes { get; set; }
 
+    public TitleActivities? Activities { get; set; }
+
     public class ToolTip
     {
         public string  DateRange    { get; set; }
