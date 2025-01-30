@@ -19,47 +19,64 @@ public class Animanga
     public List<MediaEntry> Entries { get; private set; }
 
 
-    public Animanga(List<MediaEntry> entries, Cache<TitleActivities>? cache, int? from = null, int? to = null)
+    public Animanga(List<MediaEntry> entries, Cache<TitleActivities>? cache, int? from = null, int? to = null, bool lastYear = false)
     {
-        var subframe = from is not null && to is not null;
+        var subframe = from != null && to != null || lastYear;
 
         Entries = entries;
 
-        var showable = entries.Where(x => !x.IsOutsideTimeline()).ToList();
+        var showableEntries = entries.Where(x => !x.IsOutsideTimeline()).ToList();
 
-        var allMin = showable.Min(x => x.GetStartDate()!.ToDateTime()!.Value);
+        var allMin = showableEntries.Min(x => x.GetStartDate()!.ToDateTime()!.Value);
         var allMax = DateTime.Today;
 
-        var min = subframe ? new DateTime(from!.Value, 1, 1) : allMin;
-        var max = subframe ? new DateTime(to!.Value, 12, 31) : allMax;
+        var shownMin = subframe
+            ? lastYear
+                ? allMax.AddDays(-365)
+                : new DateTime(from!.Value, 1, 1)
+            : allMin;
+        var shownMax = subframe
+            ? lastYear
+                ? allMax
+                : new DateTime(to!.Value, 12, 31)
+            : allMax;
 
         var visible = subframe
-            ? showable
-                .Where(x => x.GetStartDate()!.Year <= to && (x.GetCompleteDate()?.Year ?? DateTime.Today.Year) >= from)
+            ? showableEntries
+                .Where(x => x.GetStartDate()!.ToDateTime() <= shownMax && (x.GetCompleteDate()?.ToDateTime() ?? DateTime.Today) >= shownMin)
                 .ToList()
-            : showable;
+            : showableEntries;
 
         var empty = visible.Count == 0;
 
         SeriesShown = empty ? 0 : visible.DistinctBy(x => x.Media.SeriesId).Count();
         SeriesTotal =             entries.DistinctBy(x => x.Media.SeriesId).Count();
 
-        MinDay = min.ToUnixDays();
-        MaxDay = max.ToUnixDays();
+        MinDay = shownMin.ToUnixDays();
+        MaxDay = shownMax.ToUnixDays();
         Today  = DateTime.Today.ToUnixDays();
 
         Years = YearsRange(allMin.Year, allMax.Year).ToArray();
-        TimelineSections = max.Year - min.Year == 0
-            ? Enumerable.Range(1, 12).ToDictionary(MonthName, x => DaysInMonth(min.Year, x))
-            : YearsRange(min.Year, max.Year).ToDictionary(x => x.ToString(), DaysInYear);
+        TimelineSections = lastYear
+            ? MonthDaysAcrossYears(shownMin, shownMax)
+            : shownMax.Year - shownMin.Year == 0
+                ? Enumerable.Range(1, 12).ToDictionary(MonthName, x => DaysInMonth(shownMin.Year, x))
+                : YearsRange(shownMin.Year, shownMax.Year).ToDictionary(x => x.ToString(), DaysInYear);
 
-        IEnumerable<int> YearsRange(int a, int b) => Enumerable.Range(a, b - a + 1);
+        foreach (var entry in showableEntries)
+        {
+            entry.SetTooltip(MinDay, MaxDay, Today, cache);
+            entry.Media.SetAiringTooltip(MinDay, MaxDay, Today);
+        }
+
+        return;
+
 
         int DaysInYear(int year)
         {
-            return year == min.Year
+            return year == shownMin.Year
                 ? new DateTime(year, 12, 31).ToUnixDays() - MinDay + 1
-                : year == max.Year
+                : year == shownMax.Year
                     ? MaxDay - new DateTime(year, 1, 1).ToUnixDays() + 1
                     : DateTime.IsLeapYear(year) ? 366 : 365;
         }
@@ -67,22 +84,53 @@ public class Animanga
         int DaysInMonth(int year, int month)
         {
             var days = DateTime.DaysInMonth(year, month);
-            return year == min.Year && month == min.Month
+            return year == shownMin.Year && month == shownMin.Month
                 ? new DateTime(year, month, days).ToUnixDays() - MinDay + 1
-                : year == max.Year && month == max.Month
+                : year == shownMax.Year && month == shownMax.Month
                     ? MaxDay - new DateTime(year, month, 1).ToUnixDays() + 1
                     : days;
         }
+    }
 
-        string MonthName(int month)
+    private static IEnumerable<int> YearsRange(int a, int b) => Enumerable.Range(a, b - a + 1);
+
+    private static string MonthName(int month)
+    {
+        return CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(month);
+    }
+
+    private static Dictionary<string, int> MonthDaysAcrossYears(DateTime min, DateTime max)
+    {
+        var result = new Dictionary<string, int>();
+        var year = min.Year;
+        var month = min.Month;
+        var date = new DateTime(year, month, 1);
+        var first = true;
+        while (date <= max)
         {
-            return CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(month);
+            var last = year == max.Year && month == max.Month;
+
+            var monthName = first || last 
+                ? $"{MonthName(month)} '{date:yy}"
+                :    MonthName(month);
+
+            var days = first
+                ? DateTime.DaysInMonth(year, month) - min.Day + 1
+                : last
+                    ? max.Day
+                    : DateTime.DaysInMonth(year, month);
+
+            result.Add(monthName, days);
+
+            if (++month > 12)
+            {
+                year++;
+                month = 1;
+            }
+            date = new DateTime(year, month, 1);
+            first = false;
         }
 
-        foreach (var entry in showable)
-        {
-            entry.SetTooltip(MinDay, MaxDay, Today, cache);
-            entry.Media.SetAiringTooltip(MinDay, MaxDay, Today);
-        }
+        return result;
     }
 }

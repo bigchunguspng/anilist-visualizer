@@ -36,7 +36,7 @@ public class AnimangaController : ControllerWithLogger
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<Animanga>> Get(int userId)
     {
-        return await GetAnimangaInternal(userId, null, null);
+        return await GetAnimangaInternal(userId);
     }
 
     /// <summary>
@@ -50,7 +50,15 @@ public class AnimangaController : ControllerWithLogger
         return await GetAnimangaInternal(userId, from, to);
     }
 
-    private async Task<ActionResult<Animanga>> GetAnimangaInternal(int userId, int? from, int? to)
+    [HttpGet("{userId:int}/last-year")]
+    public async Task<ActionResult<Animanga>> GetLastYear(int userId)
+    {
+        return await GetAnimangaInternal(userId, lastYear: true);
+    }
+
+    private async Task<ActionResult<Animanga>>
+        GetAnimangaInternal
+        (int userId, int? from = null, int? to = null, bool lastYear = false)
     {
         try
         {
@@ -65,12 +73,12 @@ public class AnimangaController : ControllerWithLogger
                 {
                     if (userCache.IsNotYoungerThan(listCache))
                     {
-                        return new Animanga(listCache.Data, activities, from, to);
+                        return new Animanga(listCache.Data, activities, from, to, lastYear);
                     }
                 }
                 else if (listCache.UpdatedAt > Helpers.GetDateTimeMinutesAgo(15))
                 {
-                    return new Animanga(listCache.Data, activities, from, to);
+                    return new Animanga(listCache.Data, activities, from, to, lastYear);
                 }
             }
 
@@ -80,7 +88,7 @@ public class AnimangaController : ControllerWithLogger
             _entryCache.Update(userId, entries, updatedAt);
 
             LogEntries(userId, entries.Count);
-            return Ok(new Animanga(entries, activities, from, to));
+            return Ok(new Animanga(entries, activities, from, to, lastYear));
         }
         catch (Exception e)
         {
