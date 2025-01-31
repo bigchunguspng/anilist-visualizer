@@ -26,21 +26,40 @@ public class ActivitiesController : ControllerWithLogger
     }
 
     [HttpGet("{userId:int}/{mediaId:int}"), ResponseCache(Duration = 30)]
-    public async Task<ActionResult<TitleActivities>> Get(int userId, int mediaId)
+    public async Task<ActionResult<TitleActivities>> GetByMedia(int userId, int mediaId)
     {
         try
         {
             var cache = TryGetFromCache(userId, mediaId);
             if (cache != null)
             {
-                LogActivities(userId, mediaId, cache.Activities.Count);
+                LogActivitiesM(userId, mediaId, cache.Activities.Count);
                 return Ok(cache);
             }
 
-            var activities = new TitleActivities(await _service.GetActivities(userId, mediaId));
+            var activities = new TitleActivities(await _service.GetActivitiesByMedia(userId, mediaId));
             UpdateCache(userId, mediaId, activities);
 
-            LogActivities(userId, mediaId, activities.Activities.Count);
+            LogActivitiesM(userId, mediaId, activities.Activities.Count);
+            return Ok(activities);
+        }
+        catch (Exception e)
+        {
+            LogException(e);
+            return NotFound();
+        }
+    }
+
+    [HttpGet("{userId:int}/last-3-months"), ResponseCache(Duration = 30)]
+    public async Task<ActionResult<MixedActivities>> GetByRange(int userId)
+    {
+        try
+        {
+            var min = DateTime.Today.AddMonths(-3).AddSeconds(-1);
+            var max = DateTime.Today.AddDays(1);
+            var activities = new MixedActivities(await _service.GetActivitiesByRange(userId, min, max));
+
+            LogActivitiesR(userId, "last-3-months", activities.Activities.Count);
             return Ok(activities);
         }
         catch (Exception e)
@@ -79,8 +98,13 @@ public class ActivitiesController : ControllerWithLogger
         _activityCache.Update(userId, mediaCache, DateTime.Now.ToUnixTimeStamp());
     }
 
-    private void LogActivities(int userId, int mediaId, int count)
+    private void LogActivitiesM(int userId, int mediaId, int count)
     {
         Logger.LogInformation("USER: [{userId}] MEDIA: [{mediaId}] ACTIVITIES: {count}", userId, mediaId, count);
+    }
+
+    private void LogActivitiesR(int userId, string range, int count)
+    {
+        Logger.LogInformation("USER: [{userId}] RANGE: [{range}] ACTIVITIES: {count}", userId, range, count);
     }
 }

@@ -7,6 +7,16 @@ using API.Services;
 
 namespace API.Objects;
 
+public class MediaSummary
+{
+    [GqlSelection("id"   )] public int        Id    { get; private set; }
+    [GqlSelection("type" )] public MediaType  Type  { get; private set; }
+    [GqlSelection("title")] public MediaTitle Title { get; private set; }
+
+    [GqlSelection("coverImage")] public MediaCover Cover { get; private set; }
+    [GqlSelection("siteUrl"   )] public Uri        Url   { get; private set; }
+}
+
 public class Media
 {
     [GqlSelection("id"   )] public int        Id    { get; private set; }

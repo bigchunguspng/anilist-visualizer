@@ -1,5 +1,8 @@
 namespace API.Objects;
 
+/// <summary>
+/// Activities of the same title
+/// </summary>
 public class TitleActivities
 {
     public int MaxProgressValue { get; set; }
@@ -10,20 +13,19 @@ public class TitleActivities
     {
         Activities = activities.Where(x => x.Progress != 0).ToList();
 
-        if (Activities.Count > 1) UniteActivitiesByDay();
+        if (Activities.Count > 1) UniteActivitiesByDay(Activities);
 
         MaxProgressValue = Activities.Max(x => x.Progress);
     }
 
-    private void UniteActivitiesByDay()
+    public static void UniteActivitiesByDay<T>(List<T> activities) where T : IActivity
     {
-        var lastI = 0;
-        var day = Activities[0].Day;
-        var len = Activities.Count;
-        for (var thisI = 1; thisI < len; thisI++)
+        var day = activities[0].Day;
+        var len = activities.Count;
+        for (int i_last = 0, i_this = 1; i_this < len; i_this++)
         {
-            var lastActivity = Activities[lastI];
-            var thisActivity = Activities[thisI];
+            var lastActivity = activities[i_last];
+            var thisActivity = activities[i_this];
 
             if (thisActivity.Day == day)
             {
@@ -35,10 +37,10 @@ public class TitleActivities
             else
             {
                 day = thisActivity.Day;
-                lastI = thisI;
+                i_last = i_this;
             }
         }
 
-        Activities = Activities.Where(x => x.Episodes != "x").ToList();
+        activities.RemoveAll(x => x.Episodes == "x");
     }
 }
