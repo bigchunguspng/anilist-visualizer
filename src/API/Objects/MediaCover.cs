@@ -10,8 +10,9 @@ public class MediaCover
     [GqlSelection("large" )] public string  Large  { get; private set; }
     [GqlSelection("medium")] public string  Medium { get; private set; }
 
-    public void ChopUrls()
+    public void FixData()
     {
+        Color ??= "#3db4f2";
         Large  = Large [BaseUrl.Length..];
         Medium = Medium[BaseUrl.Length..];
     }

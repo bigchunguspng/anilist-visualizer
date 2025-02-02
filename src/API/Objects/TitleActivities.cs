@@ -29,8 +29,10 @@ public class TitleActivities
 
             if (thisActivity.Day == day)
             {
-                var ep1 = lastActivity.Episodes!.Split(' ')[0];
-                var epN = thisActivity.Episodes?.Split(' ')[^1] ?? $"{int.Parse(ep1) + 1}";
+                var epA = lastActivity.Episodes!.Split(' ');
+                var ep1 = epA[0];  // [21] -  23
+                var ep2 = epA[^1]; //  21  - [23]
+                var epN = thisActivity.Episodes?.Split(' ')[^1] ?? $"{int.Parse(ep2) + 1}";
                 lastActivity.Episodes = $"{ep1} - {epN}";
                 thisActivity.Episodes = "x";
             }

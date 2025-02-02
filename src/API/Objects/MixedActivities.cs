@@ -59,6 +59,8 @@ public class MixedActivities
 
             var activitiesUnited = activitiesByMedia.SelectMany(x => x.Value).ToList();
 
+            foreach (var activity in activitiesUnited) activity.Media.Cover.FixData();
+
             MaxProgressValue = activitiesByMedia.Values.Select(list => list.Max(x => x.Progress)).Max();
 
             Activities = Enumerable

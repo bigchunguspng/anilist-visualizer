@@ -125,7 +125,7 @@ public class AnimangaService
         foreach (var entry in list)
         {
             entry.FixDates();
-            entry.Media.Cover.ChopUrls();
+            entry.Media.Cover.FixData();
         }
     }
 
