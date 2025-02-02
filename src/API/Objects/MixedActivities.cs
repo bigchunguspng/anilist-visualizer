@@ -15,7 +15,7 @@ public class MixedActivities
     public record NamedInt(string Title, int Value);
 
     // day - list of activities (united)
-    public Dictionary<int, List<ListActivityWithMedia>> Activities { get; private set; }
+    public List<List<ListActivityWithMedia>> Activities { get; private set; }
 
     public MixedActivities(List<ListActivityWithMedia> activities)
     {
@@ -45,25 +45,25 @@ public class MixedActivities
             BiggerUnits.Add(new NamedInt(date.ToString("MMM"), daysInMonth));
         }
 
-        if (activities.Count == 0) Activities = new Dictionary<int, List<ListActivityWithMedia>>();
+        if (activities.Count == 0) Activities = new List<List<ListActivityWithMedia>>();
         else
         {
-            var activitiesByMedia = activities.GroupBy(x => x.Media.Id).ToDictionary(g => g.Key, g => g.ToList());
+            var activitiesByMedia = activities
+                .GroupBy(x => x.Media.Id)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
             foreach (var mediaActivities in activitiesByMedia.Values)
             {
                 TitleActivities.UniteActivitiesByDay(mediaActivities);
             }
 
+            var activitiesUnited = activitiesByMedia.SelectMany(x => x.Value).ToList();
+
             MaxProgressValue = activitiesByMedia.Values.Select(list => list.Max(x => x.Progress)).Max();
 
             Activities = Enumerable
                 .Range(minDays, maxDays - minDays + 1)
-                .ToDictionary(x => x, _ => new List<ListActivityWithMedia>());
-
-            foreach (var activity in activitiesByMedia.SelectMany(x => x.Value))
-            {
-                Activities[activity.Day].Add(activity);
-            }
+                .Select(day => activitiesUnited.Where(activity => activity.Day == day).ToList()).ToList();
         }
     }
 }
