@@ -1,10 +1,10 @@
 # Anilist Visualizer
 
-ASP.NET Core application for visualizing AniList users' activities as a timeline chart.
+ASP.NET Core API + [ReactJS application](https://github.com/bigchunguspng/anilist-visualizer-react) that can visualize your AniList activities as a timeline chart.
 
-The site isn't hosted anywhere.
+As for now, the site isn't hosted anywhere.
 
-There is also a [react version](https://github.com/bigchunguspng/anilist-visualizer-react) to be used with an API from "api" branch.
+This is also an old version built with ASP.NET MVC (net7.0) in [master branch](https://github.com/bigchunguspng/anilist-visualizer/tree/master).
 
 ## Features I'll probably implement 🔩
 
