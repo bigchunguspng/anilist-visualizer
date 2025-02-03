@@ -29,7 +29,7 @@ public class TitleActivities
 
             if (thisActivity.Day == day)
             {
-                var epA = lastActivity.Episodes!.Split(' ');
+                var epA = lastActivity.Episodes?.Split(' ') ?? new[] { "0" };
                 var ep1 = epA[0];  // [21] -  23
                 var ep2 = epA[^1]; //  21  - [23]
                 var epN = thisActivity.Episodes?.Split(' ')[^1] ?? $"{int.Parse(ep2) + 1}";
