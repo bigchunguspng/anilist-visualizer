@@ -17,6 +17,8 @@ internal class Program
         
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.WebHost.UseUrls("http://0.0.0.0:5000", "http://localhost:5000");
+
         // Add services to the container.
 
         builder.Services.AddControllers();
@@ -45,7 +47,7 @@ internal class Program
             app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
         }
 
-        app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"));
+        app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("*"));
 
         app.UseAuthorization();
 
