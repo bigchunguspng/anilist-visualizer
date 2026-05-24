@@ -4,7 +4,7 @@ ASP.NET Core API + [ReactJS application](https://github.com/bigchunguspng/anilis
 
 As for now, the site isn't hosted anywhere.
 
-This is also an old version built with ASP.NET MVC (net7.0) in [master branch](https://github.com/bigchunguspng/anilist-visualizer/tree/master).
+There is also an old version built with ASP.NET MVC (net7.0) in [master branch](https://github.com/bigchunguspng/anilist-visualizer/tree/master).
 
 ## Screenshots
 
@@ -21,3 +21,4 @@ This is also an old version built with ASP.NET MVC (net7.0) in [master branch](h
 
 - [ ] zoomable and scrollable timelines 🔍
 - [ ] dark mode 🌙
+- [ ] make it a static web app and host on github pages 📝
