@@ -33,7 +33,8 @@ This is a proposed sequence for the next implementation agent.
 
 - Recreate overview rows, title localization, statuses, hover previews,
   activity overlays, tooltips, and external AniList links.
-- Recreate language/group/order controls, cookies, keyboard shortcuts, and
+- Recreate language/group/order controls using browser storage instead of
+  cookies, plus keyboard shortcuts and
   year selectors.
 - Recreate the last-three-month chart, title highlighting, and tooltips.
 - Ensure touch/mobile behavior does not depend on mouse hover.

@@ -18,6 +18,15 @@
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.
 
+## Persistent constraints
+
+- [ ] Use browser storage (`localStorage` preferred) instead of cookies for
+  rewritten preferences and cache data where appropriate.
+- [ ] Preserve all original source files until the owner deletes them.
+- [ ] Keep existing Imgur URLs until the owner replaces them with local files.
+- [ ] Follow the naming, CSS, indentation, alignment, and comment conventions
+  in `rewrite-rules.md`.
+
 ## Known source risks
 
 - Current frontend API URL is a private LAN address.

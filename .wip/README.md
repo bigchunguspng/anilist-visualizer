@@ -23,8 +23,16 @@ React to a static vanilla HTML/CSS/JS site for GitHub Pages.
 - `static-feasibility.md` - feasibility conclusion and behavior changes
 - `migration-plan.md` - proposed implementation sequence and risks
 - `todo.md` - persistent task checklist for the next agent
+- `rewrite-rules.md` - constraints that every future rewrite task must follow
 
 ## Scope of this review
 
 This review describes the code currently pinned in the parent repository. It
 does not implement the rewrite.
+
+## Persistent rewrite constraints
+
+The detailed rules are in `rewrite-rules.md`. In particular, browser storage
+must replace the original cookies, original source files must remain untouched
+until the owner removes them, existing Imgur URLs must remain for now, and the
+documented naming/formatting conventions apply to new static code.
