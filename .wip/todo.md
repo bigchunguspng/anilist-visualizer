@@ -1,7 +1,7 @@
 # Rewrite task checklist
 
-Status as of 2026-10-11: analysis and handoff documentation are complete;
-static application implementation has not started.
+Status as of 2026-10-11: Phase 1 static shell is complete; data and feature
+porting remain.
 
 ## Analysis completed
 
@@ -12,8 +12,9 @@ static application implementation has not started.
 
 ## Next implementation tasks
 
-- [ ] Choose the static directory and GitHub Pages deployment strategy.
-- [ ] Choose hash routing versus a `404.html` fallback.
+- [x] Choose the static directory and GitHub Pages deployment strategy.
+- [x] Choose hash routing versus a `404.html` fallback.
+- [x] Add the static HTML/CSS/JS shell and loading/error/not-found states.
 - [ ] Implement the minimal direct AniList GraphQL client.
 - [ ] Port server normalization into browser-side modules.
 - [ ] Port the home/search/user/overview/three-month UI.

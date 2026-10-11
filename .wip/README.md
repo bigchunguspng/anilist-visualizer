@@ -3,8 +3,8 @@
 Last reviewed: 2026-10-11
 
 This directory is the persistent handoff for rewriting the ASP.NET Core + React
-application as a static vanilla HTML/CSS/JS site hosted on GitHub Pages. The
-rewrite has not started in the application source yet.
+application as a static vanilla HTML/CSS/JS site hosted on GitHub Pages. Phase 1
+has established the static shell; AniList data access and visualizations remain.
 
 ## Current repository state
 
@@ -15,7 +15,11 @@ rewrite has not started in the application source yet.
 - AniList library: `src/AniListNet` (fork submodule,
   `bigchunguspng/AniListNet`, commit `47c4e6a`)
 - React submodule commit: `9ef269c`
-- Worktree was clean when this handoff was reviewed.
+- Static app: `static` (vanilla HTML/CSS/ES module JavaScript).
+- GitHub Pages publishing source: the `static` directory, deployed by the
+  eventual Pages workflow.
+- Routing: hash URLs (`#/` and `#/user/{username}`); `static/404.html` is a
+  fallback for direct file-server misses.
 
 ## Document map
 
@@ -45,3 +49,11 @@ Use each document for one purpose; do not copy its content into another file.
 The original ASP.NET, React, and submodule sources remain reference material
 and must not be removed as part of the rewrite. The rewrite-wide constraints
 are maintained only in `rewrite-rules.md`.
+
+## Phase 1 implementation
+
+`static/index.html` loads `styles.css` and `main.js` without a package manager
+or build step. The shell currently renders the home search form, a user loading
+screen, a custom not-found screen, and the shared footer. Submitting a non-empty
+username navigates to its hash user route; it does not call AniList until Phase
+2 adds the GraphQL client.
