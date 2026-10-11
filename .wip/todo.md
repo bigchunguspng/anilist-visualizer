@@ -1,4 +1,7 @@
-# Rewrite handoff checklist
+# Rewrite task checklist
+
+Status as of 2026-10-11: analysis and handoff documentation are complete;
+static application implementation has not started.
 
 ## Analysis completed
 
@@ -7,25 +10,19 @@
 - [x] Record AniListNet submodule provenance and application usage.
 - [x] Assess static GitHub Pages feasibility and behavior changes.
 
-## Next agent
+## Next implementation tasks
 
-- [ ] Choose static directory and GitHub Pages deployment strategy.
-- [ ] Choose hash routing versus `404.html` fallback.
-- [ ] Implement minimal direct AniList GraphQL client.
+- [ ] Choose the static directory and GitHub Pages deployment strategy.
+- [ ] Choose hash routing versus a `404.html` fallback.
+- [ ] Implement the minimal direct AniList GraphQL client.
 - [ ] Port server normalization into browser-side modules.
-- [ ] Port home/search/user/overview/three-month UI.
-- [ ] Add robust loading, empty, GraphQL, rate-limit, CORS, and offline states.
+- [ ] Port the home/search/user/overview/three-month UI.
+- [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.
 
-## Persistent constraints
-
-- [ ] Use browser storage (`localStorage` preferred) instead of cookies for
-  rewritten preferences and cache data where appropriate.
-- [ ] Preserve all original source files until the owner deletes them.
-- [ ] Keep existing Imgur URLs until the owner replaces them with local files.
-- [ ] Follow the naming, CSS, indentation, alignment, and comment conventions
-  in `rewrite-rules.md`.
+Rewrite-wide constraints and conventions are maintained in
+`rewrite-rules.md`.
 
 ## Known source risks
 
