@@ -15,7 +15,10 @@ porting remain.
 - [x] Choose the static directory and GitHub Pages deployment strategy.
 - [x] Choose hash routing versus a `404.html` fallback.
 - [x] Add the static HTML/CSS/JS shell and loading/error/not-found states.
-- [ ] Implement the minimal direct AniList GraphQL client.
+- [x] Implement the minimal direct AniList GraphQL client.
+- [x] Add page-size-50 pagination, explicit API error categories, request
+  deduplication, and bounded session caching.
+- [x] Wire user search and profile lookup into the static shell.
 - [ ] Port server normalization into browser-side modules.
 - [ ] Port the home/search/user/overview/three-month UI.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.

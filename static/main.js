@@ -1,3 +1,5 @@
+import {AniListApiError, get_user_by_name, search_users} from "./api.js";
+
 const CONTENT_ID = "app_content";
 
 function escape_html(value) {
@@ -93,6 +95,30 @@ function render_search_state(message, is_error = false) {
     results.innerHTML = `<div class="search-results"><p class="message${is_error ? " error" : ""}">${message}</p></div>`;
 }
 
+function render_search_results(users) {
+    const results = document.querySelector("#search_results");
+    if (!results) return;
+    if (users.length === 0) {
+        render_search_state("No AniList users found.", true);
+        return;
+    }
+    results.innerHTML = `
+        <div class="search-results">
+            ${users.map(user => `
+                <a class="search-result" href="#/user/${encodeURIComponent(user.name)}">
+                    <img class="avatar" src="${escape_html(user.avatar?.medium || "")}"
+                        alt="" loading="lazy">
+                    <span class="search-result-name">${escape_html(user.name)}</span>
+                    <span class="search-result-meta">View profile</span>
+                </a>`).join("")}
+        </div>`;
+}
+
+function render_api_error(error) {
+    if (!(error instanceof AniListApiError)) return "Could not load data from AniList.";
+    return error.message;
+}
+
 function bind_home() {
     const form = document.querySelector("[data-search-form]");
     if (!form) {
@@ -106,9 +132,32 @@ function bind_home() {
             render_search_state("Enter an AniList username to search.", true);
             return;
         }
-        window.location.hash = `/user/${encodeURIComponent(username)}`;
-        render_search_state("Loading...");
+        render_search_state("Searching...");
+        search_users(username)
+            .then(render_search_results)
+            .catch(error => render_search_state(render_api_error(error), true));
     });
+}
+
+function bind_user(username) {
+    const user_name = document.querySelector(".user-name");
+    const user_count = document.querySelector(".user-count");
+    if (!user_name || !user_count) return;
+    get_user_by_name(username)
+        .then(user => {
+            if (!user) {
+                user_count.className = "user-count error";
+                user_count.textContent = "User not found.";
+                return;
+            }
+            user_name.textContent = user.name;
+            user_count.textContent = `AniList user #${user.id}`;
+            set_title(`${user.name} · AniList Visualizer`);
+        })
+        .catch(error => {
+            user_count.className = "user-count error";
+            user_count.textContent = render_api_error(error);
+        });
 }
 
 function render() {
@@ -119,6 +168,7 @@ function render() {
         bind_home();
     } else if (route.name === "user") {
         content.innerHTML = render_user(route.username);
+        bind_user(route.username);
     } else {
         content.innerHTML = render_not_found();
     }

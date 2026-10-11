@@ -147,5 +147,9 @@ directory. `static/index.html` is the only application document and loads the
 vanilla ES module `main.js` plus `styles.css`. Hash routing avoids GitHub Pages
 server fallback requirements: `#/` is home, `#/user/{username}` is the user
 loading shell, and any other hash is the not-found view. `404.html` provides a
-basic fallback when a host requests a missing file directly. The user timeline
-and search results are placeholders until the Phase 2 GraphQL client is added.
+basic fallback when a host requests a missing file directly. The Phase 2
+GraphQL client is in `static/api.js`. It uses public POST requests, 50-item
+pagination, in-flight request deduplication, and a bounded 15-minute
+`sessionStorage` cache. It exposes user lookup/search, media-list,
+title-activity, and range-activity functions. Search and user routes now use
+the client; normalization and timeline rendering remain Phase 3/4 work.
