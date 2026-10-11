@@ -160,15 +160,21 @@ optional activity attachment. `build_title_activities` and
 `build_mixed_activities` now back the overview overlays and the last-three-
 months chart.
 
-`static/main.js` now renders the migrated UI in vanilla DOM/HTML:
+`static/main.js` now renders the migrated UI in vanilla DOM/HTML using the
+legacy React markup and behavior as the parity source:
 
-- overview rows with localized titles, status badges, AniList links, airing
-  overlays, tooltips, and row-triggered title activity loading;
+- overview rows with localized titles, legacy status SVGs, AniList links, airing
+  overlays, tooltips, and colored-rectangle-triggered title activity loading;
 - browser-stored language/group/order preferences, year selectors, last-year
   filtering, and keyboard shortcuts (`J`, `G`, `R`);
 - a last-three-month chart that fetches a three-month Unix timestamp range
-  directly from AniList, highlights a selected title, and keeps touch users on
-  a click/focus-safe preview flow instead of relying on hover alone.
+  directly from AniList, shows the legacy cover preview on click, and restores
+  all activities on double-click.
+
+The legacy parity CSS must remain global. In particular, the legacy entry,
+timeline, control, and chart selectors must not be nested under the
+`max-width: 449px` media query; doing so causes desktop to fall back to the
+incompatible Phase 4 card/grid rules.
 
 Phase 5 is now verification work: real-browser/mobile validation, error-path
 testing, deep-link refresh checks, and GitHub Pages deployment checks.

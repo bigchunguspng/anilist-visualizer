@@ -1,7 +1,7 @@
 # Rewrite task checklist
 
-Status as of 2026-10-11: Phases 1-3 are complete; visualization and controls
-remain.
+Status as of 2026-10-11: Static visualization and controls are ported; final
+real-browser/deployment verification remains.
 
 ## Analysis completed
 
@@ -30,14 +30,12 @@ remain.
 
 - Static `main.js` now renders the overview and last-three-month views end to
   end.
-- Overview rows include localized titles, status badges, AniList links, airing
-  overlays, title-activity overlays, keyboard shortcuts (`J`, `G`, `R`), year
-  filters, last-year/all filters, and browser-stored preferences.
-- Row selection loads per-title activities through `get_title_activities`, and
-  chart mode loads range activities through `get_range_activities` plus
-  `build_mixed_activities`.
-- Desktop hover still shows tooltips, while touch/keyboard users can open the
-  same details through click/focus-safe controls and persistent preview cards.
+- Overview rows use the legacy React markup and status SVGs, with activity
+  loading only from the colored timeline rectangle.
+- Chart mode loads range activities through `get_range_activities` plus
+  `build_mixed_activities`, preserving hover, click highlight, cover preview,
+  and double-click restore behavior.
+- No new preview-card, status-pill, or clear-highlight UI is part of the port.
 
 ## Phase 5 remaining
 

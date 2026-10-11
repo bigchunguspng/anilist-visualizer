@@ -99,6 +99,25 @@ function hide_tooltip() {
     if (!tooltip) return;
     tooltip.setAttribute("aria-hidden", "true");
     tooltip.classList.remove("visible");
+    const legacy_tip = document.getElementById("tip");
+    if (legacy_tip) legacy_tip.style.display = "none";
+}
+
+function show_legacy_tooltip(target, lines, chart = false) {
+    const tip = document.getElementById("tip");
+    const root = document.querySelector("main");
+    if (!tip || !root || !lines.length) return;
+    tip.innerHTML = lines.map(line => `<p>${escape_html(line)}</p>`).join("");
+    tip.style.display = "block";
+    const target_rect = chart
+        ? target.parentElement.getBoundingClientRect()
+        : target.getBoundingClientRect();
+    const root_rect = root.getBoundingClientRect();
+    const tip_rect = tip.getBoundingClientRect();
+    tip.style.top = `${(chart ? target_rect.bottom + 18 : target_rect.top - 12 - tip_rect.height) - root_rect.top}px`;
+    tip.style.left = `${(chart
+        ? target_rect.left - (tip_rect.width - target_rect.width) / 2
+        : target_rect.left) - root_rect.left}px`;
 }
 
 function show_tooltip(target, lines, placement = "top") {
@@ -152,6 +171,25 @@ function format_day(day) {
     });
 }
 
+function format_last_activity(timestamp) {
+    const seconds = Math.max(0, Math.floor(Date.now() / 1000) - Number(timestamp || 0));
+    const units = [
+        ["year", 31536000],
+        ["month", 2592000],
+        ["week", 604800],
+        ["day", 86400],
+        ["hour", 3600],
+        ["minute", 60]
+    ];
+    for (const [name, size] of units) {
+        if (seconds >= size) {
+            const value = Math.floor(seconds / size);
+            return `${value} ${name}${value === 1 ? "" : "s"} ago`;
+        }
+    }
+    return "just now";
+}
+
 function get_localized_title(titles, language) {
     if (language === LANG_JAPANESE) {
         return titles?.native || titles?.english || titles?.romaji || "Untitled";
@@ -187,17 +225,18 @@ function render_home() {
     set_title("AniList Visualizer");
     set_favicon();
     return `
-        <main class="home">
-            <img class="home-logo" draggable="false"
+        <main class="home pb-3">
+            <div class="text-center">
+            <img class="logo" draggable="false"
                 src="https://i.imgur.com/tgGcE0v.png"
-                alt="AniList Visualizer">
-            <form class="search-bar" data-search-form>
-                <label class="sr-only" for="user_search">AniList username</label>
-                <input id="user_search" class="search" type="search"
+                alt="AniList Visualizer (WHOLESOME 100 | ifunny.co)">
+            <form class="searchbar" data-search-form>
+                <input id="user-search" class="search section" type="text"
                     name="username" autocomplete="off" placeholder="Enter your username">
             </form>
             <div id="search_results" aria-live="polite"></div>
-            <p class="home-help">Go to <a href="https://anilist.co" target="_blank" rel="noreferrer">AniList</a> if you don't get it.</p>
+            <p>Go to <a href="https://anilist.co">AniList</a> if you don't get it.</p>
+            </div>
         </main>`;
 }
 
@@ -205,12 +244,18 @@ function render_not_found() {
     set_title("Nothing here...");
     set_favicon();
     return `
-        <main class="not-found">
-            <img class="not-found-logo" src="https://i.imgur.com/CdcGFjA.png"
+        <header><div class="nav-mini">
+            <a class="nav-logo" href="#" data-home-link>
+                <img src="https://anilist.co/img/icons/icon.svg" height="50" alt="AniList">
+                <span>Visualizer</span>
+            </a>
+        </div></header>
+        <main><div class="text-center diffuse">
+            <img class="logo" src="https://i.imgur.com/CdcGFjA.png"
                 alt="Akko staring at the monitor">
             <h1>Page Not Found</h1>
             <p>You picked the wrong URL baka!</p>
-            <p><a href="#" data-home-link>Return home</a></p>
+            </div>
         </main>`;
 }
 
@@ -326,16 +371,13 @@ function render_activity_overlay(entry, min_day) {
     if (!activities.length) return "";
     const start_day = min_day + entry.timelineItem.offset;
     const width = Math.max(entry.timelineItem.length, 1);
-    return activities.map(activity => {
-        const left = Math.max(0, Math.min(100, ((activity.day - start_day) / width) * 100));
-        const height = Math.max(12.5, Math.min(100, (activity.progress / 8) * 100));
+    return `<div class="days">${activities.map(activity => {
+        const left = Math.max(0, Math.min(100, ((activity.day - start_day - 1) / width) * 100));
+        const height = (activity.progress / 8) * 100;
         return `
-            <span
-                class="timeline-activity"
-                style="left:${left}%;height:${height}%;"
-                data-tooltip="${escape_html(title_activity_lines(activity, entry.media.type).join("\n"))}">
-            </span>`;
-    }).join("");
+            <div class="day" style="left:${left}%;width:${100 / width}%;height:${height}%;"
+                data-tooltip="${escape_html(title_activity_lines(activity, entry.media.type).join("\n"))}"></div>`;
+    }).join("")}</div>`;
 }
 
 function render_entry(entry, page, model) {
@@ -346,91 +388,44 @@ function render_entry(entry, page, model) {
     const cover_url = get_cover_url(entry.media.coverImage);
     const cover_color = get_cover_color(entry.media.coverImage);
     const tooltip = entry_tooltip_lines(entry).join("\n");
-    const is_selected = page.selectedMediaId === media_id;
-    const is_loading = page.loadingMediaId === media_id;
     const progress_style = `margin-left:${(item.offset / timeframe) * 100}%;width:${(item.length / timeframe) * 100}%;`;
     const airing = entry.media.airing;
 
     return `
-        <div class="entry-card${is_selected ? " selected" : ""}${is_loading ? " loading" : ""}">
-            <div class="entry-cover">
-                <div class="entry-thumb" style="--cover-image:url('${escape_html(cover_url)}');--cover-color:${cover_color};"></div>
-                <a class="entry-link" href="${escape_html(entry.media.siteUrl || "#")}" target="_blank" rel="noreferrer"
-                    aria-label="Open ${escape_html(title)} on AniList">AniList</a>
+        <div class="entry">
+            <div class="cover">
+                <div class="image color" style="background-image:url('${escape_html(cover_url)}');--color-blue:${cover_color};"></div>
+                <a class="link" href="${escape_html(entry.media.siteUrl || "#")}" target="_blank" rel="noreferrer">
+                    ${entry.media.type === "MANGA" ? "マ" : "ア"}
+                </a>
             </div>
-            <button
-                type="button"
-                class="entry-main"
-                data-action="select-entry"
-                data-media-id="${media_id}"
-                data-tooltip="${escape_html(tooltip)}">
-                <span class="entry-title ${escape_html(entry.status)}">${escape_html(title)}</span>
-                <span class="entry-timeline">
-                    <span class="timeline-row">${timeline_sections_html(model.timelineSections, timeframe, false)}</span>
-                    ${airing ? `
-                        <span class="timeline-item timeline-airing stripes"
-                            style="margin-left:${(airing.offset / timeframe) * 100}%;width:${(airing.length / timeframe) * 100}%;">
-                            <span class="timeline-season">${escape_html(airing.season)}</span>
-                        </span>` : ""}
-                    <span class="timeline-item" style="${progress_style}">
-                        <span class="timeline-range${item.stripes ? " stripes" : ""}" style="--cover-color:${cover_color};">
-                            ${render_activity_overlay(entry, model.minDay)}
-                        </span>
-                    </span>
-                    <span class="timeline-row text">${timeline_sections_html(model.timelineSections, timeframe, true)}</span>
-                </span>
-            </button>
-            <span class="status-pill status-${escape_html(entry.status.toLowerCase())}">
-                ${escape_html(format_status(entry.status))}
+            <div class="title ${escape_html(entry.status)}">${escape_html(title)}</div>
+            <div class="timeline tip-rect-ref">
+                <div class="timeline-row">${timeline_sections_html(model.timelineSections, timeframe, false)}</div>
+                ${airing ? `
+                    <div class="timeline-item releasing stripes"
+                        style="margin-left:${(airing.offset / timeframe) * 100}%;width:${(airing.length / timeframe) * 100}%;">
+                        <div class="season">${escape_html(airing.season)}</div>
+                    </div>` : ""}
+                <div class="timeline-item tip" style="${progress_style}">
+                    <div class="range${item.stripes ? " stripes" : ""}" style="--color-blue:${cover_color};">
+                        ${render_activity_overlay(entry, model.minDay)}
+                        <div class="hover-box" data-action="load-entry" data-media-id="${media_id}"
+                            data-tooltip="${escape_html(tooltip)}"></div>
+                    </div>
+                </div>
+                <div class="timeline-row text">${timeline_sections_html(model.timelineSections, timeframe, true)}</div>
+            </div>
+            <span class="entry-status">
+                ${entry.status !== "COMPLETED"
+                    ? `<img src="./svg/status/${escape_html(entry.status)}.svg" alt="${escape_html(entry.status)}">`
+                    : ""}
             </span>
         </div>`;
 }
 
 function render_selected_entry(page, model) {
-    const entry = model.visibleEntries.find(item => item.media.id === page.selectedMediaId);
-    if (!entry) {
-        return `
-            <section class="preview-card panel">
-                <h3>Title details</h3>
-                <p class="preview-empty">Tap or click a row to load title activities and preview the selected title.</p>
-            </section>`;
-    }
-
-    const title = get_localized_title(entry.media.title, page.prefs.language);
-    const activities = page.activityCache.get(entry.media.id);
-    const error = page.activityErrors.get(entry.media.id);
-    const cover_url = get_cover_url(entry.media.coverImage);
-
-    return `
-        <section class="preview-card panel">
-            <div class="preview-body">
-                <div class="preview-cover" style="background-image:url('${escape_html(cover_url)}');"></div>
-                <div class="preview-copy">
-                    <p class="preview-eyebrow">${escape_html(format_status(entry.status))}</p>
-                    <h3>${escape_html(title)}</h3>
-                    <p>${escape_html(entry.timelineItem.tip.dateRange)}</p>
-                    ${entry.timelineItem.tip.episodes != null
-                        ? `<p>${escape_html(`${entry.timelineItem.tip.episodes} ${unit_label(entry.media.type, entry.timelineItem.tip.episodes)}`)}</p>`
-                        : ""}
-                    ${entry.timelineItem.tip.averageSpeed
-                        ? `<p>${escape_html(entry.timelineItem.tip.averageSpeed)}</p>`
-                        : ""}
-                    ${(entry.repeat || 0) > 0
-                        ? `<p>+ ${entry.repeat} repeat${entry.repeat === 1 ? "" : "s"}</p>`
-                        : ""}
-                    <p class="preview-muted">
-                        ${page.loadingMediaId === entry.media.id
-                            ? "Loading title activities..."
-                            : error
-                                ? escape_html(error)
-                                : activities
-                                    ? `${activities.activities.length} activity day${activities.activities.length === 1 ? "" : "s"} loaded.`
-                                    : "Select the row again later if AniList has no matching activity records."}
-                    </p>
-                    <p><a href="${escape_html(entry.media.siteUrl || "#")}" target="_blank" rel="noreferrer">Open on AniList</a></p>
-                </div>
-            </div>
-        </section>`;
+    return "";
 }
 
 function render_overview(page) {
@@ -444,52 +439,46 @@ function render_overview(page) {
 
     return `
         <section class="visualizer-body">
-            <div class="control-panel panel">
+            <div class="control-panel">
                 <div class="section-name">
-                    <h2>${escape_html(overview_heading(page))}</h2>
+                    <h3>All</h3>
                     <div>${escape_html(header)}</div>
                 </div>
-                <div class="actions-grid">
-                    <button type="button" class="action-button" data-action="set-filter" data-filter="all"
-                        aria-pressed="${page.filter.mode === "all"}">All</button>
-                    <button type="button" class="action-button" data-action="set-filter" data-filter="last_year"
-                        aria-pressed="${page.filter.mode === "last_year"}">Last year</button>
-                    <button type="button" class="action-button" data-action="toggle-pref" data-pref="language"
-                        aria-pressed="${page.prefs.language === LANG_JAPANESE}">
+                <div class="actions" id="buttons">
+                    ${page.filter.mode !== "last_year"
+                        ? `<button type="button" class="section" data-action="set-filter" data-filter="last_year">Last year</button>`
+                        : ""}
+                    <button type="button" class="section" data-action="toggle-pref" data-pref="language">
                         ${page.prefs.language === LANG_JAPANESE ? "English" : "日本語"}
                     </button>
-                    <button type="button" class="action-button" data-action="toggle-pref" data-pref="grouping"
-                        aria-pressed="${page.prefs.grouping === GROUP_GROUPED}">
+                    <button type="button" class="section" data-action="toggle-pref" data-pref="grouping">
                         ${page.prefs.grouping === GROUP_GROUPED ? "Restore" : "Group"}
                     </button>
-                    <button type="button" class="action-button" data-action="toggle-pref" data-pref="ordering"
-                        aria-pressed="${page.prefs.ordering === ORDER_REVERSE}">
+                    <button type="button" class="section" data-action="toggle-pref" data-pref="ordering">
                         Reverse
                     </button>
-                    <label class="year-field">
-                        <span>From</span>
-                        <select data-filter-year="from">
+                    <div>From:</div>
+                    <select class="section" data-filter-year="from">
                             ${years.map(year => `<option value="${year}"${year === page.filter.from ? " selected" : ""}>${year}</option>`).join("")}
-                        </select>
-                    </label>
-                    <label class="year-field">
-                        <span>To</span>
-                        <select data-filter-year="to">
+                    </select>
+                    <div>To:</div>
+                    <select class="section" data-filter-year="to">
                             ${years.map(year => `<option value="${year}"${year === page.filter.to ? " selected" : ""}>${year}</option>`).join("")}
-                        </select>
-                    </label>
+                    </select>
                 </div>
             </div>
-            ${render_selected_entry(page, model)}
             <div class="hint-message-div">
                 <span class="hint-message">
-                    J = language · G = grouping · R = reverse order.<br>
-                    Tap or click a row to load title activities. Activity overlay height = 8 episodes / chapters.
+                    J - switch language.<br>
+                    G - switch grouping.<br>
+                    R - reverse / restore.<br><br>
+                    Click on colorful rectangle to see activities. Timeline height = 8 episodes / chapters.
                 </span>
             </div>
-            <div class="overview-list panel${page.prefs.ordering === ORDER_REVERSE ? " reverse" : ""}">
+            <div id="animanga" class="medialist section${page.prefs.ordering === ORDER_REVERSE ? " reverse" : ""}">
                 ${list_html}
             </div>
+            <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;
 }
 
@@ -531,82 +520,57 @@ function chart_activity_lines(activity, language) {
 
 function render_chart(page) {
     if (page.chart.status === "loading" || page.chart.status === "idle") {
-        return `<section class="panel chart-panel"><p class="message">Loading the last 3 months...</p></section>`;
+        return `<div class="section-name error">Loading...</div>`;
     }
     if (page.chart.status === "error") {
-        return `<section class="panel chart-panel"><p class="message error">${escape_html(page.chart.error)}</p></section>`;
+        return `<div class="section-name error">${escape_html(page.chart.error)}</div>`;
     }
 
     const chart = page.chart.data;
     if (!chart || chart.activities.length === 0) {
-        return `<section class="panel chart-panel"><p class="message">No title activities were recorded in the last 3 months.</p></section>`;
+        return `<div class="section-name error">No activities were recorded in the last 3 months.</div>`;
     }
 
-    const selection = get_chart_selection(page);
-    const preview_title = selection
-        ? get_localized_title(selection.media.title, page.prefs.language)
-        : "Select a title";
-    const preview_cover = selection ? get_cover_url(selection.media.coverImage) : "";
-
     return `
-        <section class="chart-layout">
-            <section class="preview-card panel">
-                <div class="preview-body">
-                    <div class="preview-cover${selection ? "" : " empty"}"
-                        style="${selection ? `background-image:url('${escape_html(preview_cover)}');` : ""}"></div>
-                    <div class="preview-copy">
-                        <p class="preview-eyebrow">Last 3 months</p>
-                        <h3>${escape_html(preview_title)}</h3>
-                        <p class="preview-muted">
-                            ${selection
-                                ? `${selection.activityDays} activity day${selection.activityDays === 1 ? "" : "s"} · ${selection.totalProgress} total ${unit_label(selection.media.type, selection.totalProgress)}`
-                                : "Tap or click a bar to highlight a title and show its cover."}
-                        </p>
-                        ${selection
-                            ? `<p><a href="${escape_html(selection.media.siteUrl || "#")}" target="_blank" rel="noreferrer">Open on AniList</a></p>`
-                            : ""}
-                        <p class="preview-muted">Use the Clear highlight button to restore every title.</p>
-                    </div>
-                </div>
-            </section>
-            <section class="panel chart-panel">
-                <div class="chart-topline">
-                    <h2>Last 3 months</h2>
-                    <button type="button" class="action-button" data-action="clear-chart-highlight">Clear highlight</button>
-                </div>
-                <div class="chart-days" aria-label="AniList activity chart">
+        <div class="container-xd">
+            <main role="main" class="pb-3" style="position:relative">
+                <div id="days">
                     ${chart.smallerUnits.map((unit, index) => `
-                        <div class="chart-day" style="width:${(unit.value / chart.smallerUnits.length) * 100}%;">
-                            <div class="chart-day-bars">
+                        <div class="am3-day" style="--width:${(unit.value / chart.smallerUnits.length) * 100}%;">
+                            <div class="am3-day-title">${escape_html(unit.title)}</div>
                                 ${(chart.activities[index] || []).map(activity => `
                                     <button
                                         type="button"
-                                        class="chart-activity${page.chart.selectedMediaId && page.chart.selectedMediaId !== activity.media.id ? " dimmed" : ""}"
+                                        class="am3-activity tip-rect-ref media-${activity.media.id}${page.chart.selectedMediaId && page.chart.selectedMediaId !== activity.media.id ? " semi" : ""}"
                                         data-action="select-chart-media"
                                         data-media-id="${activity.media.id}"
                                         data-tooltip="${escape_html(chart_activity_lines(activity, page.prefs.language).join("\n"))}"
-                                        style="height:${Math.max(12.5, (activity.progress / chart.maxProgressValue) * 100)}%;--cover-color:${get_cover_color(activity.media.coverImage)};">
+                                        style="height:${(activity.progress / chart.maxProgressValue) * 100}%;--color-blue:${get_cover_color(activity.media.coverImage)};"
+                                        data-cover="${escape_html(get_cover_url(activity.media.coverImage))}">
                                     </button>`).join("")}
-                            </div>
-                            <div class="chart-day-title">${escape_html(unit.title)}</div>
                         </div>`).join("")}
                 </div>
-                <div class="chart-months">
+                <div id="months">
                     ${chart.biggerUnits.map(unit => `
-                        <div class="chart-month" style="width:${(unit.value / chart.smallerUnits.length) * 100}%;">
+                        <div class="am3-month" style="--width:${(unit.value / chart.smallerUnits.length) * 100}%;">
                             ${escape_html(unit.title)}
                         </div>`).join("")}
                 </div>
                 <div class="hint-message-div">
-                    <span class="hint-message">Tap or click a bar to isolate one title. Hover and focus still show tooltips on desktop and keyboard.</span>
+                    <span class="hint-message">
+                        Single click - highlight specific title.<br>
+                        Double click - restore.
+                    </span>
                 </div>
-            </section>
-        </section>`;
+                <div class="am3-image" id="image"></div>
+                <div class="tipbox absolute"><span id="tip"></span></div>
+            </main>
+        </div>`;
 }
 
 function render_user_page(page) {
     const display_name = page.user?.name || page.username;
-    set_title(`${display_name} · AniList Visualizer`);
+    set_title(`${display_name} · Anilist Visualizer`);
 
     const user = page.user;
     const avatar = user?.avatar?.large || "";
@@ -620,31 +584,33 @@ function render_user_page(page) {
                 : `${base_model.visibleEntries.length} titles · ${base_model.seriesShown} series`;
 
     return `
-        <header class="site-header">
+        <header class="user">
             <div class="nav-mini">
                 <a class="nav-logo" href="#" data-home-link>
                     <img src="https://anilist.co/img/icons/icon.svg" alt="AniList">
                     <span>Visualizer</span>
                 </a>
             </div>
-            <div class="user-info">
+            <div class="container-xd user-info">
                 ${user ? `
                     <a href="${escape_html(user.siteUrl || "#")}" target="_blank" rel="noreferrer">
-                        <img class="avatar-large" src="${escape_html(avatar)}" alt="${escape_html(user.name)} avatar">
+                        <img class="avatar" src="${escape_html(avatar)}" alt="avatar.jpeg">
                     </a>` : ""}
-                <div class="user-text${user ? "" : " user-loading"}">
-                    <h1 class="user-name">${escape_html(display_name)}</h1>
-                    <p class="user-count${page.phase === "error" ? " error" : ""}">${escape_html(header_text)}</p>
-                </div>
+                ${user
+                    ? `<div class="text">
+                        <h1 class="user-name">${escape_html(display_name)}</h1>
+                        <p class="user-count">Last activity: ${escape_html(format_last_activity(user.updatedAt))}</p>
+                    </div>`
+                    : `<div class="user-count error">${escape_html(header_text)}</div>`}
             </div>
         </header>
-        <main class="visualizer-shell" aria-live="polite">
+        <main aria-live="polite">
             ${user ? `
                 <div class="nav-wrap">
-                    <div class="tab-nav" role="tablist" aria-label="Visualization view">
+                    <div class="container-xd nav" role="tablist" aria-label="Visualization view">
                         <button
                             type="button"
-                            class="tab-button${page.currentView === VIEW_OVERVIEW ? " active" : ""}"
+                            class="nav-link${page.currentView === VIEW_OVERVIEW ? " active" : ""}"
                             data-action="switch-view"
                             data-view="${VIEW_OVERVIEW}"
                             role="tab"
@@ -653,7 +619,7 @@ function render_user_page(page) {
                         </button>
                         <button
                             type="button"
-                            class="tab-button${page.currentView === VIEW_THREE_MONTHS ? " active" : ""}"
+                            class="nav-link${page.currentView === VIEW_THREE_MONTHS ? " active" : ""}"
                             data-action="switch-view"
                             data-view="${VIEW_THREE_MONTHS}"
                             role="tab"
@@ -662,7 +628,7 @@ function render_user_page(page) {
                         </button>
                     </div>
                 </div>` : ""}
-            <div class="visualizer-content">
+            <div class="container-xd">
                 ${page.phase === "loading_user" || page.phase === "loading_entries"
                     ? `<section class="panel"><p class="message">${escape_html(header_text)}</p></section>`
                     : page.phase === "error"
@@ -677,23 +643,29 @@ function render_user_page(page) {
 function render_search_state(message, is_error = false) {
     const results = document.querySelector("#search_results");
     if (!results) return;
-    results.innerHTML = `<div class="search-results"><p class="message${is_error ? " error" : ""}">${escape_html(message)}</p></div>`;
+    results.innerHTML = `<div class="mb-3 medialist section search-results"><div class="error">${escape_html(message)}</div></div>`;
 }
 
 function render_search_results(users) {
     const results = document.querySelector("#search_results");
     if (!results) return;
     if (users.length === 0) {
-        render_search_state("No AniList users found.", true);
+        results.innerHTML = `
+            <div class="mb-3 medialist section search-results">
+                <div class="search-result entry">
+                    <div class="cover"><div class="image" style="background-image:url(https://i.imgur.com/tmno0VA.png)"></div></div>
+                    <div class="title">Nobody Was Found</div><div class="last-seen">XD</div>
+                </div>
+            </div>`;
         return;
     }
     results.innerHTML = `
-        <div class="search-results">
+        <div class="mb-3 medialist section search-results">
             ${users.map(user => `
-                <a class="search-result" href="#/user/${encodeURIComponent(user.name)}">
-                    <img class="avatar" src="${escape_html(user.avatar?.medium || "")}" alt="" loading="lazy">
-                    <span class="search-result-name">${escape_html(user.name)}</span>
-                    <span class="search-result-meta">View profile</span>
+                <a class="search-result entry" href="#/user/${encodeURIComponent(user.name)}">
+                    <div class="cover"><div class="image" style="background-image:url('${escape_html(user.avatar?.large || user.avatar?.medium || "")}')"></div></div>
+                    <div class="title">${escape_html(user.name)}</div>
+                    <div class="last-seen">${escape_html(format_last_activity(user.updatedAt))}</div>
                 </a>`).join("")}
         </div>`;
 }
@@ -776,7 +748,6 @@ async function load_entry_activities(page, media_id) {
     if (!page?.user || page.activityCache.has(media_id) || page.loadingMediaId === media_id) return;
     page.loadingMediaId = media_id;
     page.activityErrors.delete(media_id);
-    update_user_render();
     try {
         const raw = await get_title_activities(page.user.id, media_id);
         if (app_state.userPage?.token !== page.token) return;
@@ -898,15 +869,9 @@ document.addEventListener("click", event => {
         return;
     }
 
-    const select_entry = event.target.closest("[data-action='select-entry']");
-    if (select_entry) {
-        const media_id = Number(select_entry.dataset.mediaId);
-        page.selectedMediaId = media_id;
-        update_user_render();
-        load_entry_activities(page, media_id);
-        if (window.matchMedia("(hover: none)").matches) {
-            show_tooltip(select_entry, parse_tooltip_lines(select_entry));
-        }
+    const load_entry = event.target.closest("[data-action='load-entry']");
+    if (load_entry) {
+        load_entry_activities(page, Number(load_entry.dataset.mediaId));
         return;
     }
 
@@ -914,17 +879,21 @@ document.addEventListener("click", event => {
     if (select_chart) {
         page.chart.selectedMediaId = Number(select_chart.dataset.mediaId);
         update_user_render();
-        if (window.matchMedia("(hover: none)").matches) {
-            show_tooltip(select_chart, parse_tooltip_lines(select_chart), "bottom");
-        }
+        const selected = document.querySelector(`.am3-activity.media-${select_chart.dataset.mediaId}`);
+        if (selected) highlight_chart_activity(selected);
         return;
     }
-
-    if (event.target.closest("[data-action='clear-chart-highlight']")) {
-        page.chart.selectedMediaId = null;
-        update_user_render();
-    }
 });
+
+function highlight_chart_activity(activity) {
+    const image = document.getElementById("image");
+    if (image) {
+        image.style.backgroundImage = `url("${activity.dataset.cover || ""}")`;
+    }
+    document.querySelectorAll(".am3-activity").forEach(item => item.classList.remove("semi"));
+    document.querySelectorAll(`.am3-activity:not(.media-${activity.dataset.mediaId})`)
+        .forEach(item => item.classList.add("semi"));
+}
 
 document.addEventListener("change", event => {
     const page = get_user_page();
@@ -955,7 +924,7 @@ document.addEventListener("mouseover", event => {
     const target = event.target.closest("[data-tooltip]");
     if (!target || target.contains(event.relatedTarget)) return;
     const lines = parse_tooltip_lines(target);
-    if (lines.length) show_tooltip(target, lines, target.classList.contains("chart-activity") ? "bottom" : "top");
+    if (lines.length) show_legacy_tooltip(target, lines, target.classList.contains("am3-activity"));
 });
 
 document.addEventListener("mouseout", event => {
@@ -968,7 +937,7 @@ document.addEventListener("focusin", event => {
     const target = event.target.closest("[data-tooltip]");
     if (!target) return;
     const lines = parse_tooltip_lines(target);
-    if (lines.length) show_tooltip(target, lines, target.classList.contains("chart-activity") ? "bottom" : "top");
+    if (lines.length) show_legacy_tooltip(target, lines, target.classList.contains("am3-activity"));
 });
 
 document.addEventListener("focusout", event => {
@@ -979,6 +948,17 @@ document.addEventListener("focusout", event => {
 
 window.addEventListener("scroll", hide_tooltip, {passive: true});
 window.addEventListener("resize", hide_tooltip);
+document.addEventListener("dblclick", event => {
+    if (!event.target.closest(".am3-activity")) return;
+    page_for_chart_reset();
+});
+
+function page_for_chart_reset() {
+    const page = get_user_page();
+    if (!page) return;
+    page.chart.selectedMediaId = null;
+    update_user_render();
+}
 window.addEventListener("hashchange", render_route);
 
 render_route();
