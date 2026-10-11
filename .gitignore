@@ -3,4 +3,5 @@
 **/.*
 !.wip/
 !.wip/**
+!static/.nojekyll
 *.user
