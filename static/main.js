@@ -1,4 +1,5 @@
-import {AniListApiError, get_user_by_name, search_users} from "./api.js";
+import {AniListApiError, get_media_lists, get_user_by_name, search_users} from "./api.js";
+import {build_animanga} from "./domain.js";
 
 const CONTENT_ID = "app_content";
 
@@ -151,7 +152,20 @@ function bind_user(username) {
                 return;
             }
             user_name.textContent = user.name;
-            user_count.textContent = `AniList user #${user.id}`;
+            get_media_lists(user.id)
+                .then(entries => {
+                    const animanga = build_animanga(entries);
+                    user_count.textContent = `${animanga.visibleEntries.length} titles · ${animanga.seriesShown} series`;
+                    document.querySelector(".placeholder-panel .message").textContent =
+                        animanga.visibleEntries.length ? "Timeline data ready." :
+                            "This user has no drawable titles.";
+                })
+                .catch(error => {
+                    user_count.className = "user-count error";
+                    user_count.textContent = render_api_error(error);
+                    document.querySelector(".placeholder-panel .message").textContent =
+                        render_api_error(error);
+                });
             set_title(`${user.name} · AniList Visualizer`);
         })
         .catch(error => {

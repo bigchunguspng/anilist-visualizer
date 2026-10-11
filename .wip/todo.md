@@ -1,7 +1,7 @@
 # Rewrite task checklist
 
-Status as of 2026-10-11: Phase 1 static shell is complete; data and feature
-porting remain.
+Status as of 2026-10-11: Phases 1-3 are complete; visualization and controls
+remain.
 
 ## Analysis completed
 
@@ -19,7 +19,8 @@ porting remain.
 - [x] Add page-size-50 pagination, explicit API error categories, request
   deduplication, and bounded session caching.
 - [x] Wire user search and profile lookup into the static shell.
-- [ ] Port server normalization into browser-side modules.
+- [x] Port server normalization into browser-side modules.
+- [x] Port timeline, date, relation, overlap, and activity transformations.
 - [ ] Port the home/search/user/overview/three-month UI.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.

@@ -152,4 +152,6 @@ GraphQL client is in `static/api.js`. It uses public POST requests, 50-item
 pagination, in-flight request deduplication, and a bounded 15-minute
 `sessionStorage` cache. It exposes user lookup/search, media-list,
 title-activity, and range-activity functions. Search and user routes now use
-the client; normalization and timeline rendering remain Phase 3/4 work.
+the client. The Phase 3 domain transformation module is `static/domain.js`;
+normalization and timeline rendering are now separated, with rendering
+remaining Phase 4 work.
