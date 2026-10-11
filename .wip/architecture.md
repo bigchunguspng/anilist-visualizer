@@ -140,18 +140,35 @@ The current API base URL is hard-coded to
 `http://192.168.0.103:5000/api`, so the checked-in frontend is intended for
 the author's LAN rather than public hosting.
 
-## Static Phase 1 shell
+## Static Phase 4 frontend
 
 The rewrite lives in `static/`, which is the intended GitHub Pages publishing
 directory. `static/index.html` is the only application document and loads the
 vanilla ES module `main.js` plus `styles.css`. Hash routing avoids GitHub Pages
 server fallback requirements: `#/` is home, `#/user/{username}` is the user
-loading shell, and any other hash is the not-found view. `404.html` provides a
-basic fallback when a host requests a missing file directly. The Phase 2
-GraphQL client is in `static/api.js`. It uses public POST requests, 50-item
+page, and any other hash is the not-found view. `404.html` provides a basic
+fallback when a host requests a missing file directly.
+
+The data client is `static/api.js`. It uses public POST requests, 50-item
 pagination, in-flight request deduplication, and a bounded 15-minute
 `sessionStorage` cache. It exposes user lookup/search, media-list,
-title-activity, and range-activity functions. Search and user routes now use
-the client. The Phase 3 domain transformation module is `static/domain.js`;
-normalization and timeline rendering are now separated, with rendering
-remaining Phase 4 work.
+title-activity, and range-activity functions.
+
+The normalization layer is `static/domain.js`. `build_animanga` still owns
+timeline bounds, overlap filtering, timeline sections, airing bars, and
+optional activity attachment. `build_title_activities` and
+`build_mixed_activities` now back the overview overlays and the last-three-
+months chart.
+
+`static/main.js` now renders the migrated UI in vanilla DOM/HTML:
+
+- overview rows with localized titles, status badges, AniList links, airing
+  overlays, tooltips, and row-triggered title activity loading;
+- browser-stored language/group/order preferences, year selectors, last-year
+  filtering, and keyboard shortcuts (`J`, `G`, `R`);
+- a last-three-month chart that fetches a three-month Unix timestamp range
+  directly from AniList, highlights a selected title, and keeps touch users on
+  a click/focus-safe preview flow instead of relying on hover alone.
+
+Phase 5 is now verification work: real-browser/mobile validation, error-path
+testing, deep-link refresh checks, and GitHub Pages deployment checks.

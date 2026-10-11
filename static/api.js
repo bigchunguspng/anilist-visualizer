@@ -10,6 +10,7 @@ const USER_FIELDS = `
     id
     name
     updatedAt
+    siteUrl
     avatar { large medium }
 `;
 
