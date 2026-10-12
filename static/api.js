@@ -4,8 +4,10 @@ const CACHE_PREFIX = "anilist-visualizer:graphql:";
 const CACHE_TTL_MS = 15 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 40;
 
+// STATE
 const in_flight_requests = new Map();
 
+// QUERIES
 const USER_FIELDS = `
     id
     name
@@ -13,7 +15,6 @@ const USER_FIELDS = `
     siteUrl
     avatar { large medium }
 `;
-
 const MEDIA_FIELDS = `
     id
     type
@@ -34,13 +35,11 @@ const MEDIA_FIELDS = `
         }
     }
 `;
-
 const USER_QUERY = `
     query UserById($id: Int) {
         User(id: $id) { ${USER_FIELDS} }
     }
 `;
-
 const USER_SEARCH_QUERY = `
     query SearchUsers($search: String!, $page: Int!, $perPage: Int!) {
         Page(page: $page, perPage: $perPage) {
@@ -49,7 +48,6 @@ const USER_SEARCH_QUERY = `
         }
     }
 `;
-
 const MEDIA_LIST_QUERY = `
     query MediaListPage(
         $userId: Int!,
@@ -71,7 +69,6 @@ const MEDIA_LIST_QUERY = `
         }
     }
 `;
-
 const TITLE_ACTIVITIES_QUERY = `
     query TitleActivities(
         $userId: Int!,
@@ -91,7 +88,6 @@ const TITLE_ACTIVITIES_QUERY = `
         }
     }
 `;
-
 const RANGE_ACTIVITIES_QUERY = `
     query RangeActivities(
         $userId: Int!,
@@ -125,20 +121,11 @@ const RANGE_ACTIVITIES_QUERY = `
     }
 `;
 
-export class AniListApiError extends Error {
-    constructor(message, kind, details = {}) {
-        super(message);
-        this.name = "AniListApiError";
-        this.kind = kind;
-        Object.assign(this, details);
-    }
-}
-
+// CACHE
 function cache_key(query, variables) {
     return `${CACHE_PREFIX}${query}:${JSON.stringify(variables)}`;
 }
-
-function read_cache(key) {
+function cache_read(key) {
     try {
         const raw = sessionStorage.getItem(key);
         if (!raw) return null;
@@ -152,8 +139,7 @@ function read_cache(key) {
         return null;
     }
 }
-
-function write_cache(key, data) {
+function cache_write(key, data) {
     try {
         const entries = [];
         for (let index = 0; index < sessionStorage.length; index++) {
@@ -178,9 +164,28 @@ function write_cache(key, data) {
     }
 }
 
+// API HELPERS
+export class AniListApiError extends Error {
+    constructor(message, kind, details = {}) {
+        super(message);
+        this.name = "AniListApiError";
+        this.kind = kind;
+        Object.assign(this, details);
+    }
+}
+function page_reader(path, items_key) {
+    return data => {
+        let page = data;
+        for (const key of path) page = page?.[key];
+        return {
+            items: page?.[items_key],
+            hasNextPage: page?.pageInfo?.hasNextPage
+        };
+    };
+}
 async function post_graphql(query, variables) {
     const key = cache_key(query, variables);
-    const cached = read_cache(key);
+    const cached = cache_read(key);
     if (cached !== null) return cached;
     if (in_flight_requests.has(key)) return in_flight_requests.get(key);
 
@@ -233,7 +238,7 @@ async function post_graphql(query, variables) {
                 {payload}
             );
         }
-        write_cache(key, payload.data);
+        cache_write(key, payload.data);
         return payload.data;
     }).catch(error => {
         if (error instanceof AniListApiError) throw error;
@@ -249,7 +254,6 @@ async function post_graphql(query, variables) {
     in_flight_requests.set(key, request);
     return request;
 }
-
 async function get_all_pages(query, variables, get_page) {
     const results = [];
     let page = 1;
@@ -274,22 +278,7 @@ async function get_all_pages(query, variables, get_page) {
     return results;
 }
 
-function page_reader(path, items_key) {
-    return data => {
-        let page = data;
-        for (const key of path) page = page?.[key];
-        return {
-            items: page?.[items_key],
-            hasNextPage: page?.pageInfo?.hasNextPage
-        };
-    };
-}
-
-export async function get_user_by_id(user_id) {
-    const data = await post_graphql(USER_QUERY, {id: Number(user_id)});
-    return data.User;
-}
-
+// EXPORT
 export async function search_users(query) {
     const users = await get_all_pages(
         USER_SEARCH_QUERY,
@@ -298,12 +287,14 @@ export async function search_users(query) {
     );
     return users.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 }
-
+export async function get_user_by_id(user_id) {
+    const data = await post_graphql(USER_QUERY, {id: Number(user_id)});
+    return data.User;
+}
 export async function get_user_by_name(username) {
     const users = await search_users(username);
     return users[0] || null;
 }
-
 export async function get_media_lists(user_id) {
     const statuses = ["CURRENT", "COMPLETED", "DROPPED", "PAUSED", "REPEATING"];
     const lists = await Promise.all(statuses.map(status => get_all_pages(
@@ -313,7 +304,6 @@ export async function get_media_lists(user_id) {
     )));
     return lists.flat();
 }
-
 export async function get_title_activities(user_id, media_id) {
     return get_all_pages(
         TITLE_ACTIVITIES_QUERY,
@@ -321,7 +311,6 @@ export async function get_title_activities(user_id, media_id) {
         page_reader(["Page"], "activities")
     );
 }
-
 export async function get_range_activities(user_id, from, to) {
     return get_all_pages(
         RANGE_ACTIVITIES_QUERY,

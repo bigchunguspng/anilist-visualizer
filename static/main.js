@@ -55,18 +55,15 @@ function escape_html(value) {
         "'": "&#039;"
     })[character]);
 }
-
 function set_title(title) {
     document.title = title;
 }
-
 function set_favicon(url = DEFAULT_FAVICON) {
     const link = document.querySelector("link[rel~='icon']") || document.createElement("link");
     link.rel = "icon";
     link.href = url || DEFAULT_FAVICON;
     document.head.appendChild(link);
 }
-
 function read_preference(key, fallback) {
     try {
         return localStorage.getItem(key) || fallback;
@@ -74,7 +71,6 @@ function read_preference(key, fallback) {
         return fallback;
     }
 }
-
 function write_preference(key, value) {
     try {
         localStorage.setItem(key, value);
@@ -82,18 +78,15 @@ function write_preference(key, value) {
         // Storage can be disabled; the UI still works for the current session.
     }
 }
-
 function render_api_error(error) {
     if (!(error instanceof AniListApiError)) {
         return "Could not load data from AniList.";
     }
     return error.message;
 }
-
 function tooltip_element() {
     return document.getElementById(TOOLTIP_ID);
 }
-
 function hide_tooltip() {
     const tooltip = tooltip_element();
     if (!tooltip) return;
@@ -102,7 +95,6 @@ function hide_tooltip() {
     const legacy_tip = document.getElementById("tip");
     if (legacy_tip) legacy_tip.style.display = "none";
 }
-
 function show_legacy_tooltip(target, lines, chart = false) {
     const tip = document.getElementById("tip");
     const root = document.querySelector("main");
@@ -119,7 +111,6 @@ function show_legacy_tooltip(target, lines, chart = false) {
         ? target_rect.left - (tip_rect.width - target_rect.width) / 2
         : target_rect.left) - root_rect.left}px`;
 }
-
 function show_tooltip(target, lines, placement = "top") {
     const tooltip = tooltip_element();
     if (!tooltip || !lines.length) return;
@@ -151,17 +142,14 @@ function show_tooltip(target, lines, placement = "top") {
     tooltip.style.left = `${left}px`;
     tooltip.style.top = `${top}px`;
 }
-
 function parse_tooltip_lines(element) {
     const raw = element?.dataset?.tooltip;
     return raw ? raw.split("\n").map(item => item.trim()).filter(Boolean) : [];
 }
-
 function unit_label(type, count) {
     const unit = type === "MANGA" ? "chapter" : "episode";
     return `${unit}${count === 1 ? "" : "s"}`;
 }
-
 function format_day(day) {
     return new Date(day * DAY_MS).toLocaleDateString(undefined, {
         year: "numeric",
@@ -170,7 +158,6 @@ function format_day(day) {
         timeZone: "UTC"
     });
 }
-
 function format_last_activity(timestamp) {
     const seconds = Math.max(0, Math.floor(Date.now() / 1000) - Number(timestamp || 0));
     const units = [
@@ -189,26 +176,21 @@ function format_last_activity(timestamp) {
     }
     return "just now";
 }
-
 function get_localized_title(titles, language) {
     if (language === LANG_JAPANESE) {
         return titles?.native || titles?.english || titles?.romaji || "Untitled";
     }
     return titles?.english || titles?.romaji || titles?.native || "Untitled";
 }
-
 function get_cover_url(cover) {
     return cover?.extraLarge || cover?.large || cover?.medium || "";
 }
-
 function get_cover_color(cover) {
     return cover?.color || "#3db4f2";
 }
-
 function format_status(status) {
     return status_labels[status] || status || "Unknown";
 }
-
 function parse_route() {
     const hash = window.location.hash.replace(/^#\/?/, "");
     const segments = hash.split("/").filter(Boolean).map(decodeURIComponent);
@@ -220,7 +202,6 @@ function parse_route() {
     }
     return {name: "not_found"};
 }
-
 function render_home() {
     set_title("AniList Visualizer");
     set_favicon();
@@ -239,7 +220,6 @@ function render_home() {
             </div>
         </main>`;
 }
-
 function render_not_found() {
     set_title("Nothing here...");
     set_favicon();
@@ -258,7 +238,6 @@ function render_not_found() {
             </div>
         </main>`;
 }
-
 function create_user_state(username, token) {
     return {
         token,
@@ -291,11 +270,9 @@ function create_user_state(username, token) {
         allYears: [new Date().getFullYear()]
     };
 }
-
 function get_user_page() {
     return app_state.userPage;
 }
-
 function get_overview_model(page) {
     const options = {activities_by_media: page.activityCache};
     if (page.filter.mode === "last_year") {
@@ -306,7 +283,6 @@ function get_overview_model(page) {
     }
     return build_animanga(page.rawEntries, options);
 }
-
 function group_entries(entries) {
     const series = [];
     const seen = new Set();
@@ -326,12 +302,10 @@ function group_entries(entries) {
     grouped.pop();
     return grouped;
 }
-
 function get_display_entries(page, model) {
     const visible = model.visibleEntries.filter(entry => entry.timelineItem !== null);
     return page.prefs.grouping === GROUP_GROUPED ? group_entries(visible) : visible;
 }
-
 function overview_heading(page) {
     if (page.filter.mode === "last_year") return "Last year";
     if (page.filter.mode === "range" && page.filter.from != null && page.filter.to != null) {
@@ -339,14 +313,12 @@ function overview_heading(page) {
     }
     return "All";
 }
-
 function timeline_sections_html(sections, timeframe, text) {
     return Object.entries(sections).map(([label, value]) => `
         <div class="timeline-year${text ? " text" : ""}" style="width:${(value / timeframe) * 100}%;">
             ${text ? escape_html(label) : ""}
         </div>`).join("");
 }
-
 function entry_tooltip_lines(entry) {
     const tip = entry.timelineItem?.tip;
     if (!tip) return [];
@@ -358,14 +330,12 @@ function entry_tooltip_lines(entry) {
     if ((entry.repeat || 0) > 0) lines.push(`+ ${entry.repeat} repeat${entry.repeat === 1 ? "" : "s"}`);
     return lines;
 }
-
 function title_activity_lines(activity, media_type) {
     const lines = [format_day(activity.day)];
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
     lines.push(`${activity.progress} ${unit_label(media_type, activity.progress)}`);
     return lines;
 }
-
 function render_activity_overlay(entry, min_day) {
     const activities = entry.timelineItem?.activities?.activities || [];
     if (!activities.length) return "";
@@ -379,7 +349,6 @@ function render_activity_overlay(entry, min_day) {
                 data-tooltip="${escape_html(title_activity_lines(activity, entry.media.type).join("\n"))}"></div>`;
     }).join("")}</div>`;
 }
-
 function render_entry(entry, page, model) {
     const media_id = entry.media.id;
     const timeframe = model.maxDay - model.minDay + 1;
@@ -423,11 +392,9 @@ function render_entry(entry, page, model) {
             </span>
         </div>`;
 }
-
 function render_selected_entry(page, model) {
     return "";
 }
-
 function render_overview(page) {
     const model = get_overview_model(page);
     const entries = get_display_entries(page, model);
@@ -481,7 +448,6 @@ function render_overview(page) {
             <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;
 }
-
 function get_chart_range() {
     const today = new Date();
     const start_of_today = new Date(Date.UTC(
@@ -497,7 +463,6 @@ function get_chart_range() {
         to: Math.floor(tomorrow.getTime() / 1000)
     };
 }
-
 function get_chart_selection(page) {
     if (!page.chart.data || !page.chart.selectedMediaId) return null;
     const activities = page.chart.data.activities.flat().filter(activity => activity.media?.id === page.chart.selectedMediaId);
@@ -509,7 +474,6 @@ function get_chart_selection(page) {
         totalProgress: activities.reduce((sum, activity) => sum + activity.progress, 0)
     };
 }
-
 function chart_activity_lines(activity, language) {
     const title = get_localized_title(activity.media?.title, language);
     const lines = [title, format_day(activity.day)];
@@ -517,7 +481,6 @@ function chart_activity_lines(activity, language) {
     lines.push(`${activity.progress} ${unit_label(activity.media?.type, activity.progress)}`);
     return lines;
 }
-
 function render_chart(page) {
     if (page.chart.status === "loading" || page.chart.status === "idle") {
         return `<div class="section-name error">Loading...</div>`;
@@ -564,7 +527,6 @@ function render_chart(page) {
             <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;
 }
-
 function render_user_page(page) {
     const display_name = page.user?.name || page.username;
     set_title(`${display_name} · Anilist Visualizer`);
@@ -637,13 +599,11 @@ function render_user_page(page) {
             </div>
         </main>`;
 }
-
 function render_search_state(message, is_error = false) {
     const results = document.querySelector("#search_results");
     if (!results) return;
     results.innerHTML = `<div class="mb-3 medialist section search-results"><div class="error">${escape_html(message)}</div></div>`;
 }
-
 function render_search_results(users) {
     const results = document.querySelector("#search_results");
     if (!results) return;
@@ -667,7 +627,6 @@ function render_search_results(users) {
                 </a>`).join("")}
         </div>`;
 }
-
 function update_user_render() {
     const content = document.getElementById(CONTENT_ID);
     if (!content) return;
@@ -680,7 +639,6 @@ function update_user_render() {
         content.innerHTML = render_not_found();
     }
 }
-
 async function load_user_route(username) {
     const token = ++app_state.routeToken;
     const page = create_user_state(username, token);
@@ -721,7 +679,6 @@ async function load_user_route(username) {
         update_user_render();
     }
 }
-
 async function ensure_chart_loaded(page) {
     if (!page?.user || page.chart.status === "loading" || page.chart.status === "ready") return;
     page.chart.status = "loading";
@@ -741,7 +698,6 @@ async function ensure_chart_loaded(page) {
         update_user_render();
     }
 }
-
 async function load_entry_activities(page, media_id) {
     if (!page?.user || page.activityCache.has(media_id) || page.loadingMediaId === media_id) return;
     page.loadingMediaId = media_id;
@@ -759,7 +715,6 @@ async function load_entry_activities(page, media_id) {
         update_user_render();
     }
 }
-
 function toggle_preference(page, preference) {
     if (preference === "language") {
         page.prefs.language = page.prefs.language === LANG_JAPANESE ? LANG_ENGLISH : LANG_JAPANESE;
@@ -773,7 +728,6 @@ function toggle_preference(page, preference) {
     }
     update_user_render();
 }
-
 function set_filter_mode(page, mode) {
     page.filter.mode = mode;
     if (mode === "all") {
@@ -782,7 +736,6 @@ function set_filter_mode(page, mode) {
     }
     update_user_render();
 }
-
 function update_year_filter(page, which, value) {
     page.filter.mode = "range";
     page.filter[which] = Number(value);
@@ -793,7 +746,6 @@ function update_year_filter(page, which, value) {
     }
     update_user_render();
 }
-
 function render_route() {
     const route = parse_route();
     app_state.route = route;

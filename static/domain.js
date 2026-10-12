@@ -1,10 +1,10 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_COVER_COLOR = "#3db4f2";
+const MONTH_TITLES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function valid_integer(value) {
     return Number.isInteger(value);
 }
-
 export function normalize_date(value) {
     if (!value || !valid_integer(value.year) || !valid_integer(value.month) ||
         !valid_integer(value.day) || value.month < 1 || value.month > 12 ||
@@ -13,28 +13,22 @@ export function normalize_date(value) {
     }
     return {year: value.year, month: value.month, day: value.day};
 }
-
 export function date_to_day(value) {
     const date = normalize_date(value);
     if (!date) return null;
     return Math.floor(Date.UTC(date.year, date.month - 1, date.day) / DAY_MS);
 }
-
 export function day_to_date(day) {
     const date = new Date(day * DAY_MS);
     return {year: date.getUTCFullYear(), month: date.getUTCMonth() + 1, day: date.getUTCDate()};
 }
-
 function date_text(value, format) {
     const date = normalize_date(value);
     if (!date) return "";
-    const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    if (format === "full") return `${date.day} ${names[date.month - 1]} ${date.year}`;
-    if (format === "long") return `${names[date.month - 1]} ${date.year}`;
-    return `${date.day} ${names[date.month - 1]}`;
+    if (format === "full") return `${date.day} ${MONTH_TITLES[date.month - 1]} ${date.year}`;
+    if (format === "long") return `${MONTH_TITLES[date.month - 1]} ${date.year}`;
+    return `${date.day} ${MONTH_TITLES[date.month - 1]}`;
 }
-
 function normalize_cover(cover, media_type) {
     const source = cover || {};
     const prefix = `https://s4.anilist.co/file/anilistcdn/media/${media_type === "MANGA" ? "manga" : "anime"}/cover/`;
@@ -46,7 +40,6 @@ function normalize_cover(cover, media_type) {
         extraLarge: normalize_url(source.extraLarge)
     };
 }
-
 function normalize_media(media) {
     const source = media || {};
     const type = source.type || "ANIME";
@@ -65,14 +58,12 @@ function normalize_media(media) {
         airing: null
     };
 }
-
 function relation_ids(media) {
     return (media.relations?.edges || [])
         .filter(edge => edge.relationType !== "CHARACTER" && edge.node?.id != null)
         .map(edge => Number(edge.node.id))
         .filter(Number.isInteger);
 }
-
 function set_series_ids(entries) {
     const ids = new Set(entries.map(entry => entry.media.id));
     for (const entry of entries) {
@@ -113,7 +104,6 @@ function set_series_ids(entries) {
         }
     }
 }
-
 function normalize_entry(entry) {
     const start_date = normalize_date(entry.startedAt);
     let complete_date = normalize_date(entry.completedAt);
@@ -135,12 +125,10 @@ function normalize_entry(entry) {
         timelineItem: null
     };
 }
-
 function format_date_range(start, end, arrow = "➽") {
     if (!end) return `${date_text(start, "short")} ${arrow}`;
     return `${date_text(start, "short")} - ${date_text(end, "short")}`;
 }
-
 function speed_text(progress, days, media_type) {
     const unit = media_type === "MANGA" ? "chapter" : "episode";
     const speed = progress / days;
@@ -151,7 +139,6 @@ function speed_text(progress, days, media_type) {
         ? `${unit} every ${one ? "day" : `${value} days`}`
         : `${value} ${unit}${one ? "" : "s"}/day`;
 }
-
 function set_entry_timeline(entry, min_day, max_day, today, activities_by_media) {
     if (!entry.startedAt) return;
     const day_a = date_to_day(entry.startedAt);
@@ -179,7 +166,6 @@ function set_entry_timeline(entry, min_day, max_day, today, activities_by_media)
     }
     entry.timelineItem = timeline;
 }
-
 function set_airing_timeline(media, min_day, max_day, today) {
     const start = date_to_day(media.startDate) ?? min_day;
     const end = date_to_day(media.endDate) ?? today;
@@ -195,7 +181,6 @@ function set_airing_timeline(media, min_day, max_day, today) {
         season
     };
 }
-
 function month_days(min_date, max_date, include_year) {
     const result = {};
     let cursor = new Date(Date.UTC(min_date.year, min_date.month - 1, 1));
@@ -205,8 +190,7 @@ function month_days(min_date, max_date, include_year) {
         const year = cursor.getUTCFullYear();
         const month = cursor.getUTCMonth() + 1;
         const last = year === max_date.year && month === max_date.month;
-        const name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month - 1];
+        const name = MONTH_TITLES[month - 1];
         const title = include_year && (first || last) ? `${name} '${String(year).slice(-2)}` : name;
         result[title] = first ? new Date(Date.UTC(year, month, 0)).getUTCDate() - min_date.day + 1 :
             last ? max_date.day : new Date(Date.UTC(year, month, 0)).getUTCDate();
@@ -215,7 +199,6 @@ function month_days(min_date, max_date, include_year) {
     }
     return result;
 }
-
 export function build_animanga(raw_entries, options = {}) {
     const entries = [];
     const seen_media = new Set();
@@ -267,7 +250,6 @@ export function build_animanga(raw_entries, options = {}) {
         visibleEntries: visible
     };
 }
-
 function activity_progress(activity) {
     if (activity.progress == null || activity.progress === "") {
         return String(activity.status).toLowerCase() === "completed" ? 1 : 0;
@@ -276,7 +258,6 @@ function activity_progress(activity) {
     const match = text.match(/^(\d+)\s*-\s*(\d+)$/);
     return match ? Math.max(Number(match[2]) - Number(match[1]) + 1, 0) : 1;
 }
-
 function merge_activities_by_day(activities) {
     const sorted = [...activities].sort((a, b) => a.day - b.day);
     const merged = [];
@@ -293,7 +274,6 @@ function merge_activities_by_day(activities) {
     }
     return merged;
 }
-
 export function build_title_activities(raw_activities) {
     const activities = (raw_activities || []).map(activity => ({
         ...activity,
@@ -307,7 +287,6 @@ export function build_title_activities(raw_activities) {
         activities: united
     };
 }
-
 export function build_mixed_activities(raw_activities) {
     const activities = (raw_activities || []).map(activity => ({
         ...activity,
@@ -334,8 +313,7 @@ export function build_mixed_activities(raw_activities) {
         const next = {...cursor, month: cursor.month + 1};
         if (next.month === 13) { next.month = 1; next.year++; }
         const next_day = Math.min(date_to_day(next) - 1, max_day);
-        bigger_units.push({title: ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][cursor.month - 1], value: next_day - date_to_day(cursor) + 1});
+        bigger_units.push({title: MONTH_TITLES[cursor.month - 1], value: next_day - date_to_day(cursor) + 1});
         cursor = next;
     }
     return {

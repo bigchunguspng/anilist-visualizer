@@ -1,48 +1,38 @@
 /* INDEX */
-
 body {
     margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
     font-weight: 400;
     line-height: 1.5;
 }
-
 *, ::after, ::before {
     box-sizing: border-box;
 }
-
 img, svg {
     vertical-align: middle;
 }
-
 .medialist > :not(caption) > * {
     margin: .1em .5em;
 }
-
 @media (min-width: 1200px) {
     .h1, h1 {
         font-size: 2.5rem;
     }
 }
-
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
     margin-top: 0;
     margin-bottom: .5rem;
     font-weight: 500;
     line-height: 1.2;
 }
-
 p {
     margin-top: 0;
     margin-bottom: 1rem;
 }
-
 .mb-3 {
     margin-bottom: 1rem !important;
 }
-
 :root {
     --color-background: rgb(237, 241, 245);
     --color-foreground: rgb(250, 250, 250);
@@ -130,98 +120,80 @@ p {
     --height: 0;
     --shadow-opacity: 0.09;
 }
-
 .container-xd {
     width: 100%;
     padding-inline: 0.75rem;
     margin-inline: auto;
     transition: 0.2s;
 }
-
 .max-800 {
     max-width: 800px;
 }
-
 @media (max-width: 280px) {
     div.last-seen {
         display: none;
     }
 }
-
 @media (max-width: 320px) {
     #search_results {
         display: block !important;
         min-width: 100% !important;
     }
-
     .search {
         max-width: 250px;
         width: 100% !important;
     }
 }
-
-
 @media (max-width: 799px) {
     #animanga .title {
         font-size: 10px;
         padding-left: 9px;
         padding-bottom: 1px;
     }
-
     #animanga .timeline {
         flex-basis: 100%;
     }
-
     #animanga .entry {
         flex-wrap: wrap;
         min-height: 51px;
         padding-left: 75px;
     }
-
     #animanga .cover, .entry-status {
         position: absolute;
         left: 0;
     }
-
     #animanga .entry:hover .image {
         top:   -60px !important;
         left: -160px !important;
     }
 }
-
 @media (min-width: 800px) {
     .container-xd {
         padding-right: 5rem;
     }
-
     #animanga .title {
         font-size: 12px;
         flex: 3.5;
     }
 }
-
 @media (min-width: 970px) {
     .container-xd {
         padding-left: 10rem;
     }
-
     #animanga .title {
         font-size: small;
         flex: 5;
     }
 }
-
 @media (min-width: 1560px) {
     .container-xd {
         padding-right: calc(100vw - 1480px);
         transition: 0s padding-right;
     }
-
     #animanga .title {
         font-size: inherit
     }
 }
-
 @media (min-width: 1640px) {
     .container-xd {
         max-width: calc(1320px + 20rem);
@@ -229,34 +201,26 @@ p {
         transition: 0.2s;
     }
 }
-
-
 main {
     min-height: 100vh;
     line-height: 1.15;
 }
-
 main, header {
     font-size: 62.5%;
     font-family: var(--font-main);
 }
-
 a {
     color: var(--color-blue-900);
 }
-
 a:hover {
     color: var(--color-blue-dim);
 }
-
 p {
     font-size: 1.5em;
 }
-
 .pb-3 {
     padding-bottom: 2rem !important;
 }
-
 .actions button, .actions select {
     font-size: 1.1em;
     min-height: 32px;
@@ -266,126 +230,100 @@ p {
     color: var(--color-text);
     transition: 0.1s;
 }
-
 .actions > div {
     font-size: 1.1em;
     margin-block: auto;
     margin-left: 16px;
     margin-right: 10px;
 }
-
 @media (hover: hover) {
     .actions button:hover {
         color: var(--color-background);
         background-color: var(--color-text);
     }
-
     .actions button:active {
         transform: scale(0.95);
         color: var(--color-background);
         background-color: var(--color-background-900);
     }
 }
-
 @media (hover: none) {
     .actions button:active {
         transform: scale(0.9);
     }
 }
-
 .section-name {
     padding-left: 30px;
     margin-block: 0.8rem;
 }
-
 .section-name h3 {
     font-size: 1.9em;
     font-weight: 400;
 }
-
 .section-name div {
     font-size: 1.1em;
 }
-
 .control-panel {
     position: relative;
     margin-top: 32px;
 }
-
 .actions {
     position: absolute;
     top: -20px;
     right: 0;
     display: flex;
 }
-
 .error {
     margin-block: 10px !important;
 }
-
 .section-name.error {
     font-size: 1.1em;
 }
-
 .invisible {
     display: none;
 }
-
 *:focus-visible {
     background-color: var(--color-blue-300);
     outline: 0;
 }
-
 html {
     position: relative;
     min-height: 100%;
 }
-
-
 body {
     color: var(--color-text);
     background-color: var(--color-background);
 }
-
-
 .section {
     background-color: white;
     border-radius: 4px;
     box-shadow: 0 2px 20px rgba(var(--color-shadow), var(--shadow-opacity));
     padding-block: 4px;
 }
-
-
 .medialist {
     font-size: 1.5em;
 }
-
 .entry {
     display: flex;
     align-items: center;
     align-content: center;
     position: relative;
 }
-
 .entry-status {
     position: absolute;
     margin: 6px !important;
 }
-
 .title {
     font-family: var(--font-kana);
     flex: 5;
     transition: 0.25s;
 }
-
 .title.CURRENT, .title.REPEATING {
     font-weight: bold;
 }
-
 .title.DROPPED {
     font-style: italic;
 }
-
 .link {
     border-radius: 3px;
     line-height: 40px;
@@ -396,11 +334,9 @@ body {
     color: var(--color-background-500);
     background-color: rgb(224, 232, 240);
 }
-
 .link:hover {
     color: var(--color-blue);
 }
-
 .entry .cover {
     align-items: center;
     display: flex;
@@ -408,12 +344,10 @@ body {
     width: 60px;
     height: 48px;
 }
-
 #search_results .cover {
     width: 48px;
     justify-content: center;
 }
-
 .cover .image {
     background-position: 50%;
     background-size: cover;
@@ -421,11 +355,9 @@ body {
     height: 40px;
     width: 40px;
 }
-
 .cover .image.color {
     background-color: var(--color-blue);
 }
-
 .entry:hover .image {
     position: absolute;
     top:   -75px;
@@ -434,12 +366,9 @@ body {
     height: 200px;
     box-shadow: 0 2px 20px rgba(var(--color-shadow), 0.3);
 }
-
 .entry:hover .link {
     display: block;
 }
-
-
 div.timeline {
     flex: 10;
     display: flex;
@@ -447,7 +376,6 @@ div.timeline {
     background-color: var(--color-background-75);
     margin-right: 15px;
 }
-
 div.timeline-row {
     width: 100%;
     height: 24px;
@@ -455,18 +383,15 @@ div.timeline-row {
     z-index: 2;
     pointer-events: none;
 }
-
 div.timeline-row.text {
     position: absolute;
     mix-blend-mode: multiply;
 }
-
 div.timeline-year {
     border-left: 2px solid white;
     opacity: 80%;
     overflow: hidden;
 }
-
 div.timeline-year.text {
     padding-left: 7px;
     font-family: var(--font-year);
@@ -474,12 +399,9 @@ div.timeline-year.text {
     line-height: 24px;
     text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.45);
 }
-
 div.timeline-year:first-child {
     border-left: 0;
 }
-
-
 div.timeline-item {
     margin-left: var(--left);
     width: var(--width);
@@ -490,20 +412,17 @@ div.timeline-item {
     justify-content: center;
     position: absolute;
 }
-
 div.releasing {
     --color-blue: var(--color-background-300);
     opacity: 0.75;
     border: var(--color-background-700);
     transition: 0.2s;
 }
-
 .timeline:hover div.releasing {
     --color-blue: var(--color-background-400);
     opacity: 1;
     border: 1px dashed var(--color-background-700);
 }
-
 div.season {
     color: var(--color-background-700);
     font-family: var(--font-tips);
@@ -514,44 +433,35 @@ div.season {
     opacity: 0;
     transition: 0.25s;
 }
-
 .timeline:hover div.season {
     opacity: 1;
 }
-
 .stripes {
     background:
             repeating-linear-gradient(45deg,    var(--color-blue), #0000 2px, var(--color-blue) 4px),
             repeating-linear-gradient(to right, var(--color-blue), #0000) !important;
     background-blend-mode: screen;
 }
-
 div.timeline-item .range {
     width: 100%;
     background-color: var(--color-blue);
     position: relative;
 }
-
-
 .tip:hover {
     cursor: help;
     z-index: 10;
 }
-
 .tip:hover .range {
     opacity: 75%;
 }
-
 .hover-box {
     min-width: 24px;
     height: 100%;
     margin-inline: -6px;
 }
-
 .tipbox {
     font-size: 1.5em;
 }
-
 .tipbox span {
     padding: 5px;
     z-index: 100;
@@ -563,41 +473,34 @@ div.timeline-item .range {
     font-size: 0.8em;
     display: none;
 }
-
 .tipbox span p {
     margin-bottom: 0;
     color: white;
     font-family: var(--font-tips);
     font-size: 13px;
 }
-
 .tipbox span p:nth-child(n+2) {
     font-size: 0.8em;
     margin-top: 4px;
     color: var(--color-background-300);
 }
-
 .tipbox span p.repeats {
     color: var(--color-yellow);
 }
-
 .tipbox span p:only-child {
     margin-top: 4px;
 }
-
 .absolute {
     position: absolute;
     top: 0;
     left: 0;
 }
-
 .searchbar {
     font-size: 14px;
     display: inline-block;
     width: 100%;
     margin-block: 20px;
 }
-
 .search {
     width: 250px;
     line-height: 40px;
@@ -607,20 +510,16 @@ div.timeline-item .range {
     outline: 0;
     transition: 0.2s box-shadow;
 }
-
 .search:focus {
     box-shadow: 0 1px 10px rgba(var(--color-shadow), 0.2);
 }
-
 .search-result {
     text-decoration: none;
 }
-
 #search_results {
     display: inline-grid;
     min-width: 300px;
 }
-
 #search_results .title {
     color: var(--color-text);
     text-decoration: none;
@@ -629,7 +528,6 @@ div.timeline-item .range {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 div.last-seen {
     color: var(--color-background-500);
     padding-right: 20px;
@@ -638,16 +536,12 @@ div.last-seen {
     text-align: end;
     white-space: nowrap;
 }
-
-
 .explanation {
     display: flex;
 }
-
 .explanation * {
     border-radius: 5px;
 }
-
 .osaka {
     width: 8rem;
     height: 10rem;
@@ -662,12 +556,10 @@ div.last-seen {
     --shadow-opacity: 0.25;
     transition: 0.075s transform;
 }
-
 .osaka:hover {
     transform: scale(0.95);
     background-image: url(https://i.imgur.com/NBWHKtF.png), url(https://i.imgur.com/kDRpvgw.png);
 }
-
 .caption {
     margin-left: 5px;
     background-color: var(--color-background-200);
@@ -677,7 +569,6 @@ div.last-seen {
     z-index: 2;
     transition: 0.2s background-color;
 }
-
 .caption p {
     margin: 0;
     width: 100%;
@@ -686,55 +577,44 @@ div.last-seen {
     text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.18);
     transition: 0.1s;
 }
-
 .caption:hover {
     background-color: var(--color-background-100);
 }
-
 .caption:hover p {
     font-size: 1.45em;
 }
-
 .logo {
     max-width: 100%;
     font-size: 1.5em;
     user-select: none;
     transition: 0.075s transform;
 }
-
 .logo:hover {
     transform: scale(1.015) rotate(-1deg);
 }
-
 .logo[alt*="AniList"] {
     margin-top: 7vh;
 }
-
 .text-center {
     text-align: center !important;
 }
-
 .text-center h1 {
     margin-block: 0.5em;
     font-family: var(--font-logo);
 }
-
 .diffuse {
     text-shadow: 0 0 5px rgba(var(--color-shadow-text), 0.15);
 }
-
 .nav-mini {
     width: 100%;
     display: flex;
     justify-content: center;
 }
-
 .user .nav-mini {
     position: absolute;
     top: 0;
     z-index: 420;
 }
-
 .nav-logo {
     font-size: 1.25rem;
     margin-block: 0.25em;
@@ -743,57 +623,46 @@ div.last-seen {
     align-items: center;
     transition: 0.25s;
 }
-
 .nav-logo:hover {
     transform: scale(1.05) rotate(-5deg);
     transition: 0.05s;
 }
-
 .nav-logo span, .nav-logo img::before {
     font-size: 24px;
     font-family: var(--font-logo);
     transition: 0.25s ease-in-out;
 }
-
 .nav-logo span {
     color: var(--color-blue-100);
     margin-left: -19px;
     padding-right: 7px;
     text-shadow: 1px 2px 6px var(--color-background-600), 1px 1px 2px var(--color-background-600);
 }
-
 .nav-logo img::before {
     margin-right: 23px;
     line-height: 50px;
     color: var(--color-background-100);
     text-shadow: 1px 1px 2px var(--color-background-300);
 }
-
 .user .nav-logo img::before {
     color: var(--color-blue-500);
     text-shadow: 1px 2px 1px var(--color-blue-900);
 }
-
 .user .nav-logo span {
     text-shadow: 1px 2px 1px var(--color-blue-900);
 }
-
 .nav-logo:hover span {
     color: var(--color-blue);
     text-shadow: 1px 2px 7px var(--color-blue-400);
     transition: 0.05s;
 }
-
 .user .nav-logo:hover span {
     text-shadow: 1px 2px 3px var(--color-blue-1000);
 }
-
 header:not(.user) .nav-logo img {
     filter: drop-shadow(1px 2px 5px var(--color-background-500));
     z-index: -1;
 }
-
-
 .section hr {
     border: 0;
     margin: 1rem 0;
@@ -803,16 +672,12 @@ header:not(.user) .nav-logo img {
     margin-block: 8px;
     border-top: 1px dashed white;
 }
-
 [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled), button:not(:disabled) {
     cursor: pointer;
 }
-
-
 .nav-wrap {
     background-color: white;
 }
-
 .nav-link {
     margin: 0 10px;
     padding: 15px;
@@ -825,61 +690,48 @@ header:not(.user) .nav-logo img {
     font-weight: 600;
     transition-duration: 0.25s;
 }
-
 .nav-link:hover {
     color: var(--color-text);
 }
-
-
 #days, #months {
     display: flex;
 }
-
 #days {
     padding-top: 20px;
 }
-
 .am3-day, .am3-month {
     width: var(--width);
     text-align: center;
     box-sizing: border-box;
     transition-duration: 0.05s;
 }
-
 .am3-day:hover, .am3-month:hover {
     background-color: var(--color-background-100);
 }
-
 .am3-day {
     height: 240px;
     display: flex;
     flex-direction: column-reverse;
 }
-
 .am3-month, .am3-day-title {
     padding: 4px 0;
 }
-
 .am3-activity {
     background-color: var(--color-blue);
     height: var(--height);
 }
-
 .am3-activity:hover {
     box-shadow: 0 2px 20px rgba(var(--color-shadow), 0.3);
     z-index: 1000;
 }
-
 .semi {
     opacity: 0.2;
 }
-
 .hint-message-div {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .hint-message {
     margin-top: 65px;
     color: var(--color-text-light);
@@ -887,7 +739,6 @@ header:not(.user) .nav-logo img {
     font-size: 0.8rem;
     text-align: center;
 }
-
 .am3-image {
     position: absolute;
     top: 40px;
@@ -898,24 +749,19 @@ header:not(.user) .nav-logo img {
     background-size: cover;
     box-shadow: 0 2px 20px rgba(var(--color-shadow), 0.3);
 }
-
 /* APP */
-
 .app {
     /*text-align: center;*/
 }
-
 .app-logo {
     height: 40vmin;
     pointer-events: none;
 }
-
 @media (prefers-reduced-motion: no-preference) {
     .app-logo {
         animation: App-logo-spin infinite 20s linear;
     }
 }
-
 .app-header {
     background-color: #282c34;
     min-height: 100vh;
@@ -926,11 +772,9 @@ header:not(.user) .nav-logo img {
     font-size: calc(10px + 2vmin);
     color: white;
 }
-
 .app-link {
     color: #61dafb;
 }
-
 @keyframes App-logo-spin {
     from {
         transform: rotate(0deg);
@@ -939,14 +783,11 @@ header:not(.user) .nav-logo img {
         transform: rotate(360deg);
     }
 }
-
 /* FOOTER */
-
 footer {
     background-color: #11161d;
     padding-bottom: 80px;
 }
-
 footer a {
     color: #a0b1c5;
     font-family: var(--font-tips);
@@ -956,11 +797,9 @@ footer a {
     padding: 14px;
     display: inline-block;
 }
-
 footer a:hover {
     color: var(--color-blue);
 }
-
 .ifunny {
     position: absolute;
     bottom: 0;
@@ -974,9 +813,7 @@ footer a:hover {
     text-align: end;
     color: var(--color-yellow);
 }
-
 /* USER*/
-
 header.user {
     background-color: #242538;
     background-position: 50% 35%;
@@ -987,100 +824,78 @@ header.user {
     display: flex;
     align-items: flex-end;
 }
-
 .banner-shadow {
     background: linear-gradient(180deg, rgba(var(--color-shadow-dark), 0) 40%, rgba(var(--color-shadow-dark), 0.6));
     height: 100%;
     width: 100%;
     position: absolute;
 }
-
-
 .user-info {
     align-items: flex-end;
     display: flex;
     width: 100%;
     z-index: 1;
 }
-
 .user-info * {
     display: inline-block;
     margin-block: 0;
 }
-
 .user-info div.text {
     margin-bottom: 18px;
 }
-
 .user-info div.text * {
     margin-left: 25px;
 }
-
-
 .user-name {
     color: var(--color-text-bright);
     font-family: var(--font-tips);
     font-weight: 800;
 }
-
 .user-count {
     font-size: 1.5em;
     color: var(--color-background-500);
     display: block;
 }
-
-
 .avatar {
     border-radius: 4px 4px 0 0;
     max-height: 230px;
     max-width: 160px;
     width: 100%;
 }
-
 a:hover .avatar {
     transform: scale(1.05);
     transform-origin: bottom;
 }
-
-
 @media (max-width: 449px) {
     .user-count {
         font-size: calc(6px + 2vw) !important;
     }
-
     .user-info div.text h1 {
         font-size: calc(10px + 3vw) !important;
     }
-
     .user-info div.text * {
         margin-left: 3vw !important;
     }
 }
-
 /* ACTIVITIES */
-
 .days {
     height: 100%;
     width: 100%;
     position: absolute;
     pointer-events: none;
 }
-
 .day {
     position: absolute;
     bottom: 0;
     min-width: 2px;
     background: var(--color-blue);
 }
-
 /* NEW */
-
 nav, .nav {
     display: flex;
     gap: 0;
     justify-content: center;
 }
-
 .visualizer-body {
     padding-bottom: 2rem !important;
 }
