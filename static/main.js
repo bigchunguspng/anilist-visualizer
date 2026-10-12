@@ -246,7 +246,7 @@ function render_not_found() {
     return `
         <header><div class="nav-mini">
             <a class="nav-logo" href="#" data-home-link>
-                <img src="https://anilist.co/img/icons/icon.svg" height="50" alt="AniList">
+                <img src="https://anilist.co/img/icons/icon.svg" height="50px" alt="AniList">
                 <span>Visualizer</span>
             </a>
         </div></header>
@@ -532,40 +532,37 @@ function render_chart(page) {
     }
 
     return `
-        <div class="container-xd">
-            <main role="main" class="pb-3" style="position:relative">
-                <div id="days">
-                    ${chart.smallerUnits.map((unit, index) => `
-                        <div class="am3-day" style="--width:${(unit.value / chart.smallerUnits.length) * 100}%;">
-                            <div class="am3-day-title">${escape_html(unit.title)}</div>
-                                ${(chart.activities[index] || []).map(activity => `
-                                    <button
-                                        type="button"
-                                        class="am3-activity tip-rect-ref media-${activity.media.id}${page.chart.selectedMediaId && page.chart.selectedMediaId !== activity.media.id ? " semi" : ""}"
-                                        data-action="select-chart-media"
-                                        data-media-id="${activity.media.id}"
-                                        data-tooltip="${escape_html(chart_activity_lines(activity, page.prefs.language).join("\n"))}"
-                                        style="height:${(activity.progress / chart.maxProgressValue) * 100}%;--color-blue:${get_cover_color(activity.media.coverImage)};"
-                                        data-cover="${escape_html(get_cover_url(activity.media.coverImage))}">
-                                    </button>`).join("")}
-                        </div>`).join("")}
-                </div>
-                <div id="months">
-                    ${chart.biggerUnits.map(unit => `
-                        <div class="am3-month" style="--width:${(unit.value / chart.smallerUnits.length) * 100}%;">
-                            ${escape_html(unit.title)}
-                        </div>`).join("")}
-                </div>
-                <div class="hint-message-div">
-                    <span class="hint-message">
-                        Single click - highlight specific title.<br>
-                        Double click - restore.
-                    </span>
-                </div>
-                <div class="am3-image" id="image"></div>
-                <div class="tipbox absolute"><span id="tip"></span></div>
-            </main>
-        </div>`;
+        <section class="pb-3" style="position:relative">
+            <div id="days">
+                ${chart.smallerUnits.map((unit, index) => `
+                    <div class="am3-day" style="--width:${(unit.value / chart.smallerUnits.length) * 100}%;">
+                        <div class="am3-day-title">${escape_html(unit.title)}</div>
+                            ${(chart.activities[index] || []).map(activity => `
+                                <div
+                                    class="am3-activity tip-rect-ref media-${activity.media.id}${page.chart.selectedMediaId && page.chart.selectedMediaId !== activity.media.id ? " semi" : ""}"
+                                    data-action="select-chart-media"
+                                    data-media-id="${activity.media.id}"
+                                    data-tooltip="${escape_html(chart_activity_lines(activity, page.prefs.language).join("\n"))}"
+                                    style="height:${(activity.progress / chart.maxProgressValue) * 100}%;--color-blue:${get_cover_color(activity.media.coverImage)};"
+                                    data-cover="${escape_html(get_cover_url(activity.media.coverImage))}">
+                                </div>`).join("")}
+                    </div>`).join("")}
+            </div>
+            <div id="months">
+                ${chart.biggerUnits.map(unit => `
+                    <div class="am3-month" style="--width:${(unit.value / chart.smallerUnits.length) * 100}%;">
+                        ${escape_html(unit.title)}
+                    </div>`).join("")}
+            </div>
+            <div class="hint-message-div">
+                <span class="hint-message">
+                    Single click - highlight specific title.<br>
+                    Double click - restore.
+                </span>
+            </div>
+            <div class="am3-image" id="image"></div>
+            <div class="tipbox absolute"><span id="tip"></span></div>
+        </section>`;
 }
 
 function render_user_page(page) {
@@ -587,10 +584,11 @@ function render_user_page(page) {
         <header class="user">
             <div class="nav-mini">
                 <a class="nav-logo" href="#" data-home-link>
-                    <img src="https://anilist.co/img/icons/icon.svg" alt="AniList">
+                    <img src="https://anilist.co/img/icons/icon.svg" height="50px" alt="AniList">
                     <span>Visualizer</span>
                 </a>
             </div>
+            <div class="banner-shadow"></div>
             <div class="container-xd user-info">
                 ${user ? `
                     <a href="${escape_html(user.siteUrl || "#")}" target="_blank" rel="noreferrer">
