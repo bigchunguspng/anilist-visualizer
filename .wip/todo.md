@@ -1,7 +1,8 @@
 # Rewrite task checklist
 
-Status as of 2026-10-11: Static visualization and controls are ported; final
-real-browser/deployment verification remains.
+Status as of 2026-10-11: Static visualization and controls are ported; legacy
+style parity is restored for the migrated surfaces; final real-browser/
+deployment verification remains.
 
 ## Analysis completed
 
@@ -43,6 +44,13 @@ real-browser/deployment verification remains.
   lists, repeated titles, and sparse/no activity data.
 - Exercise API failure paths, rate-limit messaging, direct deep links, and
   GitHub Pages deployment/base-path behavior in real browsers.
+
+## Style parity handoff
+
+- Static CSS now uses the legacy Google fonts and the original `favicon.png`.
+- Search rows retain the old neutral hover and enlarge the avatar on hover.
+- Legacy title/user spacing, year-control alignment, navbar logo typography,
+  user-header inset, avatar animation, and overview hint placement are restored.
 
 Rewrite-wide constraints and conventions are maintained in
 `rewrite-rules.md`.

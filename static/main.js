@@ -14,7 +14,7 @@ import {
 
 const CONTENT_ID = "app_content";
 const TOOLTIP_ID = "floating_tooltip";
-const DEFAULT_FAVICON = "https://anilist.co/img/icons/icon.svg";
+const DEFAULT_FAVICON = "./favicon.png";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const VIEW_OVERVIEW = "overview";
@@ -467,6 +467,9 @@ function render_overview(page) {
                     </select>
                 </div>
             </div>
+            <div id="animanga" class="medialist section${page.prefs.ordering === ORDER_REVERSE ? " reverse" : ""}">
+                ${list_html}
+            </div>
             <div class="hint-message-div">
                 <span class="hint-message">
                     J - switch language.<br>
@@ -474,9 +477,6 @@ function render_overview(page) {
                     R - reverse / restore.<br><br>
                     Click on colorful rectangle to see activities. Timeline height = 8 episodes / chapters.
                 </span>
-            </div>
-            <div id="animanga" class="medialist section${page.prefs.ordering === ORDER_REVERSE ? " reverse" : ""}">
-                ${list_html}
             </div>
             <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;

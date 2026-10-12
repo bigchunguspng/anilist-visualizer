@@ -57,3 +57,8 @@ or build step. The app renders the home/search form, user timeline, three-month
 chart, loading/error states, custom not-found screen, and shared footer.
 Submitting a non-empty username searches AniList; hash routes then load the
 user and visualization data.
+
+The static presentation preserves the legacy React styling, including its
+Google fonts, original favicon, navbar logo typography and animation, search
+avatar hover behavior, user-header spacing, year-control alignment, and
+below-timeline overview hints.

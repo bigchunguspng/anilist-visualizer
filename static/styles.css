@@ -10,8 +10,13 @@
     --color-blue: rgb(61, 180, 242);
     --color-blue-dark: rgb(11, 70, 113);
     --color-blue-soft: rgb(201, 232, 255);
+    --color-blue-100: rgb(247, 250, 252);
+    --color-blue-400: rgb(143, 215, 255);
     --color-shadow: 49, 54, 68;
     --color-shadow-dark: 6, 13, 34;
+    --color-background-100: rgb(251, 251, 251);
+    --color-background-500: rgb(173, 192, 210);
+    --color-background-600: rgb(139, 160, 178);
     --color-green: rgb(123, 213, 85);
     --color-orange: rgb(247, 154, 99);
     --color-red: rgb(232, 93, 117);
@@ -19,6 +24,8 @@
     --font-main: Roboto, "Segoe UI", Ubuntu, system-ui, sans-serif;
     --font-kana: Roboto, "Segoe UI", Ubuntu, system-ui, "Yu Gothic", sans-serif;
     --font-tips: Overpass, "Segoe UI", Ubuntu, sans-serif;
+    --font-year: Calibri, system-ui;
+    --font-logo: "Kaushan Script";
 }
 
 *,
@@ -916,7 +923,267 @@ header:not(.user) {
     .user-info .user-count {
         font-size: calc(6px + 2vw);
     }
+}
 
+/* LEGACY DESKTOP PARITY */
+    .searchbar {
+        display: inline-block;
+        width: 100%;
+        margin-block: 20px;
+        font-size: 14px;
+    }
+
+    .search {
+        width: 250px;
+        line-height: 40px;
+        color: var(--color-text);
+        text-align: center;
+        border: 0;
+        outline: 0;
+    }
+
+    #search_results {
+        display: inline-grid;
+        min-width: 300px;
+    }
+
+    .search-result,
+    .search-result:hover {
+        color: var(--color-text);
+        background: transparent;
+    }
+
+    #search_results .title {
+        color: var(--color-text);
+        text-decoration: none;
+        white-space: nowrap;
+        text-align: start;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #search_results .last-seen {
+        color: var(--color-background-500);
+        padding-right: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-align: end;
+        white-space: nowrap;
+    }
+
+    .title {
+        flex: 5;
+        font-family: var(--font-kana);
+        transition: 0.25s;
+    }
+
+    .actions > div {
+        margin-block: auto;
+        margin-left: 16px;
+        margin-right: 10px;
+        font-size: 1.1em;
+    }
+
+    .actions button,
+    .actions select {
+        min-height: 32px;
+        margin-left: 6px;
+        padding-inline: 15px;
+        border: 0;
+        color: var(--color-text);
+        font-size: 1.1em;
+        transition: 0.1s;
+    }
+
+    header.user .user-info {
+        padding-inline: 0.75rem;
+    }
+
+    .user-name {
+        font-family: var(--font-tips);
+        font-weight: 800;
+    }
+
+    .user-info a:hover .avatar {
+        transform: scale(1.05);
+        transform-origin: bottom;
+    }
+
+    .nav-logo {
+        font-size: 1.25rem;
+        margin-block: 0.25em;
+        transition: 0.25s;
+    }
+
+    .nav-logo:hover {
+        transform: scale(1.05) rotate(-5deg);
+        transition: 0.05s;
+    }
+
+    .nav-logo span {
+        color: var(--color-blue-100);
+        margin-left: -19px;
+        padding-right: 7px;
+        font-size: 24px;
+        font-family: var(--font-logo);
+        text-shadow: 1px 2px 6px var(--color-background-600), 1px 1px 2px var(--color-background-600);
+        transition: 0.25s ease-in-out;
+    }
+
+    .nav-logo:hover span {
+        color: var(--color-blue);
+        text-shadow: 1px 2px 7px var(--color-blue-400);
+    }
+
+    @media (min-width: 800px) {
+        header.user .user-info {
+            padding-right: 5rem;
+        }
+    }
+
+    @media (min-width: 970px) {
+        header.user .user-info {
+            padding-left: 10rem;
+        }
+    }
+
+    @media (min-width: 1560px) {
+        header.user .user-info {
+            padding-right: calc(100vw - 1480px);
+        }
+    }
+
+    @media (min-width: 1640px) {
+        header.user .user-info {
+            max-width: calc(1320px + 20rem);
+            padding-right: 10rem;
+        }
+    }
+
+    /* LEGACY PRESENTATION PARITY */
+    .search-result,
+    .search-result:hover {
+        color: var(--color-text);
+        background: transparent;
+    }
+
+    #search_results .search-result:hover .image {
+        position: absolute;
+        top: -75px;
+        left: -152px;
+        width: 140px;
+        height: 200px;
+        z-index: 5;
+        box-shadow: 0 2px 20px rgba(var(--color-shadow), 0.3);
+    }
+
+    .actions > div {
+        margin-block: auto;
+        margin-left: 16px;
+        margin-right: 10px;
+        font-size: 1.1em;
+    }
+
+    .actions button,
+    .actions select {
+        min-height: 32px;
+        margin-left: 6px;
+        padding-inline: 15px;
+        border: 0;
+        color: var(--color-text);
+        font-size: 1.1em;
+        transition: 0.1s;
+    }
+
+    .actions select {
+        appearance: auto;
+        background-color: white;
+    }
+
+    .user-info {
+        padding-inline: 0.75rem;
+    }
+
+    .user-name {
+        font-family: var(--font-tips);
+        font-weight: 800;
+    }
+
+    .user-info .avatar {
+        transition: 0.25s transform;
+    }
+
+    .user-info a:hover .avatar {
+        transform: scale(1.05);
+        transform-origin: bottom;
+    }
+
+    .nav-logo {
+        font-size: 1.25rem;
+        margin-block: 0.25em;
+        transition: 0.25s;
+    }
+
+    .nav-logo:hover {
+        transform: scale(1.05) rotate(-5deg);
+        transition: 0.05s;
+    }
+
+    .nav-logo span {
+        color: var(--color-blue-100);
+        margin-left: -19px;
+        padding-right: 7px;
+        font-size: 24px;
+        font-family: var(--font-logo);
+        text-shadow: 1px 2px 6px var(--color-background-600), 1px 1px 2px var(--color-background-600);
+        transition: 0.25s ease-in-out;
+    }
+
+    .nav-logo:hover span {
+        color: var(--color-blue);
+        text-shadow: 1px 2px 7px var(--color-blue-400);
+        transition: 0.05s;
+    }
+
+    header:not(.user) .nav-logo img {
+        filter: drop-shadow(1px 2px 5px var(--color-background-500));
+        z-index: -1;
+    }
+
+    .hint-message-div {
+        margin-top: 0;
+    }
+
+    .hint-message {
+        margin-top: 65px;
+    }
+
+    @media (min-width: 800px) {
+        header.user .user-info {
+            padding-right: 5rem;
+        }
+    }
+
+    @media (min-width: 970px) {
+        header.user .user-info {
+            padding-left: 10rem;
+        }
+    }
+
+    @media (min-width: 1560px) {
+        header.user .user-info {
+            padding-right: calc(100vw - 1480px);
+        }
+    }
+
+    @media (min-width: 1640px) {
+        header.user .user-info {
+            max-width: calc(1320px + 20rem);
+            padding-right: 10rem;
+        }
+    }
+
+@media (max-width: 449px) {
     .user-info div.text h1 {
         font-size: calc(10px + 3vw);
     }
