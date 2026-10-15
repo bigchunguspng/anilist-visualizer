@@ -1040,18 +1040,17 @@ document.addEventListener("change", event => {
 });
 
 document.addEventListener("keydown", event => {
+    if (event.ctrlKey || event.altKey || event.shiftKey) return;
     const page = get_user_page();
     if (!page || page.phase !== "ready") return;
-    if (event.ctrlKey || event.altKey || event.metaKey) return;
     const tag = event.target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || event.target.isContentEditable) return;
 
-    const key = event.key.toLowerCase();
-    if (key === "j") {
+    if (event.code === "KeyJ") {
         toggle_preference(page, "language");
-    } else if (key === "g") {
+    } else if (event.code === "KeyG") {
         toggle_preference(page, "grouping");
-    } else if (key === "r") {
+    } else if (event.code === "KeyR") {
         toggle_preference(page, "ordering");
     }
 });
