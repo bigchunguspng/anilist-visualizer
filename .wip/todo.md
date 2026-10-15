@@ -29,6 +29,8 @@ fixed; final real-browser/deployment verification remains.
   including all overlapping months.
 - [x] Show overview activity marks that fall outside an entry's watch/read
   period, matching the React overlay overflow behavior.
+- [x] Add concise in-place JSDoc contracts and examples for non-obvious
+  functions in `static/domain.js`, `static/api.js`, and `static/main.js`.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.

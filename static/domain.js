@@ -5,6 +5,12 @@ const MONTH_TITLES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "S
 function valid_integer(value) {
     return Number.isInteger(value);
 }
+/**
+ * Validates an AniList date object and drops invalid calendar components.
+ * @param {?Object} value - Date-like `{year, month, day}` value.
+ * @returns {?Object} Normalized date, or `null` for invalid input.
+ * @example normalize_date({year: 2024, month: 2, day: 29}) -> {year: 2024, month: 2, day: 29}
+ */
 export function normalize_date(value) {
     if (!value || !valid_integer(value.year) || !valid_integer(value.month) ||
         !valid_integer(value.day) || value.month < 1 || value.month > 12 ||
@@ -13,11 +19,23 @@ export function normalize_date(value) {
     }
     return {year: value.year, month: value.month, day: value.day};
 }
+/**
+ * Converts a UTC calendar date to an integer day offset from Unix epoch.
+ * @param {?Object} value - Date-like `{year, month, day}` value.
+ * @returns {?number} Unix day number, or `null` when the date is invalid.
+ * @example date_to_day({year: 1970, month: 1, day: 2}) -> 1
+ */
 export function date_to_day(value) {
     const date = normalize_date(value);
     if (!date) return null;
     return Math.floor(Date.UTC(date.year, date.month - 1, date.day) / DAY_MS);
 }
+/**
+ * Converts a Unix day number back to a UTC calendar date object.
+ * @param {number} day - Integer day offset from Unix epoch.
+ * @returns {{year: number, month: number, day: number}} UTC date parts.
+ * @example day_to_date(1) -> {year: 1970, month: 1, day: 2}
+ */
 export function day_to_date(day) {
     const date = new Date(day * DAY_MS);
     return {year: date.getUTCFullYear(), month: date.getUTCMonth() + 1, day: date.getUTCDate()};
@@ -29,6 +47,12 @@ function date_text(value, format) {
     if (format === "long") return `${MONTH_TITLES[date.month - 1]} ${date.year}`;
     return `${date.day} ${MONTH_TITLES[date.month - 1]}`;
 }
+/**
+ * Normalizes AniList cover URLs and supplies a default accent color.
+ * @param {?Object} cover - Raw AniList cover image object.
+ * @param {string} media_type - `"ANIME"` or `"MANGA"` URL namespace.
+ * @returns {{color: string, large: string, medium: string, extraLarge: string}} Safe cover fields.
+ */
 function normalize_cover(cover, media_type) {
     const source = cover || {};
     const prefix = `https://s4.anilist.co/file/anilistcdn/media/${media_type === "MANGA" ? "manga" : "anime"}/cover/`;
@@ -40,6 +64,11 @@ function normalize_cover(cover, media_type) {
         extraLarge: normalize_url(source.extraLarge)
     };
 }
+/**
+ * Replaces malformed media fields with display-safe defaults.
+ * @param {?Object} media - Raw AniList media object.
+ * @returns {Object} Media with normalized title, cover, dates, and timeline fields.
+ */
 function normalize_media(media) {
     const source = media || {};
     const type = source.type || "ANIME";
@@ -58,12 +87,23 @@ function normalize_media(media) {
         airing: null
     };
 }
+/**
+ * Collects non-character relation IDs used to connect titles into series.
+ * @param {Object} media - Media object containing AniList relation edges.
+ * @returns {number[]} Related media IDs.
+ */
 function relation_ids(media) {
     return (media.relations?.edges || [])
         .filter(edge => edge.relationType !== "CHARACTER" && edge.node?.id != null)
         .map(edge => Number(edge.node.id))
         .filter(Number.isInteger);
 }
+/**
+ * Assigns one shared series ID to connected related-media groups.
+ * @param {Object[]} entries - Normalized media-list entries, mutated in place.
+ * @returns {void}
+ * @example sequel and prequel IDs 20 and 7 -> both entries receive seriesId 7
+ */
 function set_series_ids(entries) {
     const ids = new Set(entries.map(entry => entry.media.id));
     for (const entry of entries) {
@@ -104,6 +144,11 @@ function set_series_ids(entries) {
         }
     }
 }
+/**
+ * Normalizes an entry and repairs a completion date that precedes its start.
+ * @param {Object} entry - Raw AniList media-list entry.
+ * @returns {Object} Entry with normalized dates/media and no stale timeline item.
+ */
 function normalize_entry(entry) {
     const start_date = normalize_date(entry.startedAt);
     let complete_date = normalize_date(entry.completedAt);
@@ -125,10 +170,24 @@ function normalize_entry(entry) {
         timelineItem: null
     };
 }
+/**
+ * Formats a date interval for timeline tooltips.
+ * @param {?Object} start - Start date.
+ * @param {?Object} end - Optional end date.
+ * @param {string} arrow - Suffix used when the interval is open-ended.
+ * @returns {string} Compact date range text.
+ */
 function format_date_range(start, end, arrow = "➽") {
     if (!end) return `${date_text(start, "short")} ${arrow}`;
     return `${date_text(start, "short")} - ${date_text(end, "short")}`;
 }
+/**
+ * Describes average viewing/reading speed using the media's unit.
+ * @param {number} progress - Episodes or chapters completed.
+ * @param {number} days - Inclusive elapsed days.
+ * @param {string} media_type - `"ANIME"` or `"MANGA"`.
+ * @returns {string} Human-readable speed such as `"2 episodes/day"`.
+ */
 function speed_text(progress, days, media_type) {
     const unit = media_type === "MANGA" ? "chapter" : "episode";
     const speed = progress / days;
@@ -139,6 +198,15 @@ function speed_text(progress, days, media_type) {
         ? `${unit} every ${one ? "day" : `${value} days`}`
         : `${value} ${unit}${one ? "" : "s"}/day`;
 }
+/**
+ * Adds a clipped list-entry interval and activity tooltip to an entry.
+ * @param {Object} entry - Normalized entry, mutated with `timelineItem`.
+ * @param {number} min_day - Visible timeline start.
+ * @param {number} max_day - Visible timeline end.
+ * @param {number} today - Current Unix day used for unfinished entries.
+ * @param {?Map} activities_by_media - Optional media ID to activity-model map.
+ * @returns {void}
+ */
 function set_entry_timeline(entry, min_day, max_day, today, activities_by_media) {
     if (!entry.startedAt) return;
     const day_a = date_to_day(entry.startedAt);
@@ -166,6 +234,14 @@ function set_entry_timeline(entry, min_day, max_day, today, activities_by_media)
     }
     entry.timelineItem = timeline;
 }
+/**
+ * Adds the media's release/airing interval clipped to the visible timeline.
+ * @param {Object} media - Normalized media, mutated with `airing`.
+ * @param {number} min_day - Visible timeline start.
+ * @param {number} max_day - Visible timeline end.
+ * @param {number} today - Current Unix day for ongoing releases.
+ * @returns {void}
+ */
 function set_airing_timeline(media, min_day, max_day, today) {
     const start = date_to_day(media.startDate) ?? min_day;
     const end = date_to_day(media.endDate) ?? today;
@@ -181,6 +257,14 @@ function set_airing_timeline(media, min_day, max_day, today) {
         season
     };
 }
+/**
+ * Builds day-count sections for a timeline spanning one or more months.
+ * @param {Object} min_date - First visible date.
+ * @param {Object} max_date - Last visible date.
+ * @param {boolean} include_year - Add abbreviated years at range boundaries.
+ * @returns {Object<string, number>} Section labels mapped to visible day counts.
+ * @example month_days({year: 2024, month: 1, day: 30}, {year: 2024, month: 2, day: 2}, false) -> {Jan: 2, Feb: 2}
+ */
 function month_days(min_date, max_date, include_year) {
     const result = {};
     let cursor = new Date(Date.UTC(min_date.year, min_date.month - 1, 1));
@@ -199,6 +283,13 @@ function month_days(min_date, max_date, include_year) {
     }
     return result;
 }
+/**
+ * Converts raw list entries into the complete overview timeline model.
+ * @param {Object[]} raw_entries - AniList media-list entries.
+ * @param {Object} options - Optional range, last-year, and activity settings.
+ * @returns {Object} Bounds, sections, series counts, and visible normalized entries.
+ * @example build_animanga(entries, {last_year: true}) -> timeline limited to the last 365 days
+ */
 export function build_animanga(raw_entries, options = {}) {
     const entries = [];
     const seen_media = new Set();
@@ -250,6 +341,12 @@ export function build_animanga(raw_entries, options = {}) {
         visibleEntries: visible
     };
 }
+/**
+ * Converts an AniList activity progress value into counted units.
+ * @param {Object} activity - Activity with optional progress and status.
+ * @returns {number} Units represented; completed-without-progress counts as one.
+ * @example activity_progress({progress: "4 - 6"}) -> 3
+ */
 function activity_progress(activity) {
     if (activity.progress == null || activity.progress === "") {
         return String(activity.status).toLowerCase() === "completed" ? 1 : 0;
@@ -258,6 +355,12 @@ function activity_progress(activity) {
     const match = text.match(/^(\d+)\s*-\s*(\d+)$/);
     return match ? Math.max(Number(match[2]) - Number(match[1]) + 1, 0) : 1;
 }
+/**
+ * Combines same-day activity records, extending episode/chapter ranges.
+ * @param {Object[]} activities - Activity records containing `day` and `progress`.
+ * @returns {Object[]} Sorted records with one merged record per day.
+ * @example [{day: 1, progress: 2}, {day: 1, progress: 1}] -> [{day: 1, progress: 3}]
+ */
 function merge_activities_by_day(activities) {
     const sorted = [...activities].sort((a, b) => a.day - b.day);
     const merged = [];
@@ -278,6 +381,11 @@ function merge_activities_by_day(activities) {
     }
     return merged;
 }
+/**
+ * Builds per-title activity bars, merging multiple updates on each day.
+ * @param {Object[]} raw_activities - Raw AniList list activities.
+ * @returns {{maxProgressValue: number, activities: Object[]}} Chart-ready title data.
+ */
 export function build_title_activities(raw_activities) {
     const activities = (raw_activities || []).map(activity => ({
         ...activity,
@@ -291,6 +399,12 @@ export function build_title_activities(raw_activities) {
         activities: united
     };
 }
+/**
+ * Builds a day-indexed activity chart grouped by media and calendar month.
+ * @param {Object[]} raw_activities - Raw AniList activities from a date range.
+ * @returns {{maxProgressValue: number, smallerUnits: Object[], biggerUnits: Object[], activities: Object[][]}} Chart model.
+ * @example no activities -> {maxProgressValue: 0, smallerUnits: [], biggerUnits: [], activities: []}
+ */
 export function build_mixed_activities(raw_activities) {
     const activities = (raw_activities || []).map(activity => ({
         ...activity,

@@ -46,6 +46,12 @@ const app_state = {
     userPage: null
 };
 
+/**
+ * Escapes text before inserting it into generated HTML.
+ * @param {*} value - Value to render as text.
+ * @returns {string} HTML-safe string.
+ * @example escape_html("<AniList>") -> "&lt;AniList&gt;"
+ */
 function escape_html(value) {
     return String(value).replace(/[&<>"']/g, character => ({
         "&": "&amp;",
@@ -78,6 +84,11 @@ function write_preference(key, value) {
         // Storage can be disabled; the UI still works for the current session.
     }
 }
+/**
+ * Converts an API exception into the message shown in the page UI.
+ * @param {*} error - Thrown value from an AniList request.
+ * @returns {string} Safe user-facing error text.
+ */
 function render_api_error(error) {
     if (!(error instanceof AniListApiError)) {
         return "Could not load data from AniList.";
@@ -95,6 +106,13 @@ function hide_tooltip() {
     const legacy_tip = document.getElementById("tip");
     if (legacy_tip) legacy_tip.style.display = "none";
 }
+/**
+ * Positions the legacy tooltip relative to an overview or chart target.
+ * @param {Element} target - Element whose bounds anchor the tooltip.
+ * @param {string[]} lines - Plain-text lines to render.
+ * @param {boolean} chart - Use chart-specific below-target placement.
+ * @returns {void}
+ */
 function show_legacy_tooltip(target, lines, chart = false) {
     const tip = document.getElementById("tip");
     if (!tip || !lines.length) return;
@@ -114,6 +132,13 @@ function show_legacy_tooltip(target, lines, chart = false) {
         ? target_rect.left - (tip_rect.width - target_rect.width) / 2
         : target_rect.left) - position_root.left}px`;
 }
+/**
+ * Displays the accessible floating tooltip while keeping it inside the viewport.
+ * @param {Element} target - Element whose bounds anchor the tooltip.
+ * @param {string[]} lines - Plain-text lines to render.
+ * @param {"top"|"bottom"} placement - Preferred side of the target.
+ * @returns {void}
+ */
 function show_tooltip(target, lines, placement = "top") {
     const tooltip = tooltip_element();
     if (!tooltip || !lines.length) return;
@@ -145,14 +170,31 @@ function show_tooltip(target, lines, placement = "top") {
     tooltip.style.left = `${left}px`;
     tooltip.style.top = `${top}px`;
 }
+/**
+ * Reads newline-separated tooltip text from a data attribute.
+ * @param {?Element} element - Element potentially carrying `data-tooltip`.
+ * @returns {string[]} Trimmed non-empty tooltip lines.
+ * @example parse_tooltip_lines({dataset: {tooltip: "Title\nJan 1"}}) -> ["Title", "Jan 1"]
+ */
 function parse_tooltip_lines(element) {
     const raw = element?.dataset?.tooltip;
     return raw ? raw.split("\n").map(item => item.trim()).filter(Boolean) : [];
 }
+/**
+ * Chooses singular/plural episode or chapter wording for a count.
+ * @param {string} type - AniList media type.
+ * @param {number} count - Unit count.
+ * @returns {string} `"episode(s)"` or `"chapter(s)"`.
+ */
 function unit_label(type, count) {
     const unit = type === "MANGA" ? "chapter" : "episode";
     return `${unit}${count === 1 ? "" : "s"}`;
 }
+/**
+ * Formats a Unix day as a localized UTC date.
+ * @param {number} day - Unix day number.
+ * @returns {string} Localized date such as `"Jan 2, 2024"`.
+ */
 function format_day(day) {
     return new Date(day * DAY_MS).toLocaleDateString(undefined, {
         year: "numeric",
@@ -161,6 +203,11 @@ function format_day(day) {
         timeZone: "UTC"
     });
 }
+/**
+ * Formats an AniList timestamp as elapsed time from the current moment.
+ * @param {number|string} timestamp - Unix timestamp in seconds.
+ * @returns {string} Relative text such as `"3 days ago"` or `"just now"`.
+ */
 function format_last_activity(timestamp) {
     const seconds = Math.max(0, Math.floor(Date.now() / 1000) - Number(timestamp || 0));
     const units = [
@@ -179,6 +226,12 @@ function format_last_activity(timestamp) {
     }
     return "just now";
 }
+/**
+ * Selects the preferred title language, falling back through available titles.
+ * @param {?Object} titles - AniList title variants.
+ * @param {string} language - `english` or the Japanese preference value.
+ * @returns {string} Best available title, or `"Untitled"`.
+ */
 function get_localized_title(titles, language) {
     if (language === LANG_JAPANESE) {
         return titles?.native || titles?.english || titles?.romaji || "Untitled";
@@ -191,9 +244,19 @@ function get_cover_url(cover) {
 function get_cover_color(cover) {
     return cover?.color || "#3db4f2";
 }
+/**
+ * Converts an AniList status code into its display label.
+ * @param {string} status - AniList media-list status.
+ * @returns {string} Human-readable status or `"Unknown"`.
+ */
 function format_status(status) {
     return status_labels[status] || status || "Unknown";
 }
+/**
+ * Parses the hash URL into one of the supported application routes.
+ * @returns {{name: string, username?: string}} Home, user, or not-found route.
+ * @example parse_route() with `#/user/alice` -> {name: "user", username: "alice"}
+ */
 function parse_route() {
     const hash = window.location.hash.replace(/^#\/?/, "");
     const segments = hash.split("/").filter(Boolean).map(decodeURIComponent);
@@ -241,6 +304,12 @@ function render_not_found() {
             </div>
         </main>`;
 }
+/**
+ * Creates the loading, preference, filter, cache, and chart state for a user route.
+ * @param {string} username - Requested AniList username.
+ * @param {number} token - Navigation token used to reject stale responses.
+ * @returns {Object} Mutable user-page state.
+ */
 function create_user_state(username, token) {
     return {
         token,
@@ -276,6 +345,11 @@ function create_user_state(username, token) {
 function get_user_page() {
     return app_state.userPage;
 }
+/**
+ * Builds the overview model using the page's active date filter and activities.
+ * @param {Object} page - Current user-page state.
+ * @returns {Object} Filtered timeline model from `build_animanga`.
+ */
 function get_overview_model(page) {
     const options = {activities_by_media: page.activityCache};
     if (page.filter.mode === "last_year") {
@@ -286,6 +360,12 @@ function get_overview_model(page) {
     }
     return build_animanga(page.rawEntries, options);
 }
+/**
+ * Inserts separators between entries belonging to different media series.
+ * @param {Object[]} entries - Entries already sorted for display.
+ * @returns {(Object|string)[]} Entries grouped by series with `"-"` separators.
+ * @example [A, B, C] with A/B related -> [A, B, "-", C]
+ */
 function group_entries(entries) {
     const series = [];
     const seen = new Set();
@@ -305,6 +385,12 @@ function group_entries(entries) {
     grouped.pop();
     return grouped;
 }
+/**
+ * Filters out entries without drawable timeline bars and applies grouping.
+ * @param {Object} page - Current user-page state.
+ * @param {Object} model - Built overview timeline model.
+ * @returns {(Object|string)[]} Entries ready for overview rendering.
+ */
 function get_display_entries(page, model) {
     const visible = model.visibleEntries.filter(entry => entry.timelineItem !== null);
     return page.prefs.grouping === GROUP_GROUPED ? group_entries(visible) : visible;
@@ -316,12 +402,24 @@ function overview_heading(page) {
     }
     return "All";
 }
+/**
+ * Renders proportional calendar sections used behind each timeline row.
+ * @param {Object<string, number>} sections - Section labels mapped to day counts.
+ * @param {number} timeframe - Total visible days.
+ * @param {boolean} text - Whether to include section labels.
+ * @returns {string} Timeline-section HTML.
+ */
 function timeline_sections_html(sections, timeframe, text) {
     return Object.entries(sections).map(([label, value]) => `
         <div class="timeline-year${text ? " text" : ""}" style="width:${(value / timeframe) * 100}%;">
             ${text ? escape_html(label) : ""}
         </div>`).join("");
 }
+/**
+ * Builds tooltip lines for a title's timeline interval and progress.
+ * @param {Object} entry - Normalized timeline entry.
+ * @returns {string[]} Date, progress, speed, and repeat lines.
+ */
 function entry_tooltip_lines(entry) {
     const tip = entry.timelineItem?.tip;
     if (!tip) return [];
@@ -333,12 +431,26 @@ function entry_tooltip_lines(entry) {
     if ((entry.repeat || 0) > 0) lines.push(`+ ${entry.repeat} repeat${entry.repeat === 1 ? "" : "s"}`);
     return lines;
 }
+/**
+ * Builds tooltip lines for one title activity marker.
+ * @param {Object} activity - Chart-ready activity.
+ * @param {string} media_type - AniList media type.
+ * @returns {string[]} Date and progress lines.
+ */
 function title_activity_lines(activity, media_type) {
     const lines = [format_day(activity.day)];
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
     lines.push(`${activity.progress} ${unit_label(media_type, activity.progress)}`);
     return lines;
 }
+/**
+ * Renders per-day activity markers over an overview timeline bar.
+ * @param {Object} entry - Entry containing title activities.
+ * @param {number} min_day - Timeline's first Unix day.
+ * @param {number} timeframe - Number of displayed days.
+ * @param {string} color - CSS color for activity markers.
+ * @returns {string} Activity overlay HTML, or an empty string.
+ */
 function render_activity_overlay(entry, min_day, timeframe, color) {
     const activities = entry.timelineItem?.activities?.activities || [];
     if (!activities.length) return "";
@@ -351,6 +463,13 @@ function render_activity_overlay(entry, min_day, timeframe, color) {
                 data-tooltip="${escape_html(title_activity_lines(activity, entry.media.type).join("\n"))}"></div>`;
     }).join("")}</div>`;
 }
+/**
+ * Renders one anime/manga row with airing, progress, and activity overlays.
+ * @param {Object} entry - Timeline entry.
+ * @param {Object} page - Current user-page state and preferences.
+ * @param {Object} model - Overview timeline model.
+ * @returns {string} Entry row HTML.
+ */
 function render_entry(entry, page, model) {
     const media_id = entry.media.id;
     const timeframe = model.maxDay - model.minDay + 1;
@@ -451,6 +570,11 @@ function render_overview(page) {
             <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;
 }
+/**
+ * Calculates the AniList query window covering today and the previous 3 months.
+ * @returns {{from: number, to: number}} Unix timestamp bounds in seconds.
+ * @example get_chart_range() -> {from: 172..., to: 172...}
+ */
 function get_chart_range() {
     const today = new Date();
     const start_of_today = new Date(Date.UTC(
@@ -466,6 +590,11 @@ function get_chart_range() {
         to: Math.floor(tomorrow.getTime() / 1000)
     };
 }
+/**
+ * Summarizes activities for the currently selected chart media title.
+ * @param {Object} page - Current user-page state.
+ * @returns {?Object} Selected media, active days, and total progress.
+ */
 function get_chart_selection(page) {
     if (!page.chart.data || !page.chart.selectedMediaId) return null;
     const activities = page.chart.data.activities.flat().filter(activity => activity.media?.id === page.chart.selectedMediaId);
@@ -477,6 +606,12 @@ function get_chart_selection(page) {
         totalProgress: activities.reduce((sum, activity) => sum + activity.progress, 0)
     };
 }
+/**
+ * Builds chart tooltip lines with localized title and progress details.
+ * @param {Object} activity - Chart activity containing media metadata.
+ * @param {string} language - Current title-language preference.
+ * @returns {string[]} Tooltip lines.
+ */
 function chart_activity_lines(activity, language) {
     const title = get_localized_title(activity.media?.title, language);
     const lines = [title, format_day(activity.day)];
@@ -630,6 +765,10 @@ function render_search_results(users) {
                 </a>`).join("")}
         </div>`;
 }
+/**
+ * Re-renders the current route and hides stale tooltips.
+ * @returns {void}
+ */
 function update_user_render() {
     const content = document.getElementById(CONTENT_ID);
     if (!content) return;
@@ -642,6 +781,11 @@ function update_user_render() {
         content.innerHTML = render_not_found();
     }
 }
+/**
+ * Loads a user route while ignoring responses from obsolete navigations.
+ * @param {string} username - AniList username from the hash route.
+ * @returns {Promise<void>}
+ */
 async function load_user_route(username) {
     const token = ++app_state.routeToken;
     const page = create_user_state(username, token);
@@ -682,6 +826,11 @@ async function load_user_route(username) {
         update_user_render();
     }
 }
+/**
+ * Lazily fetches and builds the last-three-month chart for a user page.
+ * @param {Object} page - Current user-page state.
+ * @returns {Promise<void>}
+ */
 async function ensure_chart_loaded(page) {
     if (!page?.user || page.chart.status === "loading" || page.chart.status === "ready") return;
     page.chart.status = "loading";
@@ -701,6 +850,12 @@ async function ensure_chart_loaded(page) {
         update_user_render();
     }
 }
+/**
+ * Lazily loads and caches activity details for one overview title.
+ * @param {Object} page - Current user-page state.
+ * @param {number} media_id - AniList media ID.
+ * @returns {Promise<void>}
+ */
 async function load_entry_activities(page, media_id) {
     if (!page?.user || page.activityCache.has(media_id) || page.loadingMediaId === media_id) return;
     page.loadingMediaId = media_id;
@@ -718,6 +873,12 @@ async function load_entry_activities(page, media_id) {
         update_user_render();
     }
 }
+/**
+ * Toggles and persists one of the language, grouping, or ordering preferences.
+ * @param {Object} page - Current user-page state.
+ * @param {string} preference - Preference key selected by the user.
+ * @returns {void}
+ */
 function toggle_preference(page, preference) {
     if (preference === "language") {
         page.prefs.language = page.prefs.language === LANG_JAPANESE ? LANG_ENGLISH : LANG_JAPANESE;
@@ -731,6 +892,12 @@ function toggle_preference(page, preference) {
     }
     update_user_render();
 }
+/**
+ * Selects all-time or last-year overview filtering.
+ * @param {Object} page - Current user-page state.
+ * @param {string} mode - `"all"` or `"last_year"`.
+ * @returns {void}
+ */
 function set_filter_mode(page, mode) {
     page.filter.mode = mode;
     if (mode === "all") {
@@ -739,6 +906,13 @@ function set_filter_mode(page, mode) {
     }
     update_user_render();
 }
+/**
+ * Sets a year endpoint and keeps the range ordered.
+ * @param {Object} page - Current user-page state.
+ * @param {"from"|"to"} which - Endpoint being changed.
+ * @param {string|number} value - Selected calendar year.
+ * @returns {void}
+ */
 function update_year_filter(page, which, value) {
     page.filter.mode = "range";
     page.filter[which] = Number(value);
@@ -749,6 +923,10 @@ function update_year_filter(page, which, value) {
     }
     update_user_render();
 }
+/**
+ * Resolves the current hash route and starts any required user loading.
+ * @returns {void}
+ */
 function render_route() {
     const route = parse_route();
     app_state.route = route;
@@ -838,6 +1016,11 @@ document.addEventListener("click", event => {
     }
 });
 
+/**
+ * Shows a chart title's cover and dims activities belonging to other titles.
+ * @param {Element} activity - Selected chart activity element.
+ * @returns {void}
+ */
 function highlight_chart_activity(activity) {
     const image = document.getElementById("image");
     if (image) {

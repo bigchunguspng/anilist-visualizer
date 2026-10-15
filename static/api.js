@@ -122,9 +122,20 @@ const RANGE_ACTIVITIES_QUERY = `
 `;
 
 // CACHE
+/**
+ * Creates a stable session-storage key for a GraphQL query and variables.
+ * @param {string} query - GraphQL document.
+ * @param {Object} variables - GraphQL variables.
+ * @returns {string} Namespaced cache key.
+ */
 function cache_key(query, variables) {
     return `${CACHE_PREFIX}${query}:${JSON.stringify(variables)}`;
 }
+/**
+ * Reads an unexpired cached GraphQL response.
+ * @param {string} key - Cache key.
+ * @returns {?Object} Cached data, or `null` when absent/expired/unreadable.
+ */
 function cache_read(key) {
     try {
         const raw = sessionStorage.getItem(key);
@@ -139,6 +150,12 @@ function cache_read(key) {
         return null;
     }
 }
+/**
+ * Stores a response and removes the oldest cache entries beyond the limit.
+ * @param {string} key - Cache key.
+ * @param {Object} data - GraphQL response data.
+ * @returns {void}
+ */
 function cache_write(key, data) {
     try {
         const entries = [];
@@ -165,6 +182,12 @@ function cache_write(key, data) {
 }
 
 // API HELPERS
+/**
+ * Error type carrying a user-facing message and AniList failure category.
+ * @param {string} message - Displayable error message.
+ * @param {string} kind - Category such as `network`, `graphql`, or `rate_limit`.
+ * @param {Object} details - Extra response/status metadata.
+ */
 export class AniListApiError extends Error {
     constructor(message, kind, details = {}) {
         super(message);
@@ -173,6 +196,13 @@ export class AniListApiError extends Error {
         Object.assign(this, details);
     }
 }
+/**
+ * Extracts paginated items and `hasNextPage` from a nested GraphQL response.
+ * @param {string[]} path - Keys leading to the page object.
+ * @param {string} items_key - Page property containing the item array.
+ * @returns {Function} Reader returning `{items, hasNextPage}`.
+ * @example page_reader(["Page"], "users")(data) -> {items: [...], hasNextPage: false}
+ */
 function page_reader(path, items_key) {
     return data => {
         let page = data;
@@ -183,6 +213,12 @@ function page_reader(path, items_key) {
         };
     };
 }
+/**
+ * Posts a GraphQL query with caching and in-flight request deduplication.
+ * @param {string} query - GraphQL document.
+ * @param {Object} variables - GraphQL variables.
+ * @returns {Promise<Object>} GraphQL `data` payload.
+ */
 async function post_graphql(query, variables) {
     const key = cache_key(query, variables);
     const cached = cache_read(key);
@@ -254,6 +290,13 @@ async function post_graphql(query, variables) {
     in_flight_requests.set(key, request);
     return request;
 }
+/**
+ * Fetches every page of a GraphQL connection and flattens its items.
+ * @param {string} query - GraphQL document accepting `page` and `perPage`.
+ * @param {Object} variables - Query variables excluding pagination.
+ * @param {Function} get_page - Extractor created by `page_reader`.
+ * @returns {Promise<Object[]>} Items from all pages.
+ */
 async function get_all_pages(query, variables, get_page) {
     const results = [];
     let page = 1;
@@ -279,6 +322,11 @@ async function get_all_pages(query, variables, get_page) {
 }
 
 // EXPORT
+/**
+ * Searches AniList users across all result pages, newest activity first.
+ * @param {string} query - Username search text.
+ * @returns {Promise<Object[]>} Matching users sorted by `updatedAt`.
+ */
 export async function search_users(query) {
     const users = await get_all_pages(
         USER_SEARCH_QUERY,
@@ -287,14 +335,29 @@ export async function search_users(query) {
     );
     return users.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 }
+/**
+ * Loads a public AniList user by numeric ID.
+ * @param {number|string} user_id - AniList user ID.
+ * @returns {Promise<?Object>} User object, or `null` when absent.
+ */
 export async function get_user_by_id(user_id) {
     const data = await post_graphql(USER_QUERY, {id: Number(user_id)});
     return data.User;
 }
+/**
+ * Resolves the first AniList user matching a username search.
+ * @param {string} username - Username to search.
+ * @returns {Promise<?Object>} Best matching user, or `null`.
+ */
 export async function get_user_by_name(username) {
     const users = await search_users(username);
     return users[0] || null;
 }
+/**
+ * Loads and combines all supported media-list statuses for a user.
+ * @param {number|string} user_id - AniList user ID.
+ * @returns {Promise<Object[]>} Combined entries from all supported statuses.
+ */
 export async function get_media_lists(user_id) {
     const statuses = ["CURRENT", "COMPLETED", "DROPPED", "PAUSED", "REPEATING"];
     const lists = await Promise.all(statuses.map(status => get_all_pages(
@@ -304,6 +367,12 @@ export async function get_media_lists(user_id) {
     )));
     return lists.flat();
 }
+/**
+ * Loads all list-activity updates for one title and user.
+ * @param {number|string} user_id - AniList user ID.
+ * @param {number|string} media_id - AniList media ID.
+ * @returns {Promise<Object[]>} Raw title activities.
+ */
 export async function get_title_activities(user_id, media_id) {
     return get_all_pages(
         TITLE_ACTIVITIES_QUERY,
@@ -311,6 +380,13 @@ export async function get_title_activities(user_id, media_id) {
         page_reader(["Page"], "activities")
     );
 }
+/**
+ * Loads list activities bounded by a Unix timestamp window.
+ * @param {number|string} user_id - AniList user ID.
+ * @param {number|string} from - Lower timestamp bound.
+ * @param {number|string} to - Upper timestamp bound.
+ * @returns {Promise<Object[]>} Raw range activities.
+ */
 export async function get_range_activities(user_id, from, to) {
     return get_all_pages(
         RANGE_ACTIVITIES_QUERY,
