@@ -1,6 +1,6 @@
 # AniList Visualizer rewrite handoff
 
-Last reviewed: 2026-10-11
+Last reviewed: 2026-10-15
 
 This directory is the persistent handoff for rewriting the ASP.NET Core + React
 application as a static vanilla HTML/CSS/JS site hosted on GitHub Pages. The

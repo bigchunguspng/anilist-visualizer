@@ -1,8 +1,8 @@
 # Rewrite task checklist
 
-Status as of 2026-10-11: Static visualization and controls are ported; legacy
-style parity is restored for the migrated surfaces; final real-browser/
-deployment verification remains.
+Status as of 2026-10-15: Static visualization and controls are ported; the
+remaining reported parity mismatches were fixed; final real-browser/deployment
+verification remains.
 
 ## Analysis completed
 
@@ -51,6 +51,11 @@ deployment verification remains.
 - Search rows retain the old neutral hover and enlarge the avatar on hover.
 - Legacy title/user spacing, year-control alignment, navbar logo typography,
   user-header inset, avatar animation, and overview hint placement are restored.
+- Tooltip coordinates now use their actual absolute positioning context for
+  overview and three-month tips; reverse ordering uses the legacy
+  column-reverse layout; fetched timeline details use the legacy translucent
+  rectangle color while activity days remain opaque, and repeat tips are
+  accented.
 
 Rewrite-wide constraints and conventions are maintained in
 `rewrite-rules.md`.

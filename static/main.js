@@ -97,19 +97,22 @@ function hide_tooltip() {
 }
 function show_legacy_tooltip(target, lines, chart = false) {
     const tip = document.getElementById("tip");
-    const root = document.querySelector("main");
-    if (!tip || !root || !lines.length) return;
-    tip.innerHTML = lines.map(line => `<p>${escape_html(line)}</p>`).join("");
+    if (!tip || !lines.length) return;
+    tip.innerHTML = lines.map(line => {
+        const class_name = /^\+\s*\d+\s+repeats?$/.test(line) ? " class=\"repeats\"" : "";
+        return `<p${class_name}>${escape_html(line)}</p>`;
+    }).join("");
     tip.style.display = "block";
     const target_rect = chart
         ? target.parentElement.getBoundingClientRect()
         : target.getBoundingClientRect();
-    const root_rect = root.getBoundingClientRect();
+    const position_root = tip.offsetParent?.getBoundingClientRect()
+        || document.body.getBoundingClientRect();
     const tip_rect = tip.getBoundingClientRect();
-    tip.style.top = `${(chart ? target_rect.bottom + 18 : target_rect.top - 12 - tip_rect.height) - root_rect.top}px`;
+    tip.style.top = `${(chart ? target_rect.bottom + 18 : target_rect.top - 12 - tip_rect.height) - position_root.top}px`;
     tip.style.left = `${(chart
         ? target_rect.left - (tip_rect.width - target_rect.width) / 2
-        : target_rect.left) - root_rect.left}px`;
+        : target_rect.left) - position_root.left}px`;
 }
 function show_tooltip(target, lines, placement = "top") {
     const tooltip = tooltip_element();
@@ -336,12 +339,12 @@ function title_activity_lines(activity, media_type) {
     lines.push(`${activity.progress} ${unit_label(media_type, activity.progress)}`);
     return lines;
 }
-function render_activity_overlay(entry, min_day) {
+function render_activity_overlay(entry, min_day, color) {
     const activities = entry.timelineItem?.activities?.activities || [];
     if (!activities.length) return "";
     const start_day = min_day + entry.timelineItem.offset;
     const width = Math.max(entry.timelineItem.length, 1);
-    return `<div class="days">${activities.map(activity => {
+    return `<div class="days" style="--color-blue:${color};">${activities.map(activity => {
         const left = Math.max(0, Math.min(100, ((activity.day - start_day - 1) / width) * 100));
         const height = (activity.progress / 8) * 100;
         return `
@@ -356,6 +359,7 @@ function render_entry(entry, page, model) {
     const item = entry.timelineItem;
     const cover_url = get_cover_url(entry.media.coverImage);
     const cover_color = get_cover_color(entry.media.coverImage);
+    const activity_color = item.activities ? `${cover_color}10` : cover_color;
     const tooltip = entry_tooltip_lines(entry).join("\n");
     const progress_style = `margin-left:${(item.offset / timeframe) * 100}%;width:${(item.length / timeframe) * 100}%;`;
     const airing = entry.media.airing;
@@ -377,8 +381,8 @@ function render_entry(entry, page, model) {
                         <div class="season">${escape_html(airing.season)}</div>
                     </div>` : ""}
                 <div class="timeline-item tip" style="${progress_style}">
-                    <div class="range${item.stripes ? " stripes" : ""}" style="--color-blue:${cover_color};">
-                        ${render_activity_overlay(entry, model.minDay)}
+                    <div class="range${item.stripes ? " stripes" : ""}" style="--color-blue:${activity_color};">
+                        ${render_activity_overlay(entry, model.minDay, cover_color)}
                         <div class="hover-box" data-action="load-entry" data-media-id="${media_id}"
                             data-tooltip="${escape_html(tooltip)}"></div>
                     </div>

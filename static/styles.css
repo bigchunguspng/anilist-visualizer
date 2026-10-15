@@ -303,6 +303,13 @@ body {
 .medialist {
     font-size: 1.5em;
 }
+#animanga {
+    display: flex;
+    flex-direction: column;
+}
+#animanga.reverse {
+    flex-direction: column-reverse;
+}
 .entry {
     display: flex;
     align-items: center;
