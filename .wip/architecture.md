@@ -87,6 +87,10 @@ No AniList token is configured or required for the visualizer's public queries.
 - creates tooltip text, average speed, repeat count, and optional activities;
 - creates an airing interval for each media item.
 
+Airing labels preserve the legacy formatter: seasonal media use day-month
+ranges, while media without a season (typically manga) use month-year ranges,
+including open-ended labels such as `Oct 2012 →`.
+
 Activity normalization removes zero-progress events and merges events from the
 same day into one event (including progress ranges such as `21 - 23`).
 Last-3-month data is grouped by media and then by day.

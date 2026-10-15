@@ -31,6 +31,9 @@ fixed; final real-browser/deployment verification remains.
   period, matching the React overlay overflow behavior.
 - [x] Add concise in-place JSDoc contracts and examples for non-obvious
   functions in `static/domain.js`, `static/api.js`, and `static/main.js`.
+- [x] Match legacy airing-tip date formatting: media without a season uses
+  month-year text (for example, `Oct 2012 →`) even when its start predates the
+  visible timeline.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.

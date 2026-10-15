@@ -175,11 +175,12 @@ function normalize_entry(entry) {
  * @param {?Object} start - Start date.
  * @param {?Object} end - Optional end date.
  * @param {string} arrow - Suffix used when the interval is open-ended.
+ * @param {string} format - Date display format, either `"short"` or `"long"`.
  * @returns {string} Compact date range text.
  */
-function format_date_range(start, end, arrow = "➽") {
-    if (!end) return `${date_text(start, "short")} ${arrow}`;
-    return `${date_text(start, "short")} - ${date_text(end, "short")}`;
+function format_date_range(start, end, arrow = "➽", format = "short") {
+    if (!end) return `${date_text(start, format)} ${arrow}`;
+    return `${date_text(start, format)} - ${date_text(end, format)}`;
 }
 /**
  * Describes average viewing/reading speed using the media's unit.
@@ -250,7 +251,11 @@ function set_airing_timeline(media, min_day, max_day, today) {
     let season = "";
     if (length === 1) season = date_text(media.startDate, "full");
     else if (media.season && length > 30) season = `${media.season} ${media.seasonYear || ""}`.trim().toUpperCase();
-    else season = format_date_range(media.startDate || day_to_date(min_day), media.endDate, "→");
+    else {
+        const date_format = media.season ? "short" : "long";
+        season = format_date_range(
+            media.startDate || day_to_date(min_day), media.endDate, "→", date_format);
+    }
     media.airing = {
         offset: Math.max(start - min_day, 0),
         length,
