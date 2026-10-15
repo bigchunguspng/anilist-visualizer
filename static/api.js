@@ -23,7 +23,7 @@ const MEDIA_FIELDS = `
     chapters
     siteUrl
     title { english romaji native }
-    coverImage { large extraLarge color }
+    coverImage { large medium extraLarge color }
     startDate { year month day }
     endDate { year month day }
     season
@@ -112,7 +112,7 @@ const RANGE_ACTIVITIES_QUERY = `
                         id
                         type
                         title { english romaji native }
-                        coverImage { large extraLarge color }
+                        coverImage { large medium extraLarge color }
                         siteUrl
                     }
                 }

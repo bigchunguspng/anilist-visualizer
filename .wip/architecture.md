@@ -196,3 +196,8 @@ testing, deep-link refresh checks, and GitHub Pages deployment checks.
   timeline rather than the narrow entry range. Activity before or after a
   completed watch/read period remains visible at its real date without huge
   range-relative offsets.
+- Static media previews now request and layer AniList medium and large cover
+  URLs, matching the legacy fallback behavior for overview covers and the
+  three-month selected-title preview.
+- Static tooltip positioning restores the legacy overview right-edge correction
+  and clamps both overview and three-month tips to the viewport.

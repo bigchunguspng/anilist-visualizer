@@ -127,10 +127,31 @@ function show_legacy_tooltip(target, lines, chart = false) {
     const position_root = tip.offsetParent?.getBoundingClientRect()
         || document.body.getBoundingClientRect();
     const tip_rect = tip.getBoundingClientRect();
-    tip.style.top = `${(chart ? target_rect.bottom + 18 : target_rect.top - 12 - tip_rect.height) - position_root.top}px`;
-    tip.style.left = `${(chart
+    const viewport = document.documentElement.getBoundingClientRect();
+    const edge_target = document.querySelector(".tip-rect-ref");
+    const edge_rect = edge_target?.getBoundingClientRect();
+    const root_left = position_root.left;
+    const root_top = position_root.top;
+    let left = chart
         ? target_rect.left - (tip_rect.width - target_rect.width) / 2
-        : target_rect.left) - position_root.left}px`;
+        : target_rect.left;
+    let top = chart
+        ? target_rect.bottom + 18
+        : target_rect.top - 12 - tip_rect.height;
+
+    if (!chart && edge_rect && left + tip_rect.width > edge_rect.right - 20) {
+        left -= tip_rect.width + 5;
+    }
+    left = Math.max(viewport.left + 8, Math.min(left, viewport.right - tip_rect.width - 8));
+    if (top < viewport.top + 8) {
+        top = Math.min(target_rect.bottom + 12, viewport.bottom - tip_rect.height - 8);
+    }
+    if (top + tip_rect.height > viewport.bottom - 8) {
+        top = Math.max(viewport.top + 8, target_rect.top - tip_rect.height - 12);
+    }
+
+    tip.style.top = `${top - root_top}px`;
+    tip.style.left = `${left - root_left}px`;
 }
 /**
  * Displays the accessible floating tooltip while keeping it inside the viewport.
@@ -238,8 +259,11 @@ function get_localized_title(titles, language) {
     }
     return titles?.english || titles?.romaji || titles?.native || "Untitled";
 }
-function get_cover_url(cover) {
-    return cover?.extraLarge || cover?.large || cover?.medium || "";
+function get_cover_urls(cover) {
+    return {
+        medium: cover?.medium || cover?.large || cover?.extraLarge || "", // URL: /small/
+        large: cover?.large || cover?.extraLarge || cover?.medium || ""   // URL: /medium/
+    };
 }
 function get_cover_color(cover) {
     return cover?.color || "#3db4f2";
@@ -475,7 +499,7 @@ function render_entry(entry, page, model) {
     const timeframe = model.maxDay - model.minDay + 1;
     const title = get_localized_title(entry.media.title, page.prefs.language);
     const item = entry.timelineItem;
-    const cover_url = get_cover_url(entry.media.coverImage);
+    const cover_urls = get_cover_urls(entry.media.coverImage);
     const cover_color = get_cover_color(entry.media.coverImage);
     const activity_color = item.activities ? `${cover_color}10` : cover_color;
     const tooltip = entry_tooltip_lines(entry).join("\n");
@@ -485,7 +509,7 @@ function render_entry(entry, page, model) {
     return `
         <div class="entry">
             <div class="cover">
-                <div class="image color" style="background-image:url('${escape_html(cover_url)}');--color-blue:${cover_color};"></div>
+                <div class="image color" style="background-image:url('${escape_html(cover_urls.large)}'),url('${escape_html(cover_urls.medium)}');--color-blue:${cover_color};"></div>
                 <a class="link" href="${escape_html(entry.media.siteUrl || "#")}" target="_blank" rel="noreferrer">
                     ${entry.media.type === "MANGA" ? "マ" : "ア"}
                 </a>
@@ -645,7 +669,8 @@ function render_chart(page) {
                                     data-media-id="${activity.media.id}"
                                     data-tooltip="${escape_html(chart_activity_lines(activity, page.prefs.language).join("\n"))}"
                                     style="height:${(activity.progress / chart.maxProgressValue) * 100}%;--color-blue:${get_cover_color(activity.media.coverImage)};"
-                                    data-cover="${escape_html(get_cover_url(activity.media.coverImage))}">
+                                    data-cover-medium="${escape_html(get_cover_urls(activity.media.coverImage).medium)}"
+                                    data-cover-large="${escape_html(get_cover_urls(activity.media.coverImage).large)}">
                                 </div>`).join("")}
                     </div>`).join("")}
             </div>
@@ -1024,7 +1049,7 @@ document.addEventListener("click", event => {
 function highlight_chart_activity(activity) {
     const image = document.getElementById("image");
     if (image) {
-        image.style.backgroundImage = `url("${activity.dataset.cover || ""}")`;
+        image.style.backgroundImage = `url("${activity.dataset.coverLarge || ""}"), url("${activity.dataset.coverMedium || ""}")`;
     }
     document.querySelectorAll(".am3-activity").forEach(item => item.classList.remove("semi"));
     document.querySelectorAll(`.am3-activity:not(.media-${activity.dataset.mediaId})`)

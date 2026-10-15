@@ -34,6 +34,8 @@ fixed; final real-browser/deployment verification remains.
 - [x] Match legacy airing-tip date formatting: media without a season uses
   month-year text (for example, `Oct 2012 →`) even when its start predates the
   visible timeline.
+- [x] Use medium/large cover fallbacks for overview and three-month previews,
+  and keep legacy tooltips within the viewport.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.
