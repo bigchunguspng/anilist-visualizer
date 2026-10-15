@@ -108,7 +108,7 @@ function hide_tooltip() {
 }
 /**
  * Positions the legacy tooltip relative to an overview or chart target.
- * @param {Element} target - Element whose bounds anchor the tooltip.
+ * @param {HTMLElement} target - Element whose bounds anchor the tooltip.
  * @param {string[]} lines - Plain-text lines to render.
  * @param {boolean} chart - Use chart-specific below-target placement.
  * @returns {void}
@@ -134,7 +134,7 @@ function show_legacy_tooltip(target, lines, chart = false) {
 }
 /**
  * Displays the accessible floating tooltip while keeping it inside the viewport.
- * @param {Element} target - Element whose bounds anchor the tooltip.
+ * @param {HTMLElement} target - Element whose bounds anchor the tooltip.
  * @param {string[]} lines - Plain-text lines to render.
  * @param {"top"|"bottom"} placement - Preferred side of the target.
  * @returns {void}
@@ -172,7 +172,7 @@ function show_tooltip(target, lines, placement = "top") {
 }
 /**
  * Reads newline-separated tooltip text from a data attribute.
- * @param {?Element} element - Element potentially carrying `data-tooltip`.
+ * @param {?HTMLElement} element - Element potentially carrying `data-tooltip`.
  * @returns {string[]} Trimmed non-empty tooltip lines.
  * @example parse_tooltip_lines({dataset: {tooltip: "Title\nJan 1"}}) -> ["Title", "Jan 1"]
  */
@@ -1018,7 +1018,7 @@ document.addEventListener("click", event => {
 
 /**
  * Shows a chart title's cover and dims activities belonging to other titles.
- * @param {Element} activity - Selected chart activity element.
+ * @param {HTMLElement} activity - Selected chart activity element.
  * @returns {void}
  */
 function highlight_chart_activity(activity) {
