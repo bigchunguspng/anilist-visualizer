@@ -275,7 +275,7 @@ function render_home() {
         <main class="home pb-3">
             <div class="text-center">
             <img class="logo" draggable="false"
-                src="https://i.imgur.com/tgGcE0v.png"
+                src="img/anivis-logo.png"
                 alt="AniList Visualizer (WHOLESOME 100 | ifunny.co)">
             <form class="searchbar" data-search-form>
                 <input id="user-search" class="search section" type="text"
@@ -297,7 +297,7 @@ function render_not_found() {
             </a>
         </div></header>
         <main><div class="text-center diffuse">
-            <img class="logo" src="https://i.imgur.com/CdcGFjA.png"
+            <img class="logo" src="img/404.png"
                 alt="Akko staring at the monitor">
             <h1>Page Not Found</h1>
             <p>You picked the wrong URL baka!</p>
@@ -749,7 +749,7 @@ function render_search_results(users) {
         results.innerHTML = `
             <div class="mb-3 medialist section search-results">
                 <div class="search-result entry">
-                    <div class="cover"><div class="image" style="background-image:url(https://i.imgur.com/tmno0VA.png)"></div></div>
+                    <div class="cover"><div class="image" style="background-image:url(img/nobody.png)"></div></div>
                     <div class="title">Nobody Was Found</div><div class="last-seen">XD</div>
                 </div>
             </div>`;
