@@ -339,16 +339,15 @@ function title_activity_lines(activity, media_type) {
     lines.push(`${activity.progress} ${unit_label(media_type, activity.progress)}`);
     return lines;
 }
-function render_activity_overlay(entry, min_day, color) {
+function render_activity_overlay(entry, min_day, timeframe, color) {
     const activities = entry.timelineItem?.activities?.activities || [];
     if (!activities.length) return "";
-    const start_day = min_day + entry.timelineItem.offset;
-    const width = Math.max(entry.timelineItem.length, 1);
-    return `<div class="days" style="--color-blue:${color};">${activities.map(activity => {
-        const left = Math.max(0, Math.min(100, ((activity.day - start_day - 1) / width) * 100));
+    return `<div class="days activity-overlay" style="--color-blue:${color};">${activities.map(activity => {
+        const left = ((activity.day - min_day - 1) / timeframe) * 100;
+        const width = 100 / timeframe;
         const height = (activity.progress / 8) * 100;
         return `
-            <div class="day" style="left:${left}%;width:${100 / width}%;height:${height}%;"
+            <div class="day" style="left:${left}%;width:${width}%;height:${height}%;"
                 data-tooltip="${escape_html(title_activity_lines(activity, entry.media.type).join("\n"))}"></div>`;
     }).join("")}</div>`;
 }
@@ -380,9 +379,9 @@ function render_entry(entry, page, model) {
                         style="margin-left:${(airing.offset / timeframe) * 100}%;width:${(airing.length / timeframe) * 100}%;">
                         <div class="season">${escape_html(airing.season)}</div>
                     </div>` : ""}
+                ${render_activity_overlay(entry, model.minDay, timeframe, cover_color)}
                 <div class="timeline-item tip" style="${progress_style}">
                     <div class="range${item.stripes ? " stripes" : ""}" style="--color-blue:${activity_color};">
-                        ${render_activity_overlay(entry, model.minDay, cover_color)}
                         <div class="hover-box" data-action="load-entry" data-media-id="${media_id}"
                             data-tooltip="${escape_html(tooltip)}"></div>
                     </div>

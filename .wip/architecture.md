@@ -178,3 +178,17 @@ incompatible Phase 4 card/grid rules.
 
 Phase 5 is now verification work: real-browser/mobile validation, error-path
 testing, deep-link refresh checks, and GitHub Pages deployment checks.
+
+## Recent parity fixes
+
+- `static/domain.js` now advances the merged same-day progress endpoint from
+  the current endpoint, including activities whose `progress` is omitted but
+  whose completed status still contributes one unit. This preserves ranges
+  such as `4 - 8` with five chapters.
+- Three-month chart month units are clipped against actual calendar-month
+  boundaries, so a range spanning four calendar months renders four correctly
+  sized labels.
+- `static/main.js` positions title activity overlays against the full overview
+  timeline rather than the narrow entry range. Activity before or after a
+  completed watch/read period remains visible at its real date without huge
+  range-relative offsets.

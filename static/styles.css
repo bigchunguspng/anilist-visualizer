@@ -897,6 +897,9 @@ a:hover .avatar {
     min-width: 2px;
     background: var(--color-blue);
 }
+.activity-overlay {
+    z-index: 1;
+}
 /* NEW */
 nav, .nav {
     display: flex;

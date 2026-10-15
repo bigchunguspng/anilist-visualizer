@@ -1,8 +1,8 @@
 # Rewrite task checklist
 
 Status as of 2026-10-15: Static visualization and controls are ported; the
-remaining reported parity mismatches were fixed; final real-browser/deployment
-verification remains.
+reported progress, calendar-month, and out-of-period activity mismatches are
+fixed; final real-browser/deployment verification remains.
 
 ## Analysis completed
 
@@ -23,6 +23,12 @@ verification remains.
 - [x] Port server normalization into browser-side modules.
 - [x] Port timeline, date, relation, overlap, and activity transformations.
 - [x] Port the home/search/user/overview/three-month UI.
+- [x] Match same-day activity progress ranges when AniList omits completed
+  progress endpoints.
+- [x] Align three-month month labels to clipped calendar-month boundaries,
+  including all overlapping months.
+- [x] Show overview activity marks that fall outside an entry's watch/read
+  period, matching the React overlay overflow behavior.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.

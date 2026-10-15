@@ -264,9 +264,13 @@ function merge_activities_by_day(activities) {
     for (const activity of sorted) {
         const previous = merged[merged.length - 1];
         if (previous && previous.day === activity.day) {
-            const first = String(previous.episodes || "0").split(/\s+/)[0];
-            const parts = String(activity.episodes || "").split(/\s+/);
-            previous.episodes = `${first} - ${parts[parts.length - 1] || Number(first) + 1}`;
+            const previous_parts = String(previous.episodes || "").match(/\d+/g) || [];
+            const activity_parts = String(activity.episodes || "").match(/\d+/g) || [];
+            const first = Number(previous_parts[0] || 0);
+            const previous_end = Number(previous_parts[previous_parts.length - 1] || first + previous.progress - 1);
+            const activity_end = Number(activity_parts[activity_parts.length - 1] ||
+                previous_end + activity.progress);
+            previous.episodes = `${first} - ${activity_end}`;
             previous.progress += activity.progress;
         } else {
             merged.push({...activity});
@@ -306,14 +310,24 @@ export function build_mixed_activities(raw_activities) {
     const min_day = Math.min(...united.map(activity => activity.day));
     const max_day = Math.max(...united.map(activity => activity.day));
     const smaller_units = [];
-    for (let day = min_day; day <= max_day; day++) smaller_units.push({title: String(day_to_date(day).day), value: 1});
+    for (let day = min_day; day <= max_day; day++) {
+        smaller_units.push({title: String(day_to_date(day).day), value: 1});
+    }
     const bigger_units = [];
-    let cursor = day_to_date(min_day);
+    const min_date = day_to_date(min_day);
+    let cursor = {year: min_date.year, month: min_date.month, day: 1};
     while (date_to_day(cursor) <= max_day) {
-        const next = {...cursor, month: cursor.month + 1};
-        if (next.month === 13) { next.month = 1; next.year++; }
-        const next_day = Math.min(date_to_day(next) - 1, max_day);
-        bigger_units.push({title: MONTH_TITLES[cursor.month - 1], value: next_day - date_to_day(cursor) + 1});
+        const next = cursor.month === 12
+            ? {year: cursor.year + 1, month: 1, day: 1}
+            : {year: cursor.year, month: cursor.month + 1, day: 1};
+        const month_start = Math.max(min_day, date_to_day(cursor));
+        const month_end = Math.min(max_day, date_to_day(next) - 1);
+        if (month_end >= month_start) {
+            bigger_units.push({
+                title: MONTH_TITLES[cursor.month - 1],
+                value: month_end - month_start + 1
+            });
+        }
         cursor = next;
     }
     return {
