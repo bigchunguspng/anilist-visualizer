@@ -32,9 +32,9 @@ This is NOT an official site, I just use [their public API](https://docs.anilist
 
 ## History ⌛
 
-| Architecture | When | Changes / Features |
-| --- | ---: | --- |
-| ASP.NET Core MVC | 22 Aug - 16 Nov 2023 | _v1_ - animanga timeline, user search, etc. |
-| ASP.NET Core API + [react app](https://github.com/bigchunguspng/anilist-visualizer-react)| 3-22 Mar 2024 | _PORT_, [wrapper fork](https://github.com/bigchunguspng/AniListNet), detailed activities. |
-| ^ | 29 Jan - 3 Feb 2025 | Last 3 months view, other improvements. |
-| [static web app](https://bigchunguspng.github.io/anilist-visualizer) | 11-16 Oct 2026 | _PORT_, minor improvements. |
+| Architecture | When | Changes / Features | Branch |
+| --- | ---: | --- | --- |
+| ASP.NET Core MVC | 22 Aug - 16 Nov 2023 | _v1_ - animanga timeline, user search, etc. | [master](https://github.com/bigchunguspng/anilist-visualizer/tree/master) |
+| ASP.NET Core API + [react app](https://github.com/bigchunguspng/anilist-visualizer-react)| 3-22 Mar 2024 | _PORT_, [wrapper fork](https://github.com/bigchunguspng/AniListNet), detailed activities. | [api*](https://github.com/bigchunguspng/anilist-visualizer/tree/161fcf80a1baf634971bc231c4229571b6db5f7f) |
+| ^ | 29 Jan - 3 Feb 2025 | Last 3 months view, other improvements. | [api](https://github.com/bigchunguspng/anilist-visualizer/tree/api) |
+| [static web app](https://bigchunguspng.github.io/anilist-visualizer) | 11-16 Oct 2026 | _PORT_, minor improvements. | [static](https://github.com/bigchunguspng/anilist-visualizer/tree/static) |
