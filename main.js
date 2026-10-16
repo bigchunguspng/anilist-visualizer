@@ -176,6 +176,19 @@ function unit_label(type, count) {
     return `${unit}${count === 1 ? "" : "s"}`;
 }
 /**
+ * Formats completed progress with the media total when it is known.
+ * @param {number|string} progress - Completed episode or chapter count.
+ * @param {Object} media - Media metadata containing an optional total.
+ * @returns {string} Progress with an optional `/total` suffix.
+ */
+function progress_count(progress, media) {
+    let total = media?.type === "MANGA" ? media.chapters : media?.episodes;
+    if (media.status === "RELEASING") total ??= "?";
+    return total != null && (total === "?" || Number(progress) !== Number(total))
+        ? `${progress}/${total}`
+        : String(progress);
+}
+/**
  * Formats a Unix day as a localized UTC date.
  * @param {number} day - Unix day number.
  * @returns {string} Localized date such as `"Jan 2, 2024"`.
@@ -398,7 +411,7 @@ function entry_tooltip_lines(entry) {
     if (!tip) return [];
     const lines = [entry.timelineItem.tip.dateRange];
     if (tip.episodes != null) {
-        lines.push(`${tip.episodes} ${unit_label(entry.media.type, tip.episodes)}`);
+        lines.push(`${progress_count(tip.episodes, entry.media)} ${unit_label(entry.media.type, tip.episodes)}`);
     }
     if (tip.averageSpeed) lines.push(tip.averageSpeed);
     if ((entry.repeat || 0) > 0) lines.push(`+ ${entry.repeat} repeat${entry.repeat === 1 ? "" : "s"}`);
@@ -407,13 +420,13 @@ function entry_tooltip_lines(entry) {
 /**
  * Builds tooltip lines for one title activity marker.
  * @param {Object} activity - Chart-ready activity.
- * @param {string} media_type - AniList media type.
+ * @param {Object} media - AniList media metadata.
  * @returns {string[]} Date and progress lines.
  */
-function title_activity_lines(activity, media_type) {
+function title_activity_lines(activity, media) {
     const lines = [format_day(activity.day)];
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
-    lines.push(`${activity.progress} ${unit_label(media_type, activity.progress)}`);
+    lines.push(`${progress_count(activity.progress, media)} ${unit_label(media.type, activity.progress)}`);
     return lines;
 }
 /**
@@ -433,7 +446,7 @@ function render_activity_overlay(entry, min_day, timeframe, color) {
         const height = (activity.progress / 8) * 100;
         return `
             <div class="day" style="left:${left}%;width:${width}%;height:${height}%;"
-                data-tooltip="${escape_html(title_activity_lines(activity, entry.media.type).join("\n"))}"></div>`;
+                data-tooltip="${escape_html(title_activity_lines(activity, entry.media).join("\n"))}"></div>`;
     }).join("")}</div>`;
 }
 /**
@@ -570,7 +583,7 @@ function chart_activity_lines(activity, language) {
     const title = get_localized_title(activity.media?.title, language);
     const lines = [title, format_day(activity.day)];
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
-    lines.push(`${activity.progress} ${unit_label(activity.media?.type, activity.progress)}`);
+    lines.push(`${progress_count(activity.progress, activity.media)} ${unit_label(activity.media?.type, activity.progress)}`);
     return lines;
 }
 function render_chart(page) {
