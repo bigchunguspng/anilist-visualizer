@@ -14,7 +14,7 @@ import {
 
 const CONTENT_ID = "app_content";
 const TOOLTIP_ID = "floating_tooltip";
-const DEFAULT_FAVICON = "./favicon.png";
+const DEFAULT_FAVICON = "./img/icon.png";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const VIEW_OVERVIEW = "overview";
@@ -497,7 +497,7 @@ function render_entry(entry, page, model) {
             </div>
             <span class="entry-status">
                 ${entry.status !== "COMPLETED"
-                    ? `<img src="./svg/status/${escape_html(entry.status)}.svg" alt="${escape_html(entry.status)}">`
+                    ? `<img src="./img/status/${escape_html(entry.status)}.svg" alt="${escape_html(entry.status)}">`
                     : ""}
             </span>
         </div>`;

@@ -814,8 +814,7 @@ header:not(.user) .nav-logo img {
             repeating-linear-gradient(45deg,    var(--color-blue), #0000 1px, var(--color-blue) 3px);
 }
 .semi:hover {
-    border-left: 1px solid
-            repeating-linear-gradient(45deg,    var(--color-blue), #0000 1px, var(--color-blue) 3px);
+    border-left: none;
 }
 .hint-message-div {
     display: flex;
