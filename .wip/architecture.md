@@ -138,7 +138,7 @@ progress, and optional episode/chapter text.
 The frontend supplies the visual layout rather than the backend: CSS
 variables position bars as percentages, covers use AniList CDN URLs, and
 hover tips are positioned with DOM measurements. It also references external
-images hosted on Imgur and status SVGs under `public/svg/status`.
+images hosted on Imgur and status SVGs under `svg/status`.
 
 The current API base URL is hard-coded to
 `http://192.168.0.103:5000/api`, so the checked-in frontend is intended for
@@ -146,9 +146,9 @@ the author's LAN rather than public hosting.
 
 ## Static Phase 4 frontend
 
-The rewrite lives in `static/`, which is the intended GitHub Pages publishing
-directory. `static/index.html` is the only application document and loads the
-vanilla ES module `main.js` plus `styles.css`. Hash routing avoids GitHub Pages
+The rewrite lives at the repository root, which is the GitHub Pages publishing
+source. `index.html` is the only application document and loads the vanilla ES
+module `main.js` plus `styles.css`. Hash routing avoids GitHub Pages
 server fallback requirements: `#/` is home, `#/user/{username}` is the user
 page, and any other hash is the not-found view. `404.html` provides a basic
 fallback when a host requests a missing file directly.
@@ -158,18 +158,18 @@ its live `app_state` object to `window.app_state`. This restores the console
 inspectability available with the legacy classic scripts without duplicating or
 serializing state.
 
-The data client is `static/api.js`. It uses public POST requests, 50-item
+The data client is `api.js`. It uses public POST requests, 50-item
 pagination, in-flight request deduplication, and a bounded 15-minute
 `sessionStorage` cache. It exposes user lookup/search, media-list,
 title-activity, and range-activity functions.
 
-The normalization layer is `static/domain.js`. `build_animanga` still owns
+The normalization layer is `domain.js`. `build_animanga` still owns
 timeline bounds, overlap filtering, timeline sections, airing bars, and
 optional activity attachment. `build_title_activities` and
 `build_mixed_activities` now back the overview overlays and the last-three-
 months chart.
 
-`static/main.js` now renders the migrated UI in vanilla DOM/HTML using the
+`main.js` now renders the migrated UI in vanilla DOM/HTML using the
 legacy React markup and behavior as the parity source:
 
 - overview rows with localized titles, legacy status SVGs, AniList links, airing
@@ -190,14 +190,14 @@ testing, deep-link refresh checks, and GitHub Pages deployment checks.
 
 ## Recent parity fixes
 
-- `static/domain.js` now advances the merged same-day progress endpoint from
+- `domain.js` now advances the merged same-day progress endpoint from
   the current endpoint, including activities whose `progress` is omitted but
   whose completed status still contributes one unit. This preserves ranges
   such as `4 - 8` with five chapters.
 - Three-month chart month units are clipped against actual calendar-month
   boundaries, so a range spanning four calendar months renders four correctly
   sized labels.
-- `static/main.js` positions title activity overlays against the full overview
+- `main.js` positions title activity overlays against the full overview
   timeline rather than the narrow entry range. Activity before or after a
   completed watch/read period remains visible at its real date without huge
   range-relative offsets.

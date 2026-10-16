@@ -4,7 +4,8 @@ This is a proposed sequence for the next implementation agent.
 
 ## Phase 1: establish static shell
 
-- Decide final repository layout and GitHub Pages publishing source.
+- Keep the static application at repository root so GitHub Pages can publish
+  the branch root directly.
 - Add `index.html`, CSS entrypoint, JS module entrypoint, and `404.html` or
   hash routing.
 - Recreate home/search, user header, footer, loading, error, and not-found
@@ -45,7 +46,8 @@ This is a proposed sequence for the next implementation agent.
   manga, anime, related-series entries, repeats, and multi-episode activity.
 - Test pagination, malformed/failed API responses, rate limiting, direct
   deep links, refreshes, and GitHub Pages base paths.
-- Build/deploy through the repository's chosen GitHub Pages workflow.
+- Build/deploy the repository root through the chosen GitHub Pages workflow or
+  branch-root Pages source.
 
 ## Decisions to preserve unless intentionally changed
 

@@ -13,7 +13,8 @@ fixed; final real-browser/deployment verification remains.
 
 ## Next implementation tasks
 
-- [x] Choose the static directory and GitHub Pages deployment strategy.
+- [x] Move the static application to the repository root for GitHub Pages.
+- [x] Choose the GitHub Pages branch-root deployment strategy.
 - [x] Choose hash routing versus a `404.html` fallback.
 - [x] Add the static HTML/CSS/JS shell and loading/error/not-found states.
 - [x] Implement the minimal direct AniList GraphQL client.
@@ -30,7 +31,7 @@ fixed; final real-browser/deployment verification remains.
 - [x] Show overview activity marks that fall outside an entry's watch/read
   period, matching the React overlay overflow behavior.
 - [x] Add concise in-place JSDoc contracts and examples for non-obvious
-  functions in `static/domain.js`, `static/api.js`, and `static/main.js`.
+  functions in `domain.js`, `api.js`, and `main.js`.
 - [x] Match legacy airing-tip date formatting: media without a season uses
   month-year text (for example, `Oct 2012 →`) even when its start predates the
   visible timeline.
@@ -41,6 +42,8 @@ fixed; final real-browser/deployment verification remains.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.
+- [x] Add index-page SEO metadata, social previews, canonical URL, and
+  structured data.
 
 ## Phase 4 shipped
 
@@ -79,7 +82,8 @@ Rewrite-wide constraints and conventions are maintained in
 
 - Current frontend API URL is a private LAN address.
 - Current React hook logs and swallows detailed fetch errors.
-- Current `BrowserRouter` needs GitHub Pages fallback handling.
+- Current `BrowserRouter` needs GitHub Pages fallback handling (the static app
+  uses hash routing instead).
 - Current backend catches broad exceptions and returns generic status codes.
 - `MixedActivities` assumes at least one non-zero activity when calculating
   min/max days; the static implementation must handle an empty range safely.

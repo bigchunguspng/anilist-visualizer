@@ -9,17 +9,16 @@ static app now preserves the legacy React presentation and interaction semantics
 ## Current repository state
 
 - Repository: `bigchunguspng/anilist-visualizer`
-- Branch and base commit: `static` / `b3e9852` (working tree has uncommitted
-  changes)
+- Branch and base commit: `static` / `bf68c87`
 - Backend source: `src/API` (`net7.0` ASP.NET Core)
 - Frontend source: `src/app-react` (React 18 and `react-router-dom` submodule)
 - AniList library: `src/AniListNet` (fork submodule,
   `bigchunguspng/AniListNet`, commit `47c4e6a`)
 - React submodule commit: `9ef269c`
-- Static app: `static` (vanilla HTML/CSS/ES module JavaScript).
-- GitHub Pages publishing source: the `static` directory, deployed by the
-  eventual Pages workflow.
-- Routing: hash URLs (`#/` and `#/user/{username}`); `static/404.html` is a
+- Static app: repository root (vanilla HTML/CSS/ES module JavaScript).
+- GitHub Pages publishing source: repository root, because Pages branch
+  publishing does not support an arbitrary `static` directory.
+- Routing: hash URLs (`#/` and `#/user/{username}`); `404.html` is a
   fallback for direct file-server misses.
 
 ## Document map
@@ -53,7 +52,7 @@ are maintained only in `rewrite-rules.md`.
 
 ## Static implementation
 
-`static/index.html` loads `styles.css` and `main.js` without a package manager
+`index.html` loads `styles.css` and `main.js` without a package manager
 or build step. The app renders the home/search form, user timeline, three-month
 chart, loading/error states, custom not-found screen, and shared footer.
 Submitting a non-empty username searches AniList; hash routes then load the

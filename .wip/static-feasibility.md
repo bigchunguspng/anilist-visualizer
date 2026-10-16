@@ -62,8 +62,8 @@ JavaScript.
 
 ## Recommended static shape
 
-Use one `index.html`, one or more CSS files, and ES modules under a static
-source directory. Keep a data layer separate from rendering:
+Use one root-level `index.html`, one or more CSS files, and ES modules. Keep a
+data layer separate from rendering:
 
 - `anilist-client.js`: GraphQL requests and pagination;
 - `normalization.js`: status fetch, relation grouping, date/activity logic;
