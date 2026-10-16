@@ -720,6 +720,11 @@ header:not(.user) .nav-logo img {
     display: flex;
     flex-direction: column-reverse;
 }
+.am3-activities {
+    flex: 1;
+    display: flex;
+    flex-direction: column-reverse;
+}
 .am3-month, .am3-day-title {
     padding: 4px 0;
 }
@@ -776,7 +781,7 @@ header:not(.user) .nav-logo img {
 }
 .am3-image {
     position: absolute;
-    top: 40px;
+    top: 95px;
     left: -152px;
     width: 140px;
     height: 200px;

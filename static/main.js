@@ -664,6 +664,7 @@ function render_chart(page) {
                 ${chart.smallerUnits.map((unit, index) => `
                     <div class="am3-day" style="--width:${(unit.value / chart.smallerUnits.length) * 100}%;">
                         <div class="am3-day-title">${escape_html(unit.title)}</div>
+                        <div class="am3-activities">
                             ${(chart.activities[index] || []).map(activity => `
                                 <div
                                     class="am3-activity tip-rect-ref media-${activity.media.id}${page.chart.selectedMediaId && page.chart.selectedMediaId !== activity.media.id ? " semi" : ""}"
@@ -674,6 +675,7 @@ function render_chart(page) {
                                     data-cover-medium="${escape_html(get_cover_urls(activity.media.coverImage).medium)}"
                                     data-cover-large="${escape_html(get_cover_urls(activity.media.coverImage).large)}">
                                 </div>`).join("")}
+                        </div>
                     </div>`).join("")}
             </div>
             <div id="months">

@@ -449,8 +449,12 @@ export function build_mixed_activities(raw_activities) {
         }
         cursor = next;
     }
+    const progress_by_day = new Map();
+    for (const activity of united) {
+        progress_by_day.set(activity.day, (progress_by_day.get(activity.day) || 0) + activity.progress);
+    }
     return {
-        maxProgressValue: Math.max(...by_media.values().map(list => Math.max(...list.map(activity => activity.progress)))),
+        maxProgressValue: Math.max(...progress_by_day.values()),
         smallerUnits: smaller_units,
         biggerUnits: bigger_units,
         activities: Array.from({length: max_day - min_day + 1}, (_, offset) =>
