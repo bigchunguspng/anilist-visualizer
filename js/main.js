@@ -7,9 +7,9 @@ import {
     search_users
 } from "./api.js";
 import {
-    build_animanga,
-    build_mixed_activities,
-    build_title_activities
+    ov_build_animanga,
+    am3_build_mixed_activities,
+    ov_build_title_activities
 } from "./domain.js";
 
 const CONTENT_ID = "app_content";
@@ -30,14 +30,6 @@ const STORAGE_KEYS = {
     language: "anilist-visualizer:language",
     grouping: "anilist-visualizer:grouping",
     ordering: "anilist-visualizer:ordering"
-};
-
-const status_labels = {
-    CURRENT: "Current",
-    COMPLETED: "Completed",
-    DROPPED: "Dropped",
-    PAUSED: "Paused",
-    REPEATING: "Repeating"
 };
 
 const app_state = {
@@ -343,9 +335,9 @@ function get_user_page() {
 /**
  * Builds the overview model using the page's active date filter and activities.
  * @param {Object} page - Current user-page state.
- * @returns {Object} Filtered timeline model from `build_animanga`.
+ * @returns {Object} Filtered timeline model from `ov_build_animanga`.
  */
-function get_overview_model(page) {
+function ov_get_overview_model(page) {
     const options = {activities_by_media: page.activityCache};
     if (page.filter.mode === "last_year") {
         options.last_year = true;
@@ -353,7 +345,7 @@ function get_overview_model(page) {
         options.from = page.filter.from;
         options.to = page.filter.to;
     }
-    return build_animanga(page.rawEntries, options);
+    return ov_build_animanga(page.rawEntries, options);
 }
 /**
  * Inserts separators between entries belonging to different media series.
@@ -361,7 +353,7 @@ function get_overview_model(page) {
  * @returns {(Object|string)[]} Entries grouped by series with `"-"` separators.
  * @example [A, B, C] with A/B related -> [A, B, "-", C]
  */
-function group_entries(entries) {
+function ov_group_entries(entries) {
     const series = [];
     const seen = new Set();
     for (const entry of entries) {
@@ -386,9 +378,9 @@ function group_entries(entries) {
  * @param {Object} model - Built overview timeline model.
  * @returns {(Object|string)[]} Entries ready for overview rendering.
  */
-function get_display_entries(page, model) {
+function ov_get_display_entries(page, model) {
     const visible = model.visibleEntries.filter(entry => entry.timelineItem !== null);
-    return page.prefs.grouping === GROUP_GROUPED ? group_entries(visible) : visible;
+    return page.prefs.grouping === GROUP_GROUPED ? ov_group_entries(visible) : visible;
 }
 /**
  * Renders proportional calendar sections used behind each timeline row.
@@ -397,7 +389,7 @@ function get_display_entries(page, model) {
  * @param {boolean} text - Whether to include section labels.
  * @returns {string} Timeline-section HTML.
  */
-function timeline_sections_html(sections, timeframe, text) {
+function ov_timeline_sections_html(sections, timeframe, text) {
     return Object.entries(sections).map(([label, value]) => `
         <div class="timeline-year${text ? " text" : ""}" style="width:${(value / timeframe) * 100}%;">
             ${text ? escape_html(label) : ""}
@@ -408,7 +400,7 @@ function timeline_sections_html(sections, timeframe, text) {
  * @param {Object} entry - Normalized timeline entry.
  * @returns {string[]} Date, progress, speed, and repeat lines.
  */
-function entry_tooltip_lines(entry) {
+function ov_entry_tooltip_lines(entry) {
     const tip = entry.timelineItem?.tip;
     if (!tip) return [];
     const lines = [entry.timelineItem.tip.dateRange];
@@ -425,7 +417,7 @@ function entry_tooltip_lines(entry) {
  * @param {Object} media - AniList media metadata.
  * @returns {string[]} Date and progress lines.
  */
-function title_activity_lines(activity, media) {
+function ov_title_activity_lines(activity, media) {
     const lines = [format_day(activity.day)];
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
     lines.push(`${progress_count(activity.progress, media)} ${unit_label(media.type, activity.progress)}`);
@@ -439,7 +431,7 @@ function title_activity_lines(activity, media) {
  * @param {string} color - CSS color for activity markers.
  * @returns {string} Activity overlay HTML, or an empty string.
  */
-function render_activity_overlay(entry, min_day, timeframe, color) {
+function ov_render_activity_overlay(entry, min_day, timeframe, color) {
     const activities = entry.timelineItem?.activities?.activities || [];
     if (!activities.length) return "";
     return `<div class="days activity-overlay" style="--color-blue:${color};">${activities.map(activity => {
@@ -448,7 +440,7 @@ function render_activity_overlay(entry, min_day, timeframe, color) {
         const height = (activity.progress / 8) * 100;
         return `
             <div class="day" style="left:${left}%;width:${width}%;height:${height}%;"
-                data-tooltip="${escape_html(title_activity_lines(activity, entry.media).join("\n"))}"></div>`;
+                data-tooltip="${escape_html(ov_title_activity_lines(activity, entry.media).join("\n"))}"></div>`;
     }).join("")}</div>`;
 }
 /**
@@ -458,7 +450,7 @@ function render_activity_overlay(entry, min_day, timeframe, color) {
  * @param {Object} model - Overview timeline model.
  * @returns {string} Entry row HTML.
  */
-function render_entry(entry, page, model) {
+function ov_render_entry(entry, page, model) {
     const media_id = entry.media.id;
     const timeframe = model.maxDay - model.minDay + 1;
     const title = get_localized_title(entry.media.title, page.prefs.language);
@@ -466,7 +458,7 @@ function render_entry(entry, page, model) {
     const cover_urls = get_cover_urls(entry.media.coverImage);
     const cover_color = get_cover_color(entry.media.coverImage);
     const activity_color = item.activities ? `${cover_color}10` : cover_color;
-    const tooltip = entry_tooltip_lines(entry).join("\n");
+    const tooltip = ov_entry_tooltip_lines(entry).join("\n");
     const progress_style = `margin-left:${(item.offset / timeframe) * 100}%;width:${(item.length / timeframe) * 100}%;`;
     const airing = entry.media.airing;
 
@@ -480,20 +472,20 @@ function render_entry(entry, page, model) {
             </div>
             <div class="title ${escape_html(entry.status)}">${escape_html(title)}</div>
             <div class="timeline tip-rect-ref">
-                <div class="timeline-row">${timeline_sections_html(model.timelineSections, timeframe, false)}</div>
+                <div class="timeline-row">${ov_timeline_sections_html(model.timelineSections, timeframe, false)}</div>
                 ${airing ? `
                     <div class="timeline-item releasing stripes"
                         style="margin-left:${(airing.offset / timeframe) * 100}%;width:${(airing.length / timeframe) * 100}%;">
                         <div class="season">${escape_html(airing.season)}</div>
                     </div>` : ""}
-                ${render_activity_overlay(entry, model.minDay, timeframe, cover_color)}
+                ${ov_render_activity_overlay(entry, model.minDay, timeframe, cover_color)}
                 <div class="timeline-item tip" style="${progress_style}">
                     <div class="range${item.stripes ? " stripes" : ""}" style="--color-blue:${activity_color};">
                         <div class="hover-box" data-action="load-entry" data-media-id="${media_id}"
                             data-tooltip="${escape_html(tooltip)}"></div>
                     </div>
                 </div>
-                <div class="timeline-row text">${timeline_sections_html(model.timelineSections, timeframe, true)}</div>
+                <div class="timeline-row text">${ov_timeline_sections_html(model.timelineSections, timeframe, true)}</div>
             </div>
             <span class="entry-status">
                 ${entry.status !== "COMPLETED"
@@ -502,13 +494,13 @@ function render_entry(entry, page, model) {
             </span>
         </div>`;
 }
-function render_overview(page) {
-    const model = get_overview_model(page);
-    const entries = get_display_entries(page, model);
+function ov_render_overview(page) {
+    const model = ov_get_overview_model(page);
+    const entries = ov_get_display_entries(page, model);
     const header = `${model.visibleEntries.length}/${model.entries.length} titles · ${model.seriesShown}/${model.seriesTotal} series`;
     const years = page.allYears;
     const list_html = entries.length
-        ? entries.map(item => item === "-" ? `<hr class="series-divider">` : render_entry(item, page, model)).join("")
+        ? entries.map(item => item === "-" ? `<hr class="series-divider">` : ov_render_entry(item, page, model)).join("")
         : `<p class="message">This user has no drawable titles in the selected range.</p>`;
 
     return `
@@ -560,9 +552,9 @@ function render_overview(page) {
 /**
  * Calculates the AniList query window covering today and the previous 3 months.
  * @returns {{from: number, to: number}} Unix timestamp bounds in seconds.
- * @example get_chart_range() -> {from: 172..., to: 172...}
+ * @example am3_get_chart_range() -> {from: 172..., to: 172...}
  */
-function get_chart_range() {
+function am3_get_chart_range() {
     const today = new Date();
     const start_of_today = new Date(Date.UTC(
         today.getUTCFullYear(),
@@ -583,14 +575,14 @@ function get_chart_range() {
  * @param {string} language - Current title-language preference.
  * @returns {string[]} Tooltip lines.
  */
-function chart_activity_lines(activity, language) {
+function am3_chart_activity_lines(activity, language) {
     const title = get_localized_title(activity.media?.title, language);
     const lines = [title, format_day(activity.day)];
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
     lines.push(`${activity.progress} ${unit_label(activity.media?.type, activity.progress)}`);
     return lines;
 }
-function render_chart(page) {
+function am3_render_chart(page) {
     if (page.chart.status === "loading" || page.chart.status === "idle") {
         return `<div class="section-name error">Loading...</div>`;
     }
@@ -615,7 +607,7 @@ function render_chart(page) {
                                     class="am3-activity tip-rect-ref media-${activity.media.id}${page.chart.selectedMediaId && page.chart.selectedMediaId !== activity.media.id ? " semi" : ""}"
                                     data-action="select-chart-media"
                                     data-media-id="${activity.media.id}"
-                                    data-tooltip="${escape_html(chart_activity_lines(activity, page.prefs.language).join("\n"))}"
+                                    data-tooltip="${escape_html(am3_chart_activity_lines(activity, page.prefs.language).join("\n"))}"
                                     style="height:${(activity.progress / chart.maxProgressValue) * 100}%;--color-blue:${get_cover_color(activity.media.coverImage)};"
                                     data-cover-medium="${escape_html(get_cover_urls(activity.media.coverImage).medium)}"
                                     data-cover-large="${escape_html(get_cover_urls(activity.media.coverImage).large)}">
@@ -650,7 +642,7 @@ function render_user_page(page) {
 
     const user = page.user;
     const avatar = user?.avatar?.large || "";
-    const base_model = build_animanga(page.rawEntries);
+    const base_model = ov_build_animanga(page.rawEntries);
     const header_text = page.phase === "loading_user"
         ? "Loading user..."
         : page.phase === "loading_entries"
@@ -711,8 +703,8 @@ function render_user_page(page) {
                     : page.phase === "error"
                         ? `<section class="panel"><p class="message error">${escape_html(page.error)}</p></section>`
                         : page.currentView === VIEW_OVERVIEW
-                            ? render_overview(page)
-                            : render_chart(page)}
+                            ? ov_render_overview(page)
+                            : am3_render_chart(page)}
             </div>
         </main>`;
 }
@@ -793,7 +785,7 @@ async function load_user_route(username) {
 
         page.rawEntries = entries;
         page.phase = "ready";
-        const full = build_animanga(entries);
+        const full = ov_build_animanga(entries);
         page.allYears = full.years;
         page.filter.from = full.years[0];
         page.filter.to = full.years[full.years.length - 1];
@@ -810,17 +802,17 @@ async function load_user_route(username) {
  * @param {Object} page - Current user-page state.
  * @returns {Promise<void>}
  */
-async function ensure_chart_loaded(page) {
+async function am3_ensure_chart_loaded(page) {
     if (!page?.user || page.chart.status === "loading" || page.chart.status === "ready") return;
     page.chart.status = "loading";
     page.chart.error = null;
     update_user_render();
     try {
-        const range = get_chart_range();
+        const range = am3_get_chart_range();
         const raw = await get_range_activities(page.user.id, range.from, range.to);
         if (app_state.userPage?.token !== page.token) return;
         page.chart.status = "ready";
-        page.chart.data = build_mixed_activities(raw);
+        page.chart.data = am3_build_mixed_activities(raw);
         update_user_render();
     } catch (error) {
         if (app_state.userPage?.token !== page.token) return;
@@ -835,14 +827,14 @@ async function ensure_chart_loaded(page) {
  * @param {number} media_id - AniList media ID.
  * @returns {Promise<void>}
  */
-async function load_entry_activities(page, media_id) {
+async function ov_load_entry_activities(page, media_id) {
     if (!page?.user || page.activityCache.has(media_id) || page.loadingMediaId === media_id) return;
     page.loadingMediaId = media_id;
     page.activityErrors.delete(media_id);
     try {
         const raw = await get_title_activities(page.user.id, media_id);
         if (app_state.userPage?.token !== page.token) return;
-        page.activityCache.set(media_id, build_title_activities(raw));
+        page.activityCache.set(media_id, ov_build_title_activities(raw));
     } catch (error) {
         if (app_state.userPage?.token !== page.token) return;
         page.activityErrors.set(media_id, render_api_error(error));
@@ -877,7 +869,7 @@ function toggle_preference(page, preference) {
  * @param {string} mode - `"all"` or `"last_year"`.
  * @returns {void}
  */
-function set_filter_mode(page, mode) {
+function ov_set_filter_mode(page, mode) {
     page.filter.mode = mode;
     if (mode === "all") {
         page.filter.from = page.allYears[0];
@@ -892,7 +884,7 @@ function set_filter_mode(page, mode) {
  * @param {string|number} value - Selected calendar year.
  * @returns {void}
  */
-function update_year_filter(page, which, value) {
+function ov_update_year_filter(page, which, value) {
     page.filter.mode = "range";
     page.filter[which] = Number(value);
     if (page.filter.from > page.filter.to) {
@@ -947,7 +939,6 @@ document.addEventListener("submit", event => {
         .then(render_search_results)
         .catch(error => render_search_state(render_api_error(error), true));
 });
-
 document.addEventListener("click", event => {
     const home_link = event.target.closest("[data-home-link]");
     if (home_link) {
@@ -967,7 +958,7 @@ document.addEventListener("click", event => {
 
     const filter = event.target.closest("[data-action='set-filter']");
     if (filter) {
-        set_filter_mode(page, filter.dataset.filter);
+        ov_set_filter_mode(page, filter.dataset.filter);
         return;
     }
 
@@ -975,13 +966,13 @@ document.addEventListener("click", event => {
     if (tab) {
         page.currentView = tab.dataset.view;
         update_user_render();
-        if (page.currentView === VIEW_THREE_MONTHS) ensure_chart_loaded(page);
+        if (page.currentView === VIEW_THREE_MONTHS) am3_ensure_chart_loaded(page);
         return;
     }
 
     const load_entry = event.target.closest("[data-action='load-entry']");
     if (load_entry) {
-        load_entry_activities(page, Number(load_entry.dataset.mediaId));
+        ov_load_entry_activities(page, Number(load_entry.dataset.mediaId));
         return;
     }
 
@@ -992,7 +983,7 @@ document.addEventListener("click", event => {
             large: select_chart.dataset.coverLarge || "",
             medium: select_chart.dataset.coverMedium || ""
         };
-        highlight_chart_activity(select_chart);
+        am3_highlight_chart_activity(select_chart);
         return;
     }
 });
@@ -1002,7 +993,7 @@ document.addEventListener("click", event => {
  * @param {HTMLElement} activity - Selected chart activity element.
  * @returns {void}
  */
-function highlight_chart_activity(activity) {
+function am3_highlight_chart_activity(activity) {
     const image = document.getElementById("image");
     if (image) {
         image.style.backgroundImage = `url("${activity.dataset.coverLarge || ""}"), url("${activity.dataset.coverMedium || ""}")`;
@@ -1018,15 +1009,14 @@ document.addEventListener("change", event => {
     if (!page || page.phase !== "ready") return;
     const select = event.target.closest("[data-filter-year]");
     if (!select) return;
-    update_year_filter(page, select.dataset.filterYear, select.value);
+    ov_update_year_filter(page, select.dataset.filterYear, select.value);
 });
-
 document.addEventListener("keydown", event => {
     if (event.ctrlKey || event.altKey || event.shiftKey) return;
     const page = get_user_page();
     if (!page || page.phase !== "ready") return;
     if (event.code === "Escape" && page.currentView === VIEW_THREE_MONTHS) {
-        page_for_chart_reset();
+        am3_page_for_chart_reset();
         return;
     }
     const tag = event.target.tagName;
@@ -1040,27 +1030,23 @@ document.addEventListener("keydown", event => {
         toggle_preference(page, "ordering");
     }
 });
-
 document.addEventListener("mouseover", event => {
     const target = event.target.closest("[data-tooltip]");
     if (!target || target.contains(event.relatedTarget)) return;
     const lines = parse_tooltip_lines(target);
     if (lines.length) show_legacy_tooltip(target, lines, target.classList.contains("am3-activity"));
 });
-
 document.addEventListener("mouseout", event => {
     const target = event.target.closest("[data-tooltip]");
     if (!target || target.contains(event.relatedTarget)) return;
     hide_tooltip();
 });
-
 document.addEventListener("focusin", event => {
     const target = event.target.closest("[data-tooltip]");
     if (!target) return;
     const lines = parse_tooltip_lines(target);
     if (lines.length) show_legacy_tooltip(target, lines, target.classList.contains("am3-activity"));
 });
-
 document.addEventListener("focusout", event => {
     const target = event.target.closest("[data-tooltip]");
     if (!target || target.contains(event.relatedTarget)) return;
@@ -1073,10 +1059,10 @@ document.addEventListener("dblclick", event => {
     const page = get_user_page();
     if (!page || page.phase !== "ready" || page.currentView !== VIEW_THREE_MONTHS) return;
     if (!event.target.closest(".am3-container")) return;
-    page_for_chart_reset();
+    am3_page_for_chart_reset();
 });
 
-function page_for_chart_reset() {
+function am3_page_for_chart_reset() {
     const page = get_user_page();
     if (!page) return;
     page.chart.selectedMediaId = null;

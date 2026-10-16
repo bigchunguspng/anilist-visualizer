@@ -2,6 +2,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_COVER_COLOR = "#3db4f2";
 const MONTH_TITLES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+// HELPERS
 function valid_integer(value) {
     return Number.isInteger(value);
 }
@@ -40,7 +41,9 @@ export function day_to_date(day) {
     const date = new Date(day * DAY_MS);
     return {year: date.getUTCFullYear(), month: date.getUTCMonth() + 1, day: date.getUTCDate()};
 }
-function date_text(value, format) {
+
+// ANIMANGA (Overview)
+function ov_date_text(value, format) {
     const date = normalize_date(value);
     if (!date) return "";
     if (format === "full") return `${date.day} ${MONTH_TITLES[date.month - 1]} ${date.year}`;
@@ -53,7 +56,7 @@ function date_text(value, format) {
  * @param {string} media_type - `"ANIME"` or `"MANGA"` URL namespace.
  * @returns {{color: string, large: string, medium: string, extraLarge: string}} Safe cover fields.
  */
-function normalize_cover(cover, media_type) {
+function ov_normalize_cover(cover, media_type) {
     const source = cover || {};
     const prefix = `https://s4.anilist.co/file/anilistcdn/media/${media_type === "MANGA" ? "manga" : "anime"}/cover/`;
     const normalize_url = value => value && value.startsWith(prefix) ? value : value || "";
@@ -69,7 +72,7 @@ function normalize_cover(cover, media_type) {
  * @param {?Object} media - Raw AniList media object.
  * @returns {Object} Media with normalized title, cover, dates, and timeline fields.
  */
-function normalize_media(media) {
+function ov_normalize_media(media) {
     const source = media || {};
     const type = source.type || "ANIME";
     return {
@@ -80,7 +83,7 @@ function normalize_media(media) {
             romaji: source.title?.romaji || "",
             native: source.title?.native || source.title?.romaji || ""
         },
-        coverImage: normalize_cover(source.coverImage, type),
+        coverImage: ov_normalize_cover(source.coverImage, type),
         startDate: normalize_date(source.startDate),
         endDate: normalize_date(source.endDate),
         seriesId: null,
@@ -92,7 +95,7 @@ function normalize_media(media) {
  * @param {Object} media - Media object containing AniList relation edges.
  * @returns {number[]} Related media IDs.
  */
-function relation_ids(media) {
+function ov_relation_ids(media) {
     return (media.relations?.edges || [])
         .filter(edge => edge.relationType !== "CHARACTER" && edge.node?.id != null)
         .map(edge => Number(edge.node.id))
@@ -104,10 +107,10 @@ function relation_ids(media) {
  * @returns {void}
  * @example sequel and prequel IDs 20 and 7 -> both entries receive seriesId 7
  */
-function set_series_ids(entries) {
+function ov_set_series_ids(entries) {
     const ids = new Set(entries.map(entry => entry.media.id));
     for (const entry of entries) {
-        for (const related_id of relation_ids(entry.media)) ids.add(related_id);
+        for (const related_id of ov_relation_ids(entry.media)) ids.add(related_id);
     }
     const parent = new Map([...ids].map(id => [id, id]));
     const find = id => {
@@ -126,7 +129,7 @@ function set_series_ids(entries) {
     };
 
     for (const entry of entries) {
-        for (const related_id of relation_ids(entry.media)) {
+        for (const related_id of ov_relation_ids(entry.media)) {
             union(entry.media.id, related_id);
         }
     }
@@ -149,7 +152,7 @@ function set_series_ids(entries) {
  * @param {Object} entry - Raw AniList media-list entry.
  * @returns {Object} Entry with normalized dates/media and no stale timeline item.
  */
-function normalize_entry(entry) {
+function ov_normalize_entry(entry) {
     const start_date = normalize_date(entry.startedAt);
     let complete_date = normalize_date(entry.completedAt);
     if (start_date && complete_date && date_to_day(complete_date) < date_to_day(start_date)) {
@@ -158,7 +161,7 @@ function normalize_entry(entry) {
             ...entry,
             startedAt: complete_date,
             completedAt: normalize_date(entry.startedAt),
-            media: normalize_media(entry.media),
+            media: ov_normalize_media(entry.media),
             timelineItem: null
         };
     }
@@ -166,7 +169,7 @@ function normalize_entry(entry) {
         ...entry,
         startedAt: start_date,
         completedAt: complete_date,
-        media: normalize_media(entry.media),
+        media: ov_normalize_media(entry.media),
         timelineItem: null
     };
 }
@@ -178,9 +181,9 @@ function normalize_entry(entry) {
  * @param {string} format - Date display format, either `"short"` or `"long"`.
  * @returns {string} Compact date range text.
  */
-function format_date_range(start, end, arrow = "➽", format = "short") {
-    if (!end) return `${date_text(start, format)} ${arrow}`;
-    return `${date_text(start, format)} - ${date_text(end, format)}`;
+function ov_format_date_range(start, end, arrow = "➽", format = "short") {
+    if (!end) return `${ov_date_text(start, format)} ${arrow}`;
+    return `${ov_date_text(start, format)} - ${ov_date_text(end, format)}`;
 }
 /**
  * Describes average viewing/reading speed using the media's unit.
@@ -189,7 +192,7 @@ function format_date_range(start, end, arrow = "➽", format = "short") {
  * @param {string} media_type - `"ANIME"` or `"MANGA"`.
  * @returns {string} Human-readable speed such as `"2 episodes/day"`.
  */
-function speed_text(progress, days, media_type) {
+function ov_speed_text(progress, days, media_type) {
     const unit = media_type === "MANGA" ? "chapter" : "episode";
     const speed = progress / days;
     const slow = speed < 1;
@@ -208,7 +211,7 @@ function speed_text(progress, days, media_type) {
  * @param {?Map} activities_by_media - Optional media ID to activity-model map.
  * @returns {void}
  */
-function set_entry_timeline(entry, min_day, max_day, today, activities_by_media) {
+function ov_set_entry_timeline(entry, min_day, max_day, today, activities_by_media) {
     if (!entry.startedAt) return;
     const day_a = date_to_day(entry.startedAt);
     const day_b = date_to_day(entry.completedAt) ?? today;
@@ -221,8 +224,8 @@ function set_entry_timeline(entry, min_day, max_day, today, activities_by_media)
         offset: Math.max(day_a - min_day, 0),
         length: Math.min(day_b, max_day) - Math.max(day_a, min_day) + 1,
         tip: {
-            dateRange: day_a === day_b ? date_text(entry.startedAt, "short") :
-                format_date_range(entry.startedAt, entry.completedAt),
+            dateRange: day_a === day_b ? ov_date_text(entry.startedAt, "short") :
+                ov_format_date_range(entry.startedAt, entry.completedAt),
             episodes: progress_matters ? entry.progress : null,
             averageSpeed: null
         },
@@ -230,7 +233,7 @@ function set_entry_timeline(entry, min_day, max_day, today, activities_by_media)
         activities: activities_by_media?.get(entry.media.id) || null
     };
     if (progress_matters && days > 1) {
-        timeline.tip.averageSpeed = speed_text(entry.progress, days, entry.media.type);
+        timeline.tip.averageSpeed = ov_speed_text(entry.progress, days, entry.media.type);
         timeline.stripes = days / entry.progress > 30;
     }
     entry.timelineItem = timeline;
@@ -243,17 +246,17 @@ function set_entry_timeline(entry, min_day, max_day, today, activities_by_media)
  * @param {number} today - Current Unix day for ongoing releases.
  * @returns {void}
  */
-function set_airing_timeline(media, min_day, max_day, today) {
+function ov_set_airing_timeline(media, min_day, max_day, today) {
     const start = date_to_day(media.startDate) ?? min_day;
     const end = date_to_day(media.endDate) ?? today;
     if (end <= min_day || start >= max_day) return;
     const length = Math.min(end, max_day) - Math.max(start, min_day) + 1;
     let season = "";
-    if (length === 1) season = date_text(media.startDate, "full");
+    if (length === 1) season = ov_date_text(media.startDate, "full");
     else if (media.season && length > 30) season = `${media.season} ${media.seasonYear || ""}`.trim().toUpperCase();
     else {
         const date_format = media.season ? "short" : "long";
-        season = format_date_range(
+        season = ov_format_date_range(
             media.startDate || day_to_date(min_day), media.endDate, "→", date_format);
     }
     media.airing = {
@@ -268,9 +271,9 @@ function set_airing_timeline(media, min_day, max_day, today) {
  * @param {Object} max_date - Last visible date.
  * @param {boolean} include_year - Add abbreviated years at range boundaries.
  * @returns {Object<string, number>} Section labels mapped to visible day counts.
- * @example month_days({year: 2024, month: 1, day: 30}, {year: 2024, month: 2, day: 2}, false) -> {Jan: 2, Feb: 2}
+ * @example ov_month_days({year: 2024, month: 1, day: 30}, {year: 2024, month: 2, day: 2}, false) -> {Jan: 2, Feb: 2}
  */
-function month_days(min_date, max_date, include_year) {
+function ov_month_days(min_date, max_date, include_year) {
     const result = {};
     let cursor = new Date(Date.UTC(min_date.year, min_date.month - 1, 1));
     const end = new Date(Date.UTC(max_date.year, max_date.month - 1, 1));
@@ -293,17 +296,17 @@ function month_days(min_date, max_date, include_year) {
  * @param {Object[]} raw_entries - AniList media-list entries.
  * @param {Object} options - Optional range, last-year, and activity settings.
  * @returns {Object} Bounds, sections, series counts, and visible normalized entries.
- * @example build_animanga(entries, {last_year: true}) -> timeline limited to the last 365 days
+ * @example ov_build_animanga(entries, {last_year: true}) -> timeline limited to the last 365 days
  */
-export function build_animanga(raw_entries, options = {}) {
+export function ov_build_animanga(raw_entries, options = {}) {
     const entries = [];
     const seen_media = new Set();
     for (const raw_entry of raw_entries || []) {
         if (!raw_entry?.media?.id || seen_media.has(raw_entry.media.id)) continue;
         seen_media.add(raw_entry.media.id);
-        entries.push(normalize_entry(raw_entry));
+        entries.push(ov_normalize_entry(raw_entry));
     }
-    set_series_ids(entries);
+    ov_set_series_ids(entries);
     entries.sort((a, b) => (date_to_day(a.startedAt) ?? Infinity) - (date_to_day(b.startedAt) ?? Infinity) ||
         (date_to_day(a.completedAt) ?? Infinity) - (date_to_day(b.completedAt) ?? Infinity) || a.id - b.id);
 
@@ -321,8 +324,8 @@ export function build_animanga(raw_entries, options = {}) {
         (date_to_day(entry.completedAt) ?? today) >= shown_min);
     const min_date = day_to_date(shown_min);
     const max_date = day_to_date(shown_max);
-    const timeline_sections = options.last_year ? month_days(min_date, max_date, true) :
-        min_date.year === max_date.year ? month_days(min_date, max_date, false) :
+    const timeline_sections = options.last_year ? ov_month_days(min_date, max_date, true) :
+        min_date.year === max_date.year ? ov_month_days(min_date, max_date, false) :
             Object.fromEntries(Array.from({length: max_date.year - min_date.year + 1}, (_, index) => {
                 const year = min_date.year + index;
                 return [String(year), year === min_date.year ? date_to_day({year, month: 12, day: 31}) - shown_min + 1 :
@@ -331,8 +334,8 @@ export function build_animanga(raw_entries, options = {}) {
             }));
     const activities_by_media = options.activities_by_media;
     for (const entry of showable) {
-        set_entry_timeline(entry, shown_min, shown_max, today, activities_by_media);
-        set_airing_timeline(entry.media, shown_min, shown_max, today);
+        ov_set_entry_timeline(entry, shown_min, shown_max, today, activities_by_media);
+        ov_set_airing_timeline(entry.media, shown_min, shown_max, today);
     }
     return {
         minDay: shown_min,
@@ -346,6 +349,8 @@ export function build_animanga(raw_entries, options = {}) {
         visibleEntries: visible
     };
 }
+
+// ACTIVITIES & AM3 (Last 3 months)
 /**
  * Converts an AniList activity progress value into counted units.
  * @param {Object} activity - Activity with optional progress and status.
@@ -391,7 +396,7 @@ function merge_activities_by_day(activities) {
  * @param {Object[]} raw_activities - Raw AniList list activities.
  * @returns {{maxProgressValue: number, activities: Object[]}} Chart-ready title data.
  */
-export function build_title_activities(raw_activities) {
+export function ov_build_title_activities(raw_activities) {
     const activities = (raw_activities || []).map(activity => ({
         ...activity,
         day: Math.floor(Number(activity.createdAt || 0) / 86400),
@@ -410,7 +415,7 @@ export function build_title_activities(raw_activities) {
  * @returns {{maxProgressValue: number, smallerUnits: Object[], biggerUnits: Object[], activities: Object[][]}} Chart model.
  * @example no activities -> {maxProgressValue: 0, smallerUnits: [], biggerUnits: [], activities: []}
  */
-export function build_mixed_activities(raw_activities) {
+export function am3_build_mixed_activities(raw_activities) {
     const activities = (raw_activities || []).map(activity => ({
         ...activity,
         day: Math.floor(Number(activity.createdAt || 0) / 86400),
