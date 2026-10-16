@@ -30,6 +30,7 @@ Depending on the task and step, 3-rd paragraph could be absent or could look lik
 This rewrite project is already in progress and the first task has been done.
 This rewrite project is already in progress and several tasks has been done.
 This rewrite project is already almost finished, and a lot of tasks has been done.
+This rewrite is already finished, now we are just fixing bugs and polishing stuff.
 ```
 
 For small tasks, this paragraph was added to the end:
