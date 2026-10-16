@@ -716,12 +716,40 @@ header:not(.user) .nav-logo img {
     background-color: var(--color-background-100);
 }
 .am3-day {
-    height: 240px;
+    height: 300px;
     display: flex;
     flex-direction: column-reverse;
 }
 .am3-month, .am3-day-title {
     padding: 4px 0;
+}
+.am3-day-title {
+    margin-top: 5px;
+}
+.am3-day:last-child .am3-day-title {
+    border-right: 1px solid var(--color-gray-500);
+}
+.am3-day:nth-child(7n-6) .am3-day-title {
+    border-left: 1px solid var(--color-gray-500);
+}
+@media (min-width: 1280px) {
+    .am3-day-title {
+        border-left: 1px solid var(--color-gray-500);
+    }
+}
+@media (max-width: 1280px) {
+    .am3-day-title {
+        font-size: 0.8em;
+    }
+    .am3-day:nth-child(2n) .am3-day-title {
+        color: transparent;
+    }
+}
+.am3-month {
+    border-left: 1px solid var(--color-gray-500);
+}
+.am3-month:last-child {
+    border-right: 1px solid var(--color-gray-500);
 }
 .am3-activity {
     background-color: var(--color-blue);
