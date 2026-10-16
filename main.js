@@ -138,7 +138,7 @@ function show_legacy_tooltip(target, lines, chart = false) {
         ? target_rect.left - (tip_rect.width - target_rect.width) / 2
         : target_rect.left;
     let top = chart
-        ? target_rect.bottom + 18
+        ? target_rect.bottom + 40
         : target_rect.top - 12 - tip_rect.height;
 
     if (!chart && edge_rect && left + tip_rect.width > edge_rect.right - 20) {
