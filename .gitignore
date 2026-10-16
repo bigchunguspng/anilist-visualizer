@@ -1,7 +1,4 @@
-﻿**/obj
-**/bin
-**/.*
+﻿**/.*
 !.wip/
 !.wip/**
 !.nojekyll
-*.user
