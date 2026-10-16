@@ -321,7 +321,8 @@ function create_user_state(username, token) {
             status: "idle",
             data: null,
             error: null,
-            selectedMediaId: null
+            selectedMediaId: null,
+            selectedCover: null
         },
         prefs: {
             language: read_preference(STORAGE_KEYS.language, LANG_ENGLISH),
@@ -634,7 +635,12 @@ function render_chart(page) {
                     Escape / Double click - restore.
                 </span>
             </div>
-            <div class="am3-image" id="image"></div>
+            <div
+                class="am3-image${page.chart.selectedCover ? " has-selection" : ""}"
+                id="image"
+                ${page.chart.selectedCover
+                    ? `style="background-image:url('${escape_html(page.chart.selectedCover.large)}'),url('${escape_html(page.chart.selectedCover.medium)}');"`
+                    : ""}></div>
             <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;
 }
@@ -982,6 +988,10 @@ document.addEventListener("click", event => {
     const select_chart = event.target.closest("[data-action='select-chart-media']");
     if (select_chart) {
         page.chart.selectedMediaId = Number(select_chart.dataset.mediaId);
+        page.chart.selectedCover = {
+            large: select_chart.dataset.coverLarge || "",
+            medium: select_chart.dataset.coverMedium || ""
+        };
         highlight_chart_activity(select_chart);
         return;
     }
@@ -1070,6 +1080,7 @@ function page_for_chart_reset() {
     const page = get_user_page();
     if (!page) return;
     page.chart.selectedMediaId = null;
+    page.chart.selectedCover = null;
     update_user_render();
 }
 window.addEventListener("hashchange", render_route);

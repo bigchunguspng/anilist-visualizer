@@ -801,14 +801,20 @@ header:not(.user) .nav-logo img {
 .am3-activity {
     background-color: var(--color-blue);
     height: var(--height);
+    border-left: 1px solid var(--color-background);
 }
 .am3-activity:hover {
     box-shadow: 0 2px 20px rgba(var(--color-shadow), 0.3);
     z-index: 1000;
+    border-left: 1px solid var(--color-blue);
 }
 .semi {
     opacity: 0.5;
     background:
+            repeating-linear-gradient(45deg,    var(--color-blue), #0000 1px, var(--color-blue) 3px);
+}
+.semi:hover {
+    border-left: 1px solid
             repeating-linear-gradient(45deg,    var(--color-blue), #0000 1px, var(--color-blue) 3px);
 }
 .hint-message-div {
