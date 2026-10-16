@@ -1052,6 +1052,7 @@ function highlight_chart_activity(activity) {
     const image = document.getElementById("image");
     if (image) {
         image.style.backgroundImage = `url("${activity.dataset.coverLarge || ""}"), url("${activity.dataset.coverMedium || ""}")`;
+        image.classList.add("has-selection");
     }
     document.querySelectorAll(".am3-activity").forEach(item => item.classList.remove("semi"));
     document.querySelectorAll(`.am3-activity:not(.media-${activity.dataset.mediaId})`)

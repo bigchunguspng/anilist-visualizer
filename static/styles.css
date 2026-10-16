@@ -788,6 +788,8 @@ header:not(.user) .nav-logo img {
     background-position: 50%;
     background-size: cover;
     border-radius: 3px;
+}
+.am3-image.has-selection {
     box-shadow: 0 2px 20px rgba(var(--color-shadow), 0.3);
 }
 /* APP */
