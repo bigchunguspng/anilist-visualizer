@@ -746,7 +746,10 @@ header:not(.user) .nav-logo img {
     .am3-day-title {
         font-size: 0.8em;
     }
-    .am3-day:nth-child(2n) .am3-day-title {
+    .am3-day:nth-child(7n-6) .am3-day-title,
+    .am3-day:nth-child(7n-4) .am3-day-title,
+    .am3-day:nth-child(7n-2) .am3-day-title,
+    .am3-day:nth-child(7n) .am3-day-title {
         color: transparent;
     }
 }
