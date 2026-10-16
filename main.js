@@ -156,44 +156,6 @@ function show_legacy_tooltip(target, lines, chart = false) {
     tip.style.left = `${left - root_left}px`;
 }
 /**
- * Displays the accessible floating tooltip while keeping it inside the viewport.
- * @param {HTMLElement} target - Element whose bounds anchor the tooltip.
- * @param {string[]} lines - Plain-text lines to render.
- * @param {"top"|"bottom"} placement - Preferred side of the target.
- * @returns {void}
- */
-function show_tooltip(target, lines, placement = "top") {
-    const tooltip = tooltip_element();
-    if (!tooltip || !lines.length) return;
-
-    tooltip.innerHTML = lines.map(line => `<p>${escape_html(line)}</p>`).join("");
-    tooltip.setAttribute("aria-hidden", "false");
-    tooltip.classList.add("visible");
-
-    const rect = target.getBoundingClientRect();
-    const gap = 12;
-    const viewport_width = document.documentElement.clientWidth;
-    const viewport_height = document.documentElement.clientHeight;
-    const box = tooltip.getBoundingClientRect();
-
-    let left = rect.left + rect.width / 2 - box.width / 2;
-    left = Math.max(8, Math.min(left, viewport_width - box.width - 8));
-
-    let top = placement === "bottom"
-        ? rect.bottom + gap
-        : rect.top - box.height - gap;
-
-    if (top < 8) {
-        top = Math.min(rect.bottom + gap, viewport_height - box.height - 8);
-    }
-    if (top + box.height > viewport_height - 8) {
-        top = Math.max(8, rect.top - box.height - gap);
-    }
-
-    tooltip.style.left = `${left}px`;
-    tooltip.style.top = `${top}px`;
-}
-/**
  * Reads newline-separated tooltip text from a data attribute.
  * @param {?HTMLElement} element - Element potentially carrying `data-tooltip`.
  * @returns {string[]} Trimmed non-empty tooltip lines.
@@ -269,14 +231,6 @@ function get_cover_urls(cover) {
 }
 function get_cover_color(cover) {
     return cover?.color || "#3db4f2";
-}
-/**
- * Converts an AniList status code into its display label.
- * @param {string} status - AniList media-list status.
- * @returns {string} Human-readable status or `"Unknown"`.
- */
-function format_status(status) {
-    return status_labels[status] || status || "Unknown";
 }
 /**
  * Parses the hash URL into one of the supported application routes.
@@ -421,13 +375,6 @@ function get_display_entries(page, model) {
     const visible = model.visibleEntries.filter(entry => entry.timelineItem !== null);
     return page.prefs.grouping === GROUP_GROUPED ? group_entries(visible) : visible;
 }
-function overview_heading(page) {
-    if (page.filter.mode === "last_year") return "Last year";
-    if (page.filter.mode === "range" && page.filter.from != null && page.filter.to != null) {
-        return `${page.filter.from} – ${page.filter.to}`;
-    }
-    return "All";
-}
 /**
  * Renders proportional calendar sections used behind each timeline row.
  * @param {Object<string, number>} sections - Section labels mapped to day counts.
@@ -540,9 +487,6 @@ function render_entry(entry, page, model) {
             </span>
         </div>`;
 }
-function render_selected_entry(page, model) {
-    return "";
-}
 function render_overview(page) {
     const model = get_overview_model(page);
     const entries = get_display_entries(page, model);
@@ -614,22 +558,6 @@ function get_chart_range() {
     return {
         from: Math.floor(from.getTime() / 1000) - 1,
         to: Math.floor(tomorrow.getTime() / 1000)
-    };
-}
-/**
- * Summarizes activities for the currently selected chart media title.
- * @param {Object} page - Current user-page state.
- * @returns {?Object} Selected media, active days, and total progress.
- */
-function get_chart_selection(page) {
-    if (!page.chart.data || !page.chart.selectedMediaId) return null;
-    const activities = page.chart.data.activities.flat().filter(activity => activity.media?.id === page.chart.selectedMediaId);
-    if (!activities.length) return null;
-    const sample = activities[0];
-    return {
-        media: sample.media,
-        activityDays: activities.length,
-        totalProgress: activities.reduce((sum, activity) => sum + activity.progress, 0)
     };
 }
 /**
