@@ -1,6 +1,6 @@
 # AniList Visualizer rewrite handoff
 
-Last reviewed: 2026-10-15
+Last reviewed: 2026-10-16
 
 This directory is the persistent handoff for rewriting the ASP.NET Core + React
 application as a static vanilla HTML/CSS/JS site hosted on GitHub Pages. The
@@ -9,7 +9,8 @@ static app now preserves the legacy React presentation and interaction semantics
 ## Current repository state
 
 - Repository: `bigchunguspng/anilist-visualizer`
-- Branch and commit: `static` / `6f64181`
+- Branch and base commit: `static` / `b3e9852` (working tree has uncommitted
+  changes)
 - Backend source: `src/API` (`net7.0` ASP.NET Core)
 - Frontend source: `src/app-react` (React 18 and `react-router-dom` submodule)
 - AniList library: `src/AniListNet` (fork submodule,
@@ -62,3 +63,8 @@ The static presentation preserves the legacy React styling, including its
 Google fonts, original favicon, navbar logo typography and animation, search
 avatar hover behavior, user-header spacing, year-control alignment, and
 below-timeline overview hints.
+
+The live static application state is available in the browser console as
+`window.app_state` (or `app_state`), including the current route and user-page
+loading/data state. It is the same mutable object used by `main.js`, so the
+reference updates as navigation and API requests progress.

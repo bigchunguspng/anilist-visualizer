@@ -153,6 +153,11 @@ server fallback requirements: `#/` is home, `#/user/{username}` is the user
 page, and any other hash is the not-found view. `404.html` provides a basic
 fallback when a host requests a missing file directly.
 
+Because ES-module top-level bindings are not browser globals, `main.js` assigns
+its live `app_state` object to `window.app_state`. This restores the console
+inspectability available with the legacy classic scripts without duplicating or
+serializing state.
+
 The data client is `static/api.js`. It uses public POST requests, 50-item
 pagination, in-flight request deduplication, and a bounded 15-minute
 `sessionStorage` cache. It exposes user lookup/search, media-list,

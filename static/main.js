@@ -46,6 +46,8 @@ const app_state = {
     userPage: null
 };
 
+window.app = app_state;
+
 /**
  * Escapes text before inserting it into generated HTML.
  * @param {*} value - Value to render as text.

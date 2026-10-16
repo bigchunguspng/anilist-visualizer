@@ -36,6 +36,8 @@ fixed; final real-browser/deployment verification remains.
   visible timeline.
 - [x] Use medium/large cover fallbacks for overview and three-month previews,
   and keep legacy tooltips within the viewport.
+- [x] Expose the live static application state as `window.app_state` for
+  browser-console inspection.
 - [ ] Add loading, empty, GraphQL, rate-limit, CORS, and offline states.
 - [ ] Verify external image/CDN behavior and AniList API response shape.
 - [ ] Test pagination, filters, mobile interaction, deep links, and deployment.
