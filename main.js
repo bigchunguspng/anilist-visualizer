@@ -529,14 +529,16 @@ function render_overview(page) {
                     <button type="button" class="section" data-action="toggle-pref" data-pref="ordering">
                         Reverse
                     </button>
-                    <div>From:</div>
+                    <label class="year-filter"><div>From:</div>
                     <select class="section" data-filter-year="from">
                             ${years.map(year => `<option value="${year}"${year === page.filter.from ? " selected" : ""}>${year}</option>`).join("")}
                     </select>
-                    <div>To:</div>
+                    </label>
+                    <label class="year-filter"><div>To:</div>
                     <select class="section" data-filter-year="to">
                             ${years.map(year => `<option value="${year}"${year === page.filter.to ? " selected" : ""}>${year}</option>`).join("")}
                     </select>
+                    </label>
                 </div>
             </div>
             <div id="animanga" class="medialist section${page.prefs.ordering === ORDER_REVERSE ? " reverse" : ""}">

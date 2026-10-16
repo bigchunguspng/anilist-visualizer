@@ -230,11 +230,19 @@ p {
     color: var(--color-text);
     transition: 0.1s;
 }
-.actions > div {
-    font-size: 1.1em;
+.actions > .year-filter {
     margin-block: auto;
-    margin-left: 16px;
+    margin-left: 6px;
+}
+.actions div {
+    font-size: 1.1em;
+    margin-left: 10px;
     margin-right: 10px;
+}
+.actions > .year-filter {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
 }
 @media (hover: hover) {
     .actions button:hover {
@@ -250,6 +258,28 @@ p {
 @media (hover: none) {
     .actions button:active {
         transform: scale(0.9);
+    }
+}
+@media (max-width: 800px){
+    .actions button {
+        padding-inline: 8px;
+    }
+    .actions div {
+        margin-inline: 0;
+    }
+    .actions > .year-filter {
+        margin-left: 8px;
+    }
+}
+@media (max-width: 600px){
+    .actions button {
+        padding-inline: 5px;
+    }
+    .actions div {
+        margin-inline: 0;
+    }
+    .actions > .year-filter {
+        margin-left: 5px;
     }
 }
 .section-name {
@@ -272,6 +302,10 @@ p {
     top: -20px;
     right: 0;
     display: flex;
+    flex-wrap: wrap;
+    max-width: calc(100vw - 100px);
+    row-gap: 5px;
+    justify-content: end;
 }
 .error {
     margin-block: 10px !important;
