@@ -730,6 +730,7 @@ header:not(.user) .nav-logo img {
 }
 .am3-day-title {
     margin-top: 5px;
+    font-size: 0.9em;
 }
 .am3-day:last-child .am3-day-title {
     border-right: 1px solid var(--color-gray-500);
@@ -737,15 +738,12 @@ header:not(.user) .nav-logo img {
 .am3-day:nth-child(7n-6) .am3-day-title {
     border-left: 1px solid var(--color-gray-500);
 }
-@media (min-width: 1280px) {
+@media (min-width: 1400px) {
     .am3-day-title {
         border-left: 1px solid var(--color-gray-500);
     }
 }
-@media (max-width: 1280px) {
-    .am3-day-title {
-        font-size: 0.8em;
-    }
+@media (max-width: 1279px) {
     .am3-day:nth-child(7n-6) .am3-day-title,
     .am3-day:nth-child(7n-4) .am3-day-title,
     .am3-day:nth-child(7n-2) .am3-day-title,
