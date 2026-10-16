@@ -755,7 +755,7 @@ function render_user_page(page) {
                         </button>
                     </div>
                 </div>` : ""}
-            <div class="container-xd">
+            <div class="container-xd${page.currentView === VIEW_THREE_MONTHS ? " am3-container" : ""}">
                 ${page.phase === "loading_user" || page.phase === "loading_entries"
                     ? `<section class="panel"><p class="message">${escape_html(header_text)}</p></section>`
                     : page.phase === "error"
@@ -1038,9 +1038,7 @@ document.addEventListener("click", event => {
     const select_chart = event.target.closest("[data-action='select-chart-media']");
     if (select_chart) {
         page.chart.selectedMediaId = Number(select_chart.dataset.mediaId);
-        update_user_render();
-        const selected = document.querySelector(`.am3-activity.media-${select_chart.dataset.mediaId}`);
-        if (selected) highlight_chart_activity(selected);
+        highlight_chart_activity(select_chart);
         return;
     }
 });
@@ -1113,7 +1111,9 @@ document.addEventListener("focusout", event => {
 window.addEventListener("scroll", hide_tooltip, {passive: true});
 window.addEventListener("resize", hide_tooltip);
 document.addEventListener("dblclick", event => {
-    if (!event.target.closest(".am3-activity")) return;
+    const page = get_user_page();
+    if (!page || page.phase !== "ready" || page.currentView !== VIEW_THREE_MONTHS) return;
+    if (!event.target.closest(".am3-container")) return;
     page_for_chart_reset();
 });
 
