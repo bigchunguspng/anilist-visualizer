@@ -736,12 +736,16 @@ header:not(.user) .nav-logo img {
 }
 #days, #months {
     display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0;
 }
 #days {
     padding-top: 20px;
 }
 .am3-day, .am3-month {
-    width: var(--width);
+    flex: 1 0 var(--width);
+    min-width: 0;
     text-align: center;
     box-sizing: border-box;
     transition-duration: 0.05s;
@@ -787,6 +791,7 @@ header:not(.user) .nav-logo img {
 }
 .am3-month {
     border-left: 1px solid var(--color-gray-500);
+    border-top: 1px solid var(--color-gray-500);
 }
 .am3-month:last-child {
     border-right: 1px solid var(--color-gray-500);
