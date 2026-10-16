@@ -261,7 +261,8 @@ p {
     }
 }
 @media (max-width: 800px){
-    .actions button {
+    .actions button,
+    .actions select {
         padding-inline: 8px;
     }
     .actions div {
@@ -272,7 +273,8 @@ p {
     }
 }
 @media (max-width: 600px){
-    .actions button {
+    .actions button,
+    .actions select {
         padding-inline: 5px;
     }
     .actions div {
