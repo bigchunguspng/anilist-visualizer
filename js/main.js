@@ -40,6 +40,7 @@ const app_state = {
 
 window.app = app_state;
 
+// HELPERS
 /**
  * Escapes text before inserting it into generated HTML.
  * @param {*} value - Value to render as text.
@@ -55,6 +56,8 @@ function escape_html(value) {
         "'": "&#039;"
     })[character]);
 }
+
+// INFRA
 function set_title(title) {
     document.title = title;
 }
@@ -89,6 +92,8 @@ function render_api_error(error) {
     }
     return error.message;
 }
+
+// TOOLTIP
 function tooltip_element() {
     return document.getElementById(TOOLTIP_ID);
 }
@@ -148,6 +153,8 @@ function show_legacy_tooltip(target, lines, chart = false) {
     tip.style.top = `${top - root_top}px`;
     tip.style.left = `${left - root_left}px`;
 }
+
+// DOMAIN HELPERS
 /**
  * Reads newline-separated tooltip text from a data attribute.
  * @param {?HTMLElement} element - Element potentially carrying `data-tooltip`.
@@ -238,6 +245,8 @@ function get_cover_urls(cover) {
 function get_cover_color(cover) {
     return cover?.color || "#3db4f2";
 }
+
+// APP & ROUTING
 /**
  * Parses the hash URL into one of the supported application routes.
  * @returns {{name: string, username?: string}} Home, user, or not-found route.
@@ -290,6 +299,8 @@ function render_not_found() {
             </div>
         </main>`;
 }
+
+// STATE
 /**
  * Creates the loading, preference, filter, cache, and chart state for a user route.
  * @param {string} username - Requested AniList username.
@@ -332,6 +343,8 @@ function create_user_state(username, token) {
 function get_user_page() {
     return app_state.userPage;
 }
+
+// ANIMANGA (Overview)
 /**
  * Builds the overview model using the page's active date filter and activities.
  * @param {Object} page - Current user-page state.
@@ -549,6 +562,8 @@ function ov_render_overview(page) {
             <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;
 }
+
+// AM3 (Last 3 months)
 /**
  * Calculates the AniList query window covering today and the previous 3 months.
  * @returns {{from: number, to: number}} Unix timestamp bounds in seconds.
@@ -581,6 +596,28 @@ function am3_chart_activity_lines(activity, language) {
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
     lines.push(`${activity.progress} ${unit_label(activity.media?.type, activity.progress)}`);
     return lines;
+}
+/**
+ * Shows a chart title's cover and dims activities belonging to other titles.
+ * @param {HTMLElement} activity - Selected chart activity element.
+ * @returns {void}
+ */
+function am3_highlight_chart_activity(activity) {
+    const image = document.getElementById("image");
+    if (image) {
+        image.style.backgroundImage = `url("${activity.dataset.coverLarge || ""}"), url("${activity.dataset.coverMedium || ""}")`;
+        image.classList.add("has-selection");
+    }
+    document.querySelectorAll(".am3-activity").forEach(item => item.classList.remove("semi"));
+    document.querySelectorAll(`.am3-activity:not(.media-${activity.dataset.mediaId})`)
+        .forEach(item => item.classList.add("semi"));
+}
+function am3_page_for_chart_reset() {
+    const page = get_user_page();
+    if (!page) return;
+    page.chart.selectedMediaId = null;
+    page.chart.selectedCover = null;
+    update_user_render();
 }
 function am3_render_chart(page) {
     if (page.chart.status === "loading" || page.chart.status === "idle") {
@@ -636,6 +673,38 @@ function am3_render_chart(page) {
             <div class="tipbox absolute"><span id="tip"></span></div>
         </section>`;
 }
+
+// RENDER SEARCH
+function render_search_state(message, is_error = false) {
+    const results = document.querySelector("#search_results");
+    if (!results) return;
+    results.innerHTML = `<div class="mb-3 medialist section search-results"><div class="error">${escape_html(message)}</div></div>`;
+}
+function render_search_results(users) {
+    const results = document.querySelector("#search_results");
+    if (!results) return;
+    if (users.length === 0) {
+        results.innerHTML = `
+            <div class="mb-3 medialist section search-results">
+                <div class="search-result entry">
+                    <div class="cover"><div class="image" style="background-image:url(img/nobody.png)"></div></div>
+                    <div class="title">Nobody Was Found</div><div class="last-seen">XD</div>
+                </div>
+            </div>`;
+        return;
+    }
+    results.innerHTML = `
+        <div class="mb-3 medialist section search-results">
+            ${users.map(user => `
+                <a class="search-result entry" href="#/user/${encodeURIComponent(user.name)}">
+                    <div class="cover"><div class="image" style="background-image:url('${escape_html(user.avatar?.large || user.avatar?.medium || "")}')"></div></div>
+                    <div class="title">${escape_html(user.name)}</div>
+                    <div class="last-seen">${escape_html(format_last_activity(user.updatedAt))}</div>
+                </a>`).join("")}
+        </div>`;
+}
+
+// RENDER USER PAGE
 function render_user_page(page) {
     const display_name = page.user?.name || page.username;
     set_title(`${display_name} · Anilist Visualizer`);
@@ -666,11 +735,11 @@ function render_user_page(page) {
                         <img class="avatar" src="${escape_html(avatar)}" alt="avatar.jpeg">
                     </a>` : ""}
                 ${user
-                    ? `<div class="text">
+        ? `<div class="text">
                         <h1 class="user-name">${escape_html(display_name)}</h1>
                         <p class="user-count">Last activity: ${escape_html(format_last_activity(user.updatedAt))}</p>
                     </div>`
-                    : `<div class="user-count error">${escape_html(header_text)}</div>`}
+        : `<div class="user-count error">${escape_html(header_text)}</div>`}
             </div>
         </header>
         <main aria-live="polite">
@@ -699,42 +768,14 @@ function render_user_page(page) {
                 </div>` : ""}
             <div class="container-xd${page.currentView === VIEW_THREE_MONTHS ? " am3-container" : ""}">
                 ${page.phase === "loading_user" || page.phase === "loading_entries"
-                    ? `<section class="panel"><p class="message">${escape_html(header_text)}</p></section>`
-                    : page.phase === "error"
-                        ? `<section class="panel"><p class="message error">${escape_html(page.error)}</p></section>`
-                        : page.currentView === VIEW_OVERVIEW
-                            ? ov_render_overview(page)
-                            : am3_render_chart(page)}
+        ? `<section class="panel"><p class="message">${escape_html(header_text)}</p></section>`
+        : page.phase === "error"
+            ? `<section class="panel"><p class="message error">${escape_html(page.error)}</p></section>`
+            : page.currentView === VIEW_OVERVIEW
+                ? ov_render_overview(page)
+                : am3_render_chart(page)}
             </div>
         </main>`;
-}
-function render_search_state(message, is_error = false) {
-    const results = document.querySelector("#search_results");
-    if (!results) return;
-    results.innerHTML = `<div class="mb-3 medialist section search-results"><div class="error">${escape_html(message)}</div></div>`;
-}
-function render_search_results(users) {
-    const results = document.querySelector("#search_results");
-    if (!results) return;
-    if (users.length === 0) {
-        results.innerHTML = `
-            <div class="mb-3 medialist section search-results">
-                <div class="search-result entry">
-                    <div class="cover"><div class="image" style="background-image:url(img/nobody.png)"></div></div>
-                    <div class="title">Nobody Was Found</div><div class="last-seen">XD</div>
-                </div>
-            </div>`;
-        return;
-    }
-    results.innerHTML = `
-        <div class="mb-3 medialist section search-results">
-            ${users.map(user => `
-                <a class="search-result entry" href="#/user/${encodeURIComponent(user.name)}">
-                    <div class="cover"><div class="image" style="background-image:url('${escape_html(user.avatar?.large || user.avatar?.medium || "")}')"></div></div>
-                    <div class="title">${escape_html(user.name)}</div>
-                    <div class="last-seen">${escape_html(format_last_activity(user.updatedAt))}</div>
-                </a>`).join("")}
-        </div>`;
 }
 /**
  * Re-renders the current route and hides stale tooltips.
@@ -922,6 +963,7 @@ function render_route() {
     update_user_render();
 }
 
+// HANDLERS
 document.addEventListener("submit", event => {
     const form = event.target.closest("[data-search-form]");
     if (!form) return;
@@ -987,23 +1029,12 @@ document.addEventListener("click", event => {
         return;
     }
 });
-
-/**
- * Shows a chart title's cover and dims activities belonging to other titles.
- * @param {HTMLElement} activity - Selected chart activity element.
- * @returns {void}
- */
-function am3_highlight_chart_activity(activity) {
-    const image = document.getElementById("image");
-    if (image) {
-        image.style.backgroundImage = `url("${activity.dataset.coverLarge || ""}"), url("${activity.dataset.coverMedium || ""}")`;
-        image.classList.add("has-selection");
-    }
-    document.querySelectorAll(".am3-activity").forEach(item => item.classList.remove("semi"));
-    document.querySelectorAll(`.am3-activity:not(.media-${activity.dataset.mediaId})`)
-        .forEach(item => item.classList.add("semi"));
-}
-
+document.addEventListener("dblclick", event => {
+    const page = get_user_page();
+    if (!page || page.phase !== "ready" || page.currentView !== VIEW_THREE_MONTHS) return;
+    if (!event.target.closest(".am3-container")) return;
+    am3_page_for_chart_reset();
+});
 document.addEventListener("change", event => {
     const page = get_user_page();
     if (!page || page.phase !== "ready") return;
@@ -1055,20 +1086,6 @@ document.addEventListener("focusout", event => {
 
 window.addEventListener("scroll", hide_tooltip, {passive: true});
 window.addEventListener("resize", hide_tooltip);
-document.addEventListener("dblclick", event => {
-    const page = get_user_page();
-    if (!page || page.phase !== "ready" || page.currentView !== VIEW_THREE_MONTHS) return;
-    if (!event.target.closest(".am3-container")) return;
-    am3_page_for_chart_reset();
-});
-
-function am3_page_for_chart_reset() {
-    const page = get_user_page();
-    if (!page) return;
-    page.chart.selectedMediaId = null;
-    page.chart.selectedCover = null;
-    update_user_render();
-}
 window.addEventListener("hashchange", render_route);
 
 render_route();
