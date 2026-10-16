@@ -111,8 +111,6 @@ const RANGE_ACTIVITIES_QUERY = `
                     media {
                         id
                         type
-                        episodes
-                        chapters
                         title { english romaji native }
                         coverImage { large medium extraLarge color }
                         siteUrl

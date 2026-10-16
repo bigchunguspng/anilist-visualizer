@@ -144,7 +144,8 @@ function show_legacy_tooltip(target, lines, chart = false) {
     if (!chart && edge_rect && left + tip_rect.width > edge_rect.right - 20) {
         left -= tip_rect.width + 5;
     }
-    left = Math.max(viewport.left + 8, Math.min(left, viewport.right - tip_rect.width - 8));
+    const right_margin = chart ? 30 : 8;
+    left = Math.max(viewport.left + 8, Math.min(left, viewport.right - tip_rect.width - right_margin));
     if (top < viewport.top + 8) {
         top = Math.min(target_rect.bottom + 12, viewport.bottom - tip_rect.height - 8);
     }
@@ -585,7 +586,7 @@ function chart_activity_lines(activity, language) {
     const title = get_localized_title(activity.media?.title, language);
     const lines = [title, format_day(activity.day)];
     if (activity.episodes) lines.push(`Progress: ${activity.episodes}`);
-    lines.push(`${progress_count(activity.progress, activity.media)} ${unit_label(activity.media?.type, activity.progress)}`);
+    lines.push(`${activity.progress} ${unit_label(activity.media?.type, activity.progress)}`);
     return lines;
 }
 function render_chart(page) {
