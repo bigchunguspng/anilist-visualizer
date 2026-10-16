@@ -765,7 +765,9 @@ header:not(.user) .nav-logo img {
     z-index: 1000;
 }
 .semi {
-    opacity: 0.2;
+    opacity: 0.5;
+    background:
+            repeating-linear-gradient(45deg,    var(--color-blue), #0000 1px, var(--color-blue) 3px);
 }
 .hint-message-div {
     display: flex;

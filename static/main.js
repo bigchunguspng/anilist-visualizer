@@ -687,7 +687,7 @@ function render_chart(page) {
             <div class="hint-message-div">
                 <span class="hint-message">
                     Single click - highlight specific title.<br>
-                    Double click - restore.
+                    Escape / Double click - restore.
                 </span>
             </div>
             <div class="am3-image" id="image"></div>
@@ -1071,6 +1071,10 @@ document.addEventListener("keydown", event => {
     if (event.ctrlKey || event.altKey || event.shiftKey) return;
     const page = get_user_page();
     if (!page || page.phase !== "ready") return;
+    if (event.code === "Escape" && page.currentView === VIEW_THREE_MONTHS) {
+        page_for_chart_reset();
+        return;
+    }
     const tag = event.target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || event.target.isContentEditable) return;
 
