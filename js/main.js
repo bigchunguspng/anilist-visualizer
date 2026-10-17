@@ -828,6 +828,8 @@ async function load_user_route(username) {
         page.phase = "ready";
         const full = ov_build_animanga(entries);
         page.allYears = full.years;
+        if (Number(full.years[0]) < 2012)
+            page.filter.mode = "last_year";
         page.filter.from = full.years[0];
         page.filter.to = full.years[full.years.length - 1];
         update_user_render();
