@@ -186,6 +186,17 @@ function ov_format_date_range(start, end, arrow = "➽", format = "short") {
     return `${ov_date_text(start, format)} - ${ov_date_text(end, format)}`;
 }
 /**
+ * Selects the date format needed for an entry tooltip.
+ * @param {Object} start - Entry start date.
+ * @param {?Object} end - Optional entry completion date.
+ * @param {number} today - Current Unix day used for unfinished entries.
+ * @returns {string} `"full"` when the entry spans calendar years, otherwise `"short"`.
+ */
+function ov_entry_date_format(start, end, today) {
+    const end_year = end?.year ?? day_to_date(today).year;
+    return start.year === end_year ? "short" : "full";
+}
+/**
  * Describes average viewing/reading speed using the media's unit.
  * @param {number} progress - Episodes or chapters completed.
  * @param {number} days - Inclusive elapsed days.
@@ -220,12 +231,13 @@ function ov_set_entry_timeline(entry, min_day, max_day, today, activities_by_med
     const progress_matters = (entry.media.episodes == null || entry.media.episodes > 1) &&
         entry.progress > 0;
     const days = day_b - day_a + 1;
+    const date_format = ov_entry_date_format(entry.startedAt, entry.completedAt, today);
     const timeline = {
         offset: Math.max(day_a - min_day, 0),
         length: Math.min(day_b, max_day) - Math.max(day_a, min_day) + 1,
         tip: {
             dateRange: day_a === day_b ? ov_date_text(entry.startedAt, "short") :
-                ov_format_date_range(entry.startedAt, entry.completedAt),
+                ov_format_date_range(entry.startedAt, entry.completedAt, "➽", date_format),
             episodes: progress_matters ? entry.progress : null,
             averageSpeed: null
         },
