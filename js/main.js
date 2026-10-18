@@ -470,7 +470,7 @@ function ov_render_entry(entry, page, model) {
     const item = entry.timelineItem;
     const cover_urls = get_cover_urls(entry.media.coverImage);
     const cover_color = get_cover_color(entry.media.coverImage);
-    const activity_color = item.activities ? `${cover_color}10` : cover_color;
+    const activity_color = item.activities ? `${cover_color}25` : cover_color;
     const tooltip = ov_entry_tooltip_lines(entry).join("\n");
     const progress_style = `margin-left:${(item.offset / timeframe) * 100}%;width:${(item.length / timeframe) * 100}%;`;
     const airing = entry.media.airing;
